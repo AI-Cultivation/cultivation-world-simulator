@@ -393,7 +393,7 @@ Pour les détails de contribution, consultez [CONTRIBUTORS.md](../../CONTRIBUTOR
 - ✅ Opportunités fortuites
 - ✅ Secrets du monde
 - ✅ POI
-- [ ] PNJ d'arrière-plan
+- ✅ PNJ d'arrière-plan
 - [ ] Ascension vers le royaume supérieur
 
 ### 🔭 Perspectives à long terme

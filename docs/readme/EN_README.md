@@ -388,7 +388,7 @@ For more contribution details, please check [CONTRIBUTORS.md](../../CONTRIBUTORS
 - ✅ Fortuitous opportunity
 - ✅ World secrets
 - ✅ POI
-- [ ] Background NPCs
+- ✅ Background NPCs
 - [ ] Ascension to the upper realm
 
 ### 🔭 Long-term Prospects

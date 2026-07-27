@@ -388,7 +388,7 @@ docker-compose up -d --build
 - ✅ 機縁
 - ✅ 世界の秘密
 - ✅ POI
-- [ ] 背景 NPC
+- ✅ 背景 NPC
 - [ ] 上界への飛昇
 
 ### 🔭 長期展望

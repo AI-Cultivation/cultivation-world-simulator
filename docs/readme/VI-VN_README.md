@@ -388,7 +388,7 @@ Chi tiết đóng góp vui lòng xem [CONTRIBUTORS.md](../../CONTRIBUTORS.md).
 - ✅ Cơ duyên
 - ✅ Bí mật thế giới
 - ✅ POI
-- [ ] NPC phông nền
+- ✅ NPC phông nền
 - [ ] Phi thăng thượng giới
 
 ### 🔭 Triển Vọng Dài Hạn
