@@ -5,6 +5,8 @@ import inspect
 from types import SimpleNamespace
 from typing import Any
 
+from fastapi import HTTPException
+
 from src.config import RunConfig, get_settings_service
 from src.i18n import t
 
@@ -246,6 +248,15 @@ class GameCommandService:
         )
 
     async def generate_custom_content(self, req: Any) -> dict:
+        run_config = self._deps.runtime.get("run_config") or {}
+        if bool(run_config.get("test_mode", False)):
+            raise HTTPException(
+                status_code=400,
+                detail={
+                    "code": "TEST_MODE_LLM_UNAVAILABLE",
+                    "message": "测试模式下不提供 LLM 内容生成。",
+                },
+            )
         return await self._deps.generate_custom_content_command(
             category=req.category,
             realm=req.realm,

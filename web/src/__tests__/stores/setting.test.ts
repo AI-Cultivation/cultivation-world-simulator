@@ -277,6 +277,7 @@ describe('useSettingStore', () => {
         npc_awakening_rate_per_month: 0.01,
         world_lore: '',
         world_secret_id: 'none',
+        test_mode: false,
       },
     })
     expect(mockStartGame).toHaveBeenCalledWith({
@@ -287,7 +288,16 @@ describe('useSettingStore', () => {
       npc_awakening_rate_per_month: 0.01,
       world_lore: '',
       world_secret_id: 'none',
+      test_mode: false,
     })
+  })
+
+  it('sends test mode as part of the run configuration', async () => {
+    store.updateNewGameDraft({ test_mode: true })
+
+    await store.startGameWithDraft()
+
+    expect(mockStartGame).toHaveBeenCalledWith(expect.objectContaining({ test_mode: true }))
   })
 
   it('hydrates content locale from backend as saved by settings service', async () => {

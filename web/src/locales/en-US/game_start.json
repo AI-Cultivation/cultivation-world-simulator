@@ -7,15 +7,19 @@
     "sect_num": "Active Sects",
     "new_npc_rate": "Monthly New Cultivator Rate",
     "world_lore": "Worldview and History",
-    "world_secret": "World Secret"
+    "world_secret": "World Secret",
+    "test_mode": "Test Mode"
   },
   "tips": {
-    "sect_num": "Sect number should be less than half of initial cultivators."
+    "sect_num": "Sect number should be less than half of initial cultivators.",
+    "test_mode": "For testing features and the overall game flow only. No real LLM is called; AI results use built-in rules."
   },
   "placeholders": {
     "world_lore": "Describe the cultivation system, moral alignment, sect ecosystem, and regional flavor first, then add major historical eras and events. Enabling this uses the LLM and noticeably increases initialization time. (Optional)"
   },
-  "options": {},
+  "options": {
+    "test_mode": "Enable rule-based test mode"
+  },
   "actions": {
     "start": "Start"
   },

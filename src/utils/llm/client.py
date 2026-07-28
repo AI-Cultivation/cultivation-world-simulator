@@ -16,6 +16,8 @@ from .config import LLMMode, LLMConfig, get_task_mode
 from .parser import parse_json
 from .prompt import build_prompt, load_template
 from .exceptions import LLMError, ParseError
+from .runtime_mode import is_test_mode_enabled
+from .test_mode_fallbacks import TestModeLLMUnavailable, resolve_test_mode_task
 
 # 模块级信号量，懒加载
 _SEMAPHORE: Optional[asyncio.Semaphore] = None
@@ -376,6 +378,9 @@ async def call_llm(prompt: str, mode: LLMMode = LLMMode.NORMAL) -> str:
     基础 LLM 调用，自动控制并发
     使用 urllib 直接调用 OpenAI 兼容接口
     """
+    if is_test_mode_enabled():
+        raise TestModeLLMUnavailable("raw_llm_call")
+
     config = LLMConfig.from_mode(mode)
     semaphore = _get_semaphore()
     
@@ -446,6 +451,9 @@ async def call_llm_with_task_name(
     Returns:
         dict: LLM 返回的 JSON 数据
     """
+    if is_test_mode_enabled():
+        return resolve_test_mode_task(task_name, infos)
+
     mode = get_task_mode(task_name)
     
     return await call_llm_with_template(template_path, infos, mode, max_retries)

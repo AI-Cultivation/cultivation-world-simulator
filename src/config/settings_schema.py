@@ -80,6 +80,7 @@ class NewGameDefaults(BaseModel):
     npc_awakening_rate_per_month: float = 0.01
     world_lore: str = ""
     world_secret_id: str = "none"
+    test_mode: bool = False
 
 
 class NewGameDefaultsPatch(BaseModel):
@@ -90,6 +91,7 @@ class NewGameDefaultsPatch(BaseModel):
     npc_awakening_rate_per_month: Optional[float] = None
     world_lore: Optional[str] = None
     world_secret_id: Optional[str] = None
+    test_mode: Optional[bool] = None
 
 
 class RunConfig(NewGameDefaults):

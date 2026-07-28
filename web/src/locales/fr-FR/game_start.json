@@ -7,15 +7,19 @@
     "sect_num": "Sectes actives",
     "new_npc_rate": "Éveil mensuel",
     "world_lore": "Lore du monde",
-    "world_secret": "Secret du monde"
+    "world_secret": "Secret du monde",
+    "test_mode": "Mode test"
   },
   "tips": {
-    "sect_num": "Les sectes doivent être moins nombreuses que la moitié des cultivateurs."
+    "sect_num": "Les sectes doivent être moins nombreuses que la moitié des cultivateurs.",
+    "test_mode": "Réservé aux tests fonctionnels et de flux. Aucun LLM réel n'est appelé ; l'IA applique des règles intégrées."
   },
   "placeholders": {
     "world_lore": "Décrivez le système de cultivation, les factions, les régions et l'histoire. Utilise le LLM et rallonge l'initialisation. (Facultatif)"
   },
-  "options": {},
+  "options": {
+    "test_mode": "Activer le test par règles"
+  },
   "actions": {
     "start": "Démarrer"
   },

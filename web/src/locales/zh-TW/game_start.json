@@ -7,15 +7,19 @@
     "sect_num": "活躍宗門數量",
     "new_npc_rate": "每月新生修士概率",
     "world_lore": "世界觀與歷史",
-    "world_secret": "世界秘密"
+    "world_secret": "世界秘密",
+    "test_mode": "測試模式"
   },
   "tips": {
-    "sect_num": "宗門數量建議少於角色數量的一半"
+    "sect_num": "宗門數量建議少於角色數量的一半",
+    "test_mode": "僅用於測試遊戲功能與整體流程。啟用後不會呼叫實際 LLM，AI 結果將由內建規則處理。"
   },
   "placeholders": {
     "world_lore": "請先描述修煉體系、正邪格局、宗門生態、地域風貌，再補充關鍵時代脈絡與歷史事件。啓用後會調用LLM，初始化時間會明顯增加。（可選）"
   },
-  "options": {},
+  "options": {
+    "test_mode": "啟用規則模擬測試模式"
+  },
   "actions": {
     "start": "開始"
   },

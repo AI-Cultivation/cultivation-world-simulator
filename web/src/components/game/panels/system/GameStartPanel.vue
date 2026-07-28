@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { NForm, NFormItem, NInputNumber, NButton, NInput, NSelect, useMessage } from 'naive-ui'
+import { NForm, NFormItem, NInputNumber, NButton, NInput, NSelect, NCheckbox, useMessage } from 'naive-ui'
 import { useI18n } from 'vue-i18n'
 
 import { useSettingStore } from '@/stores/setting'
@@ -121,6 +121,18 @@ async function startGame() {
         />
       </n-form-item>
 
+      <n-form-item :label="t('game_start.labels.test_mode')" path="test_mode">
+        <div>
+          <n-checkbox
+            :checked="settingStore.newGameDraft.test_mode"
+            @update:checked="(value) => settingStore.updateNewGameDraft({ test_mode: value })"
+          >
+            {{ t('game_start.options.test_mode') }}
+          </n-checkbox>
+          <div class="tip-text test-mode-tip">{{ t('game_start.tips.test_mode') }}</div>
+        </div>
+      </n-form-item>
+
       <div class="actions" v-if="!readonly">
         <n-button type="primary" size="large" @click="startGame" :loading="loading">
           {{ t('game_start.actions.start') }}
@@ -153,6 +165,10 @@ async function startGame() {
   color: #aaa;
   font-size: 0.85em;
   line-height: 1.5;
+}
+
+.test-mode-tip {
+  margin: 6px 0 0;
 }
 
 .map-section {

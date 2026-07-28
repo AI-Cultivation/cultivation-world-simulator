@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from typing import Any, Callable
 
 from .tick_payload import TickPayloadBuilder
+from src.utils.llm.runtime_mode import is_world_test_mode, llm_test_mode_scope
 
 
 @dataclass(slots=True)
@@ -51,7 +52,11 @@ class GameLoopRunner:
             if not sim or not world:
                 return
 
-            events = await self.runtime.run_mutation(sim.step)
+            async def _step_in_run_scope():
+                with llm_test_mode_scope(is_world_test_mode(world)):
+                    return await sim.step()
+
+            events = await self.runtime.run_mutation(_step_in_run_scope)
             if getattr(self.runtime, "is_reset_requested", lambda: False)():
                 return
             await self.manager.broadcast(self.tick_payload_builder.build(events=events, world=world))

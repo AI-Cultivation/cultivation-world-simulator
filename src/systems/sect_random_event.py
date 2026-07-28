@@ -13,6 +13,7 @@ from src.systems.sect_relations import SectRelationReason
 from src.utils.config import CONFIG
 from src.utils.df import game_configs, get_float, get_int, get_str
 from src.utils.llm.client import call_llm_with_template
+from src.utils.llm.runtime_mode import is_test_mode_enabled
 from src.utils.llm.config import LLMMode
 from src.i18n import t
 
@@ -106,6 +107,9 @@ async def _generate_reason_fragment(
     value: float,
     duration_months: int,
 ) -> Optional[str]:
+    if is_test_mode_enabled():
+        return None
+
     infos = {
         "language": _lang(),
         "event_type": event_type,

@@ -69,29 +69,30 @@
 12. 短槽位翻译必须控制长度但不牺牲语义：`title`、`label`、`tab`、`button`、`badge`、`status`、`*_short`、菜单项、状态栏入口、卡片标题等在法语、越南语等长语种中应使用简洁自然译法；完整说明放到 `*_desc`、tooltip、help 或正文 key，必要时新增短/长 key 分离，不要让长句兼任窄按钮和弹窗说明。
 13. 种族、妖族 action/effect key、角色创建 race 选项与 race 详情展示属于前后端 i18n 契约：后端优先提供本地化结构化 DTO，前端不得写死 `人族/狐族/狼族/鸟族/蛇族/龟族` 等用户可见 label，也不得用中文作为缺省 fallback。
 14. LLM/运行时生成文本（如 `backstory`、`thinking`、目标）不会随 UI 语言自动翻译；新增生成文本约束或 prompt 片段时应走 locale template 或翻译 key，避免在 Python 逻辑中硬编码中文最终文案。
-15. 用户设置不得再写入 `static/local_config.yml`；正式真源是用户数据目录中的 `settings.json/secrets.json`，本局参数必须走 `RunConfig` 并随存档保存。
-16. 小故事统一通过 `src/classes/story_event_service.py` 生成；业务代码应先产出事实事件，再决定是否追加故事事件。
-17. `gathering` 的故事固定为 `100%`，且所有 LLM 展开的故事正文统一使用 `is_story=True`，不要再混用 `is_major=True` 作为故事正文标记。
-18. 前端自带静态资源（`web/public/*`）禁止写死 `/icons/...`、`/sfx/...`、`/bgm/...` 这类根路径；固定图片优先放 `web/src/assets/*` 模块导入，运行时路径统一通过 `import.meta.env.BASE_URL` helper 生成。
-19. 前端系统级 UI icon 当前统一使用 `Lucide` outline SVG，资源目录为 `web/src/assets/icons/ui/lucide/`；新增 icon 时优先复用该目录并保持单一家族，不要混用多套 icon 风格；关键入口保留文字，优先用 `currentColor + mask-image` 渲染，详见 `docs/frontend.md` 与该目录下 `README.md`。
-20. 地图系统以 `static/game_configs/maps/<id>/map.json` 为官方真源，`region_rows` 是唯一语义矩阵；不要恢复 `tile_map.csv/region_map.csv` 平行主路径；一个 region 只能绑定一个 tile 图像，`-1` 是荒野且不可点击，地图特有名称/描述必须走 `region_overrides` 并随地图工具和存档保留；改官方地图后至少运行 `python tools\map_presets\validate_presets.py`。
-21. 前端根层页面编排必须采用 `scene + overlay` 语义：`SystemMenu`、`LoadingOverlay` 不得通过关闭 Splash 等副作用去推断当前底层页面；游戏主界面只能在 `scene === 'game'` 时渲染。
-22. 状态栏与系统级导航配色必须把“模块基础色”和“状态覆盖色”分层：基础色表达栏目归属，状态色只用于激活/可用/稀有度等动态信息；避免黄橙色同时承担多个语义。
-23. Docker / Compose 部署中，容器生命周期由进程管理器控制；不得因 WebSocket 断开、无人连接等桌面版逻辑自动退出。
-24. Docker 健康检查必须尽量反映真实可用性，尤其前端代理链路不能只检查静态首页；若依赖 backend，`depends_on` 优先等待 `service_healthy`。
-25. Docker 生产镜像只安装 runtime dependencies，不要把 `pytest` 等测试依赖装进运行镜像，也不要重新依赖 `/app/assets/saves`、`/app/logs` 等旧运行目录。
-26. 改动 Docker 相关配置、镜像、代理或持久化语义时，必须同步更新 contract/smoke 测试以及 `README.md` / `docs/readme/*.md` 中的部署说明。
-27. 外接控制 API 的稳定契约应优先服务外部 agent / Claw 集成；新增公共接口时先判断是 `query` 还是 `command`，并优先落到 runtime/service 分层与 `/api/v1/*` 稳定命名空间中。
-28. 所有会修改世界状态的 API 必须通过统一 mutation 入口串行化，避免与 `Simulator.step()` 并发写 world；禁止继续扩散路由层直接改 `game_instance` 的写法。
-29. 外接控制 API 的 query builder / command handler / service 若依赖会被测试 patch、配置 reload 或后续继续拆模块的函数与配置，优先使用 `get_*` getter 或在调用时动态读取，不要在模块初始化时把依赖绑死。
-30. 影响运行时语义的配置必须优先按“调用时读取当前配置”处理，尤其是存档目录、数据根、settings/secrets 派生配置；不要假设仓库里某个模块级 `CONFIG` 永远是最新对象。
-31. 编写或修改测试时，禁止硬编码只在单一操作系统下成立的绝对路径；涉及路径断言时优先使用 `tmp_path`、`pathlib.Path`、`os.path.join()` 等按当前平台生成路径，确保 Windows 本地与 GitHub Actions Linux 的结果一致。
-32. 角色扮演模式默认是“上帝视角下的单角色接管”，不是独立全局模式；实现时不要再把“个人模式”和“上帝模式”分成两套系统。
-33. 扮演态、`pending_request`、`conversation_session`、choice continuation 全部属于 runtime；不得写入存档，也必须在 `load/reinit/reset/start` 后显式清空。
-34. 角色扮演只允许在决策边界暂停，禁止中途打断动作链；二期有限选择必须优先走统一 choice resolver / continuation，不要在业务场景里散落 `if roleplay ... else ...`。
-35. 三期自由对话必须依附 `Conversation` 动作触发，采用“玩家一侧输入、目标角色由 LLM 回复”的单边接管模式；原始聊天记录不进长期事件流，只以 summary 落地。
-36. 前端大型面板/弹窗/详情页的业务状态、数据加载、派生字段、跳转、提交、timer 与 Pixi 生命周期应优先放入既有 composable；不要把这些逻辑重新堆回 `.vue` 展示组件。
-37. 使用 `defineAsyncComponent` + `v-if` 懒加载的弹窗，如果依赖 `props.show` 触发请求，watcher 必须 `{ immediate: true }`，并补“初始挂载 `show=true` 也会请求”的测试，避免王朝、天下武道会等状态栏入口首次打开为空。
+15. 规则模拟测试模式是 `RunConfig.test_mode` 的单局语义，必须随存档保存；测试模式下不得调用真实 LLM 或连通性检查。新增 LLM task 时，必须在 `src/utils/llm/test_mode_fallbacks.py` 注册可解析的规则 fallback，或在领域入口显式受控拒绝；未知 task 必须失败封闭，不得回退真实 provider。
+16. 用户设置不得再写入 `static/local_config.yml`；正式真源是用户数据目录中的 `settings.json/secrets.json`，本局参数必须走 `RunConfig` 并随存档保存。
+17. 小故事统一通过 `src/classes/story_event_service.py` 生成；业务代码应先产出事实事件，再决定是否追加故事事件。
+18. `gathering` 的故事固定为 `100%`，且所有 LLM 展开的故事正文统一使用 `is_story=True`，不要再混用 `is_major=True` 作为故事正文标记。
+19. 前端自带静态资源（`web/public/*`）禁止写死 `/icons/...`、`/sfx/...`、`/bgm/...` 这类根路径；固定图片优先放 `web/src/assets/*` 模块导入，运行时路径统一通过 `import.meta.env.BASE_URL` helper 生成。
+20. 前端系统级 UI icon 当前统一使用 `Lucide` outline SVG，资源目录为 `web/src/assets/icons/ui/lucide/`；新增 icon 时优先复用该目录并保持单一家族，不要混用多套 icon 风格；关键入口保留文字，优先用 `currentColor + mask-image` 渲染，详见 `docs/frontend.md` 与该目录下 `README.md`。
+21. 地图系统以 `static/game_configs/maps/<id>/map.json` 为官方真源，`region_rows` 是唯一语义矩阵；不要恢复 `tile_map.csv/region_map.csv` 平行主路径；一个 region 只能绑定一个 tile 图像，`-1` 是荒野且不可点击，地图特有名称/描述必须走 `region_overrides` 并随地图工具和存档保留；改官方地图后至少运行 `python tools\map_presets\validate_presets.py`。
+22. 前端根层页面编排必须采用 `scene + overlay` 语义：`SystemMenu`、`LoadingOverlay` 不得通过关闭 Splash 等副作用去推断当前底层页面；游戏主界面只能在 `scene === 'game'` 时渲染。
+23. 状态栏与系统级导航配色必须把“模块基础色”和“状态覆盖色”分层：基础色表达栏目归属，状态色只用于激活/可用/稀有度等动态信息；避免黄橙色同时承担多个语义。
+24. Docker / Compose 部署中，容器生命周期由进程管理器控制；不得因 WebSocket 断开、无人连接等桌面版逻辑自动退出。
+25. Docker 健康检查必须尽量反映真实可用性，尤其前端代理链路不能只检查静态首页；若依赖 backend，`depends_on` 优先等待 `service_healthy`。
+26. Docker 生产镜像只安装 runtime dependencies，不要把 `pytest` 等测试依赖装进运行镜像，也不要重新依赖 `/app/assets/saves`、`/app/logs` 等旧运行目录。
+27. 改动 Docker 相关配置、镜像、代理或持久化语义时，必须同步更新 contract/smoke 测试以及 `README.md` / `docs/readme/*.md` 中的部署说明。
+28. 外接控制 API 的稳定契约应优先服务外部 agent / Claw 集成；新增公共接口时先判断是 `query` 还是 `command`，并优先落到 runtime/service 分层与 `/api/v1/*` 稳定命名空间中。
+29. 所有会修改世界状态的 API 必须通过统一 mutation 入口串行化，避免与 `Simulator.step()` 并发写 world；禁止继续扩散路由层直接改 `game_instance` 的写法。
+30. 外接控制 API 的 query builder / command handler / service 若依赖会被测试 patch、配置 reload 或后续继续拆模块的函数与配置，优先使用 `get_*` getter 或在调用时动态读取，不要在模块初始化时把依赖绑死。
+31. 影响运行时语义的配置必须优先按“调用时读取当前配置”处理，尤其是存档目录、数据根、settings/secrets 派生配置；不要假设仓库里某个模块级 `CONFIG` 永远是最新对象。
+32. 编写或修改测试时，禁止硬编码只在单一操作系统下成立的绝对路径；涉及路径断言时优先使用 `tmp_path`、`pathlib.Path`、`os.path.join()` 等按当前平台生成路径，确保 Windows 本地与 GitHub Actions Linux 的结果一致。
+33. 角色扮演模式默认是“上帝视角下的单角色接管”，不是独立全局模式；实现时不要再把“个人模式”和“上帝模式”分成两套系统。
+34. 扮演态、`pending_request`、`conversation_session`、choice continuation 全部属于 runtime；不得写入存档，也必须在 `load/reinit/reset/start` 后显式清空。
+35. 角色扮演只允许在决策边界暂停，禁止中途打断动作链；二期有限选择必须优先走统一 choice resolver / continuation，不要在业务场景里散落 `if roleplay ... else ...`。
+36. 三期自由对话必须依附 `Conversation` 动作触发，采用“玩家一侧输入、目标角色由 LLM 回复”的单边接管模式；原始聊天记录不进长期事件流，只以 summary 落地。
+37. 前端大型面板/弹窗/详情页的业务状态、数据加载、派生字段、跳转、提交、timer 与 Pixi 生命周期应优先放入既有 composable；不要把这些逻辑重新堆回 `.vue` 展示组件。
+38. 使用 `defineAsyncComponent` + `v-if` 懒加载的弹窗，如果依赖 `props.show` 触发请求，watcher 必须 `{ immediate: true }`，并补“初始挂载 `show=true` 也会请求”的测试，避免王朝、天下武道会等状态栏入口首次打开为空。
 
 ## 4. `.cursor/skills` 沉淀
 

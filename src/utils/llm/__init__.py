@@ -16,6 +16,7 @@ from .client import (
 )
 from .config import LLMMode, get_task_mode
 from .exceptions import LLMError, ParseError, ConfigError
+from .runtime_mode import is_test_mode_enabled, is_world_test_mode, llm_test_mode_scope
 
 __all__ = [
     "call_llm",
@@ -28,4 +29,7 @@ __all__ = [
     "LLMError",
     "ParseError",
     "ConfigError",
+    "is_test_mode_enabled",
+    "is_world_test_mode",
+    "llm_test_mode_scope",
 ]

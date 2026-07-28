@@ -5,6 +5,8 @@ import random
 from datetime import datetime
 from typing import Any, Callable
 
+from src.utils.llm.runtime_mode import llm_test_mode_scope
+
 
 def _create_save_slot(*, config, get_events_db_path) -> tuple[Any, Any]:
     timestamp = datetime.now().strftime("%Y%m%d_%H%M")
@@ -38,6 +40,11 @@ async def _apply_world_lore_if_needed(
         return
 
     world.set_world_lore(world_lore)
+    if bool(getattr(run_config, "test_mode", False)):
+        world.world_lore_snapshot = build_world_lore_snapshot(world)
+        print("Skipping LLM world lore rewrite in rule-based test mode")
+        return
+
     print(f"Reshaping world based on worldview and history: {world_lore[:50]}...")
     try:
         world_lore_mgr = world_lore_manager_cls(world)
@@ -222,30 +229,31 @@ async def perform_game_initialization(
         )
 
         run_config = get_runtime_run_config(runtime)
-        update_init_progress(1, "loading_map")
-        game_map = await asyncio.to_thread(
+        with llm_test_mode_scope(bool(getattr(run_config, "test_mode", False))):
+            update_init_progress(1, "loading_map")
+            game_map = await asyncio.to_thread(
             load_cultivation_world_map,
             getattr(run_config, "map_id", "classic"),
-        )
+            )
 
-        save_path, events_db_path = _create_save_slot(
+            save_path, events_db_path = _create_save_slot(
             config=config,
             get_events_db_path=get_events_db_path,
-        )
-        runtime.update({"current_save_path": save_path})
-        print(f"Events database: {events_db_path}")
+            )
+            runtime.update({"current_save_path": save_path})
+            print(f"Events database: {events_db_path}")
 
-        start_year = getattr(config.world, "start_year", 100)
-        world = world_cls.create_with_db(
+            start_year = getattr(config.world, "start_year", 100)
+            world = world_cls.create_with_db(
             map=game_map,
             month_stamp=create_month_stamp(year_cls(start_year), month_enum.JANUARY),
             events_db_path=events_db_path,
             start_year=start_year,
-        )
-        world.runtime = runtime
-        world.dynasty = generate_dynasty()
-        world.dynasty.current_emperor = generate_emperor(world.dynasty, int(world.month_stamp))
-        world.event_manager.add_event(
+            )
+            world.runtime = runtime
+            world.dynasty = generate_dynasty()
+            world.dynasty.current_emperor = generate_emperor(world.dynasty, int(world.month_stamp))
+            world.event_manager.add_event(
             event_cls(
                 month_stamp=world.month_stamp,
                 content=translate(
@@ -255,66 +263,67 @@ async def perform_game_initialization(
                 ),
                 is_major=True,
             )
-        )
+            )
 
-        sim = simulator_cls(world)
-        sim.awakening_rate = run_config.npc_awakening_rate_per_month
-        world.run_config_snapshot = model_to_dict(run_config)
+            sim = simulator_cls(world)
+            sim.awakening_rate = run_config.npc_awakening_rate_per_month
+            world.run_config_snapshot = model_to_dict(run_config)
 
-        update_init_progress(2, "shaping_world_lore")
-        await _apply_world_lore_if_needed(
+            update_init_progress(2, "shaping_world_lore")
+            await _apply_world_lore_if_needed(
             world=world,
             run_config=run_config,
             world_lore_manager_cls=world_lore_manager_cls,
             build_world_lore_snapshot=build_world_lore_snapshot,
-        )
+            )
 
-        update_init_progress(3, "initializing_sects")
-        existed_sects = _select_existed_sects(
+            update_init_progress(3, "initializing_sects")
+            existed_sects = _select_existed_sects(
             sects_by_id=sects_by_id,
             needed_sects=int(run_config.sect_num or 0),
-        )
+            )
 
-        update_init_progress(4, "generating_avatars")
-        final_avatars = await _generate_initial_avatars(
+            update_init_progress(4, "generating_avatars")
+            final_avatars = await _generate_initial_avatars(
             world=world,
             run_config=run_config,
             existed_sects=existed_sects,
             make_random_avatars=make_random_avatars,
-        )
-
-        world.avatar_manager.avatars.update(final_avatars)
-        _resolve_initially_dead_avatars(world=world, avatars=final_avatars)
-        world.existed_sects = existed_sects
-        world.sect_context.from_existed_sects(existed_sects)
-        from src.systems.world_secret import initialize_world_secret
-        initialize_world_secret(world, getattr(run_config, "world_secret_id", "none"))
-        runtime.update({"world": world, "sim": sim})
-
-        update_init_progress(5, "preparing_character_profiles")
-        await _prepare_initial_character_profiles(world=world)
-
-        update_init_progress(6, "generating_initial_events")
-        runtime.set_paused(True)
-        await _generate_initial_events(sim=sim)
-        runtime.finish_initialization(phase_name="complete")
-        runtime.update(
-            {
-                "init_progress": 100,
-                "llm_check_failed": False,
-                "llm_error_message": "",
-                "llm_check_pending": True,
-            }
-        )
-        init_generation = int(runtime.get("init_generation", 0) or 0)
-        asyncio.create_task(
-            _run_llm_check_background(
-                runtime=runtime,
-                init_generation=init_generation,
-                check_llm_connectivity=check_llm_connectivity,
             )
-        )
-        print("Game world initialization completed!")
+
+            world.avatar_manager.avatars.update(final_avatars)
+            _resolve_initially_dead_avatars(world=world, avatars=final_avatars)
+            world.existed_sects = existed_sects
+            world.sect_context.from_existed_sects(existed_sects)
+            from src.systems.world_secret import initialize_world_secret
+            initialize_world_secret(world, getattr(run_config, "world_secret_id", "none"))
+            runtime.update({"world": world, "sim": sim})
+
+            update_init_progress(5, "preparing_character_profiles")
+            await _prepare_initial_character_profiles(world=world)
+
+            update_init_progress(6, "generating_initial_events")
+            runtime.set_paused(True)
+            await _generate_initial_events(sim=sim)
+            runtime.finish_initialization(phase_name="complete")
+            runtime.update(
+                {
+                    "init_progress": 100,
+                    "llm_check_failed": False,
+                    "llm_error_message": "",
+                    "llm_check_pending": not bool(getattr(run_config, "test_mode", False)),
+                }
+            )
+            init_generation = int(runtime.get("init_generation", 0) or 0)
+            if not getattr(run_config, "test_mode", False):
+                asyncio.create_task(
+                    _run_llm_check_background(
+                        runtime=runtime,
+                        init_generation=init_generation,
+                        check_llm_connectivity=check_llm_connectivity,
+                    )
+                )
+            print("Game world initialization completed!")
 
     try:
         await runtime.run_mutation(_do_init)

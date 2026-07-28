@@ -23,6 +23,7 @@ def test_settings_service_creates_defaults_in_data_root():
     assert paths.settings_file.exists()
     assert paths.secrets_file.exists()
     assert paths.saves_dir.exists()
+    assert settings.new_game_defaults.test_mode is False
 
 
 def test_settings_service_existing_read_does_not_rewrite_files(monkeypatch):

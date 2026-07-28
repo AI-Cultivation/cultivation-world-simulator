@@ -6,6 +6,7 @@ from src.classes.story_event_service import StoryEventService
 from src.classes.relation.relation_delta_service import RelationDeltaService
 from src.utils.config import CONFIG
 from src.utils.llm.client import call_llm_with_template
+from src.utils.llm.runtime_mode import is_test_mode_enabled
 
 if TYPE_CHECKING:
     from src.classes.core.world import World
@@ -55,6 +56,9 @@ class Auction(Gathering):
         返回格式: Dict[Item, Dict[Avatar, int]]
         """
         
+        if is_test_mode_enabled():
+            return {}
+
         # 1. 准备拍卖品信息
         items_info = []
         

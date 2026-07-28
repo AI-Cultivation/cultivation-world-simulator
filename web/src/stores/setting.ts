@@ -58,6 +58,7 @@ export const useSettingStore = defineStore('setting', () => {
     npc_awakening_rate_per_month: 0.01,
     world_lore: '',
     world_secret_id: 'none',
+    test_mode: false,
   });
 
   const isReady = computed(() => hydrated.value && !loading.value);
@@ -72,6 +73,7 @@ export const useSettingStore = defineStore('setting', () => {
       ...settings.new_game_defaults,
       map_id: settings.new_game_defaults.map_id ?? 'classic',
       world_secret_id: settings.new_game_defaults.world_secret_id ?? 'none',
+      test_mode: settings.new_game_defaults.test_mode ?? false,
     };
     applyUiLocale(locale.value);
   }

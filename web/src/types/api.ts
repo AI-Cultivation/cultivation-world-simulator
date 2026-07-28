@@ -314,6 +314,7 @@ export interface RunConfigDTO {
   npc_awakening_rate_per_month: number;
   world_lore?: string;
   world_secret_id?: string;
+  test_mode: boolean;
 }
 
 export interface WorldSecretOptionDTO {

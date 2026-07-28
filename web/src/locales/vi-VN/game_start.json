@@ -7,15 +7,19 @@
     "sect_num": "Số Tông Môn Hoạt Động",
     "new_npc_rate": "Tỷ Lệ Tu Sĩ Mới Mỗi Tháng",
     "world_lore": "Thế Giới Quan Và Lịch Sử",
-    "world_secret": "Bí Mật Thế Giới"
+    "world_secret": "Bí Mật Thế Giới",
+    "test_mode": "Chế Độ Kiểm Thử"
   },
   "tips": {
-    "sect_num": "Số lượng tông môn nên nhỏ hơn một nửa số tu sĩ ban đầu."
+    "sect_num": "Số lượng tông môn nên nhỏ hơn một nửa số tu sĩ ban đầu.",
+    "test_mode": "Chỉ dùng để kiểm thử tính năng và toàn bộ luồng trò chơi. Không gọi LLM thực; AI dùng quy tắc có sẵn."
   },
   "placeholders": {
     "world_lore": "Hãy mô tả trước hệ thống tu luyện, cục diện chính tà, hệ sinh thái tông môn và sắc thái vùng miền, rồi bổ sung các thời kỳ và sự kiện lịch sử quan trọng. Bật mục này sẽ gọi LLM và làm tăng rõ rệt thời gian khởi tạo. (Tùy chọn)"
   },
-  "options": {},
+  "options": {
+    "test_mode": "Bật chế độ kiểm thử theo quy tắc"
+  },
   "actions": {
     "start": "Bắt Đầu"
   },
