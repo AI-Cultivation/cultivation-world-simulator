@@ -98,6 +98,44 @@ def wait_until_frontend_proxy_ready(timeout_seconds: int = 120) -> None:
     )
 
 
+def get_compose_service_health(service_name: str) -> str | None:
+    service = run_compose("ps", "-q", service_name, timeout=60).stdout.strip()
+    if not service:
+        return None
+
+    result = subprocess.run(
+        [
+            "docker",
+            "inspect",
+            "--format",
+            "{{if .State.Health}}{{.State.Health.Status}}{{else}}missing{{end}}",
+            service,
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+        timeout=60,
+    )
+    return result.stdout.strip()
+
+
+def wait_until_compose_service_healthy(
+    service_name: str,
+    timeout_seconds: int = 120,
+) -> None:
+    deadline = time.time() + timeout_seconds
+    last_health: str | None = None
+    while time.time() < deadline:
+        last_health = get_compose_service_health(service_name)
+        if last_health == "healthy":
+            return
+        time.sleep(2)
+    raise AssertionError(
+        f"Compose service {service_name!r} did not become healthy in time. "
+        f"Last health status: {last_health!r}"
+    )
+
+
 def wait_until_game_ready(timeout_seconds: int = 300) -> None:
     deadline = time.time() + timeout_seconds
     last_error: Exception | None = None
@@ -126,11 +164,33 @@ def wait_until_game_ready(timeout_seconds: int = 300) -> None:
 
 @pytest.mark.docker
 @pytest.mark.skipif(shutil.which("docker") is None, reason="docker not found in PATH")
+def test_docker_compose_services_become_healthy():
+    try:
+        run_compose("up", "-d", timeout=600)
+        wait_until_backend_ready()
+        wait_until_frontend_proxy_ready()
+        wait_until_compose_service_healthy("backend")
+        wait_until_compose_service_healthy("frontend")
+    finally:
+        subprocess.run(
+            ["docker", "compose", "down"],
+            cwd=get_project_root(),
+            capture_output=True,
+            text=True,
+            timeout=180,
+            check=False,
+        )
+
+
+@pytest.mark.docker
+@pytest.mark.skipif(shutil.which("docker") is None, reason="docker not found in PATH")
 def test_docker_compose_persists_settings_after_recreate():
     try:
         run_compose("up", "-d", "--build", timeout=900)
         wait_until_backend_ready()
         wait_until_frontend_proxy_ready()
+        wait_until_compose_service_healthy("backend")
+        wait_until_compose_service_healthy("frontend")
 
         updated = http_json(
             "http://localhost:8002/api/settings",
@@ -190,6 +250,9 @@ def test_docker_compose_persists_settings_after_recreate():
         run_compose("down", timeout=180)
         run_compose("up", "-d", timeout=600)
         wait_until_backend_ready()
+        wait_until_frontend_proxy_ready()
+        wait_until_compose_service_healthy("backend")
+        wait_until_compose_service_healthy("frontend")
 
         after_recreate = http_json("http://localhost:8002/api/settings")
         assert after_recreate["simulation"]["auto_save_enabled"] is True

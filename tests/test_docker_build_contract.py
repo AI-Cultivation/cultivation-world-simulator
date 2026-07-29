@@ -229,6 +229,8 @@ def test_backend_compose_contract_exposes_port_and_healthcheck():
     assert '"8002:8002"' in backend_block
     assert "healthcheck:" in backend_block
     assert "test:" in backend_block
+    assert "http://127.0.0.1:8002/api/v1/query/runtime/status" in backend_block
+    assert "http://localhost:8002/api/v1/query/runtime/status" not in backend_block
     assert "interval:" in backend_block
     assert "timeout:" in backend_block
     assert "retries:" in backend_block
@@ -245,7 +247,8 @@ def test_frontend_compose_contract_depends_on_backend_and_exposes_port():
     assert '"8123:80"' in frontend_block
     assert "healthcheck:" in frontend_block
     assert "test:" in frontend_block
-    assert "http://localhost:80/api/v1/query/runtime/status" in frontend_block
+    assert "http://127.0.0.1:80/api/v1/query/runtime/status" in frontend_block
+    assert "http://localhost:80/api/v1/query/runtime/status" not in frontend_block
     assert "interval:" in frontend_block
     assert "timeout:" in frontend_block
     assert "retries:" in frontend_block
