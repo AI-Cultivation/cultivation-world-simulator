@@ -4307,20 +4307,53 @@ msgid ""
 msgstr "寓理小品: 出来事を通じて問いを立て、一、二か所の含みを残すが、説教臭くしない。"
 
 # Story Styles
-msgid ""
-"Plain narration: Restrained language, minimal embellishment, recording like "
-"a bystander."
-msgstr "平明な叙述: 言葉を抑え、装飾を最小限にし、傍観者の記録のように淡々と綴る。"
+msgid "story_style.plain_narration"
+msgstr "平明な叙述：言葉を抑え、装飾を最小限にし、傍観者が事実を記すように綴る。"
 
-msgid ""
-"Poetic lyricism: Short sentences and parallelism, sparse use of allusions, "
-"avoiding flowery language."
-msgstr "詩情抒情: 短句と対句を用い、典故は控えめに、華美に流れすぎない。"
+msgid "story_style.emotion_in_scenery"
+msgstr "借景抒情：景色に感情を託し、心の動きを情景の中へ自然に溶かし込む。"
 
-msgid ""
-"Taoist nature: Tinted with Taoist vocabulary, not obscure, focusing on a "
-"single thought."
-msgstr "道家清気: 道門の語感を帯びつつも晦渋にせず、一念に焦点を絞って描く。"
+msgid "story_style.freehand_ancient"
+msgstr "古風な写意：イメージと比喩を重んじ、簡潔に書き、難解な古語は避ける。"
+
+msgid "story_style.marketplace_life"
+msgstr "市井の息づかい：地に足の着いた言葉と口語を用い、素直で気取らない文にする。"
+
+msgid "story_style.poetic_lyricism"
+msgstr "詩情豊かな抒情：短文と折々の対句を用い、典故は控えめにして華美へ流れない。"
+
+msgid "story_style.philosophical_fable"
+msgstr "哲理の寓話：出来事を通じて問いや一、二の鋭い気づきを示し、説教にはしない。"
+
+msgid "story_style.chronicle"
+msgstr "年代記風：史家の記録のように出来事を順序立て、形容詞を抑える。"
+
+msgid "story_style.personified_scenery"
+msgstr "景物の擬人化：景色にわずかな性格を与え、願いを景に託すが、多用しない。"
+
+msgid "story_style.taoist_nature"
+msgstr "道家の自然観：分かりやすい道家の語感を添え、一つの思いへと収める。"
+
+msgid "story_style.buddhist_emptiness"
+msgstr "仏教的な空寂：無常と空の気配をさりげなく織り込み、神秘的で難解にはしない。"
+
+msgid "story_style.folk_storytelling"
+msgstr "語り物調：語り手のような躍動感を文章で表し、テンポよく生き生きと進める。"
+
+msgid "story_style.elegant_scholarly"
+msgstr "雅やかな書巻調：学識ある空気を保ち、引用を少し添えるが、ひけらかさない。"
+
+msgid "story_style.bold_and_open"
+msgstr "豪放闊達：大きな言葉と雄大な勢いを用い、感情を率直に表す。"
+
+msgid "story_style.gorgeous_and_bizarre"
+msgstr "絢爛奇譎：感覚的な描写を濃くし、妖艶な言葉と不可思議な光や色を際立たせる。"
+
+msgid "story_style.cold_and_concise"
+msgstr "冷徹簡潔：短文を主にし、金石のぶつかる響きのように一語ごとを効かせ、余情を足さない。"
+
+msgid "story_style.fine_line_drawing"
+msgstr "白描：飾りを加えず、微かな動きと表情を捉え、的確な細部から気韻を立ち上げる。"
 
 # Technique System - Techniques
 msgid " Effect: {effect_desc}"

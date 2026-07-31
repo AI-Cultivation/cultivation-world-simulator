@@ -2,34 +2,54 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: cultivation-world-simulator 1.0\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-20 00:00+0000\n"
-"PO-Revision-Date: 2024-01-20 00:00+0000\n"
-"Last-Translator: \n"
-"Language-Team: en-US\n"
 "Language: en_US\n"
-"MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
 
 # Story Styles
-msgid ""
-"Plain narration: Restrained language, minimal embellishment, recording like "
-"a bystander."
-msgstr ""
-"Plain narration: Restrained language, minimal embellishment, recording like "
-"a bystander."
+msgid "story_style.plain_narration"
+msgstr "Plain narration: Use restrained language and minimal embellishment, as if recording events from the sidelines."
 
-msgid ""
-"Poetic lyricism: Short sentences and parallelism, sparse use of allusions, "
-"avoiding flowery language."
-msgstr ""
-"Poetic lyricism: Short sentences and parallelism, sparse use of allusions, "
-"avoiding flowery language."
+msgid "story_style.emotion_in_scenery"
+msgstr "Emotion through scenery: Let landscape and setting carry the feeling, blending inner emotion into the scene."
 
-msgid ""
-"Taoist nature: Tinted with Taoist vocabulary, not obscure, focusing on a "
-"single thought."
-msgstr ""
-"Taoist nature: Tinted with Taoist vocabulary, not obscure, focusing on a "
-"single thought."
+msgid "story_style.freehand_ancient"
+msgstr "Freehand classical style: Favor imagery and metaphor; be concise and avoid obscure archaic wording."
+
+msgid "story_style.marketplace_life"
+msgstr "Marketplace life: Keep the prose grounded, colloquial, plain, and natural, without affectation."
+
+msgid "story_style.poetic_lyricism"
+msgstr "Poetic lyricism: Use short sentences and occasional parallel phrasing; allude sparingly and avoid flowery excess."
+
+msgid "story_style.philosophical_fable"
+msgstr "Philosophical fable: Let events raise a question or reveal one or two sharp insights, without preaching."
+
+msgid "story_style.chronicle"
+msgstr "Chronicle style: Recount events in clear order like a historian; use few adjectives."
+
+msgid "story_style.personified_scenery"
+msgstr "Personified scenery: Give the landscape a light touch of personification and place aspirations in the view without overusing it."
+
+msgid "story_style.taoist_nature"
+msgstr "Taoist nature: Tint the prose with accessible Daoist vocabulary and bring the piece back to one central thought."
+
+msgid "story_style.buddhist_emptiness"
+msgstr "Buddhist emptiness: Weave in impermanence and emptiness lightly, without making the prose cryptic."
+
+msgid "story_style.folk_storytelling"
+msgstr "Folk storytelling: Use the written voice of a lively storyteller, with brisk pacing and vivid interest."
+
+msgid "story_style.elegant_scholarly"
+msgstr "Elegant scholarly style: Maintain a learned atmosphere with a slight touch of quotation, never showing off."
+
+msgid "story_style.bold_and_open"
+msgstr "Bold and open: Use expansive words and majestic momentum; speak feelings directly and without restraint."
+
+msgid "story_style.gorgeous_and_bizarre"
+msgstr "Gorgeous and bizarre: Lean into sensory detail, ornate and alluring language, and strange light and color."
+
+msgid "story_style.cold_and_concise"
+msgstr "Cold and concise: Prefer short sentences; make every word count like metal striking stone, with no surplus sentiment."
+
+msgid "story_style.fine_line_drawing"
+msgstr "Fine line drawing: Add no decoration; catch subtle movement and expression so the spirit emerges through precise detail."

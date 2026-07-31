@@ -344,8 +344,11 @@ For more contribution details, please check [CONTRIBUTORS.md](../../CONTRIBUTORS
   - ✅ World Martial Arts Tournament
   - ✅ Sect preaching assembly
 - [ ] Sudden events
-  - [ ] Treasure/cave emergence
-  - [ ] Natural disaster
+  - [ ] Treasure emergence
+  - [ ] Natural disasters / celestial tribulations
+  - [ ] Treasure emergence
+  - [ ] Hidden abode emergence
+  - [ ] Natural disaster / celestial tribulation
 
 ### ⚔️ Combat System
 - ✅ Advantage and counter relationship
@@ -389,9 +392,9 @@ For more contribution details, please check [CONTRIBUTORS.md](../../CONTRIBUTORS
 - ✅ World secrets
 - ✅ POI
 - ✅ Background NPCs
-- [ ] Ascension to the upper realm
 
 ### 🔭 Long-term Prospects
+- [ ] Ascension to the upper realm
 - [ ] Found a sect / Become emperor
 - [ ] Novelization & Imaging & Video of history/events
 - [ ] Skill agentification, cultivators independently plan, analyze, call tools, and make decisions

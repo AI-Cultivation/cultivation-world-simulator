@@ -2,28 +2,54 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: cultivation-world-simulator 1.0\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-20 00:00+0000\n"
-"PO-Revision-Date: 2024-01-20 00:00+0000\n"
-"Last-Translator: \n"
-"Language-Team: zh-CN\n"
 "Language: zh_CN\n"
-"MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
 
 # Story Styles
-msgid ""
-"Plain narration: Restrained language, minimal embellishment, recording like "
-"a bystander."
-msgstr "平淡叙述：语句克制、少修饰、像旁观者记录。"
+msgid "story_style.plain_narration"
+msgstr "平淡叙述：语句克制，少作修饰，如旁观者据实记录。"
 
-msgid ""
-"Poetic lyricism: Short sentences and parallelism, sparse use of allusions, "
-"avoiding flowery language."
-msgstr "诗意抒情：短句与对仗点缀，少量用典，不堆砌辞藻。"
+msgid "story_style.emotion_in_scenery"
+msgstr "借景抒情：以景物承载情绪，让心境自然融入所见之景。"
 
-msgid ""
-"Taoist nature: Tinted with Taoist vocabulary, not obscure, focusing on a "
-"single thought."
-msgstr "道法自然：以道家语汇点染，不艰涩，收束于一念。"
+msgid "story_style.freehand_ancient"
+msgstr "古意写意：着重意象与比喻，行文凝练，不用艰涩的古奥辞句。"
+
+msgid "story_style.marketplace_life"
+msgstr "市井烟火：笔触落地，可用口语，质朴自然，不故作姿态。"
+
+msgid "story_style.poetic_lyricism"
+msgstr "诗意抒情：多用短句与适度对仗，偶尔用典，不堆砌华丽辞藻。"
+
+msgid "story_style.philosophical_fable"
+msgstr "哲思寓言：借事件提出疑问或点出一两句醒悟，不作说教。"
+
+msgid "story_style.chronicle"
+msgstr "史传笔法：如史家记事，事件次序分明，少用形容词。"
+
+msgid "story_style.personified_scenery"
+msgstr "景物拟人：轻微赋予景物性情，将志向寄于景中，不可滥用。"
+
+msgid "story_style.taoist_nature"
+msgstr "道法自然：点染通俗的道家语汇，不故弄玄虚，收束于一个念头。"
+
+msgid "story_style.buddhist_emptiness"
+msgstr "佛门空寂：轻轻织入无常与空性之感，不写得神秘晦涩。"
+
+msgid "story_style.folk_storytelling"
+msgstr "说书口吻：以书面文字写出说书人的劲头，节奏明快，生动有趣。"
+
+msgid "story_style.elegant_scholarly"
+msgstr "雅正书卷：保有文人气息，略带引述，不卖弄才学。"
+
+msgid "story_style.bold_and_open"
+msgstr "雄浑开阔：遣词大气，气势磅礴，情感直抒，不必拘束。"
+
+msgid "story_style.gorgeous_and_bizarre"
+msgstr "华丽诡谲：着重感官描写，辞藻浓艳迷离，突出光色的奇异。"
+
+msgid "story_style.cold_and_concise"
+msgstr "冷峻简练：以短句为主，字字有力，如金石相击，不作多余渲染。"
+
+msgid "story_style.fine_line_drawing"
+msgstr "白描工笔：不加粉饰，捕捉细微动作与神情，以真实细节传神。"

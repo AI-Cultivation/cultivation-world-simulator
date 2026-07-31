@@ -2,34 +2,54 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: cultivation-world-simulator 1.0\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-20 00:00+0000\n"
-"PO-Revision-Date: 2024-01-20 00:00+0000\n"
-"Last-Translator: \n"
-"Language-Team: fr-FR\n"
 "Language: fr_FR\n"
-"MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
 
 # Story Styles
-msgid ""
-"Plain narration: Restrained language, minimal embellishment, recording like "
-"a bystander."
-msgstr ""
-"Narration sobre : langage retenu, ornements minimes, relatant les faits "
-"comme un simple témoin."
+msgid "story_style.plain_narration"
+msgstr "Recit dépouillé : langue retenue, peu d'ornements, comme le compte rendu d'un témoin."
 
-msgid ""
-"Poetic lyricism: Short sentences and parallelism, sparse use of allusions, "
-"avoiding flowery language."
-msgstr ""
-"Lyrisme poétique : phrases courtes et parallélismes, usage parcimonieux des "
-"allusions, en évitant le langage ampoulé."
+msgid "story_style.emotion_in_scenery"
+msgstr "Émotion par le paysage : faites porter le sentiment par le décor et fondez l'état d'âme dans la scène."
 
-msgid ""
-"Taoist nature: Tinted with Taoist vocabulary, not obscure, focusing on a "
-"single thought."
-msgstr ""
-"Nature taoïste : teintée de vocabulaire taoïste, sans être obscure, centrée "
-"sur une seule pensée."
+msgid "story_style.freehand_ancient"
+msgstr "Évocation classique : privilégiez images et métaphores, restez concis et évitez l'archaïsme obscur."
+
+msgid "story_style.marketplace_life"
+msgstr "Vie des rues : une écriture concrète, avec une langue courante, simple et naturelle, sans pose."
+
+msgid "story_style.poetic_lyricism"
+msgstr "Lyrisme poétique : phrases courtes et quelques parallélismes, allusions rares, sans surcharge fleurie."
+
+msgid "story_style.philosophical_fable"
+msgstr "Fable philosophique : laissez les événements poser une question ou livrer un ou deux éclairs, sans sermon."
+
+msgid "story_style.chronicle"
+msgstr "Chronique : relatez les faits avec ordre, comme un historien, en usant de peu d'adjectifs."
+
+msgid "story_style.personified_scenery"
+msgstr "Paysage personnifié : prêtez légèrement une présence au décor et confiez-lui les aspirations, sans en abuser."
+
+msgid "story_style.taoist_nature"
+msgstr "Nature taoïste : teintez le texte de vocabulaire taoïste accessible et ramenez-le à une pensée centrale."
+
+msgid "story_style.buddhist_emptiness"
+msgstr "Vide bouddhique : entrelacez légèrement impermanence et vacuité, sans rendre le texte mystérieux."
+
+msgid "story_style.folk_storytelling"
+msgstr "Conte populaire : adoptez la voix écrite d'un conteur alerte, avec un rythme vif et savoureux."
+
+msgid "story_style.elegant_scholarly"
+msgstr "Élégance savante : gardez une atmosphère érudite, avec une légère citation, sans étalage."
+
+msgid "story_style.bold_and_open"
+msgstr "Souffle grandiose : mots amples, élan majestueux, sentiments exprimés sans détour."
+
+msgid "story_style.gorgeous_and_bizarre"
+msgstr "Fastueux et étrange : privilégiez les sensations, une langue somptueuse et troublante, les lumières et couleurs insolites."
+
+msgid "story_style.cold_and_concise"
+msgstr "Froid et concis : phrases brèves, chaque mot compte comme le choc du métal sur la pierre, sans pathos superflu."
+
+msgid "story_style.fine_line_drawing"
+msgstr "Trait fin : sans ornement, saisissez gestes et expressions infimes pour faire surgir l'esprit par le détail juste."

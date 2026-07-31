@@ -2,34 +2,54 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: cultivation-world-simulator 1.0\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-20 00:00+0000\n"
-"PO-Revision-Date: 2024-01-20 00:00+0000\n"
-"Last-Translator: \n"
-"Language-Team: vi-VN\n"
 "Language: vi_VN\n"
-"MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
 
 # Story Styles
-msgid ""
-"Plain narration: Restrained language, minimal embellishment, recording like "
-"a bystander."
-msgstr ""
-"Bình đạm tự sự: Ngôn từ tiết chế, ít tu sức, như người đứng ngoài lặng lẽ "
-"ghi chép."
+msgid "story_style.plain_narration"
+msgstr "Ke chuyen binh dan: Dung ngon ngu tiet che, it to diem, nhu nguoi dung ngoai ghi lai su viec."
 
-msgid ""
-"Poetic lyricism: Short sentences and parallelism, sparse use of allusions, "
-"avoiding flowery language."
-msgstr ""
-"Thi ý trữ tình: Điểm xuyết bằng câu ngắn và đối ngẫu, thỉnh thoảng dùng "
-"điển cố, tránh chồng chất hoa từ."
+msgid "story_style.emotion_in_scenery"
+msgstr "Gui tinh vao canh: De phong canh mang cam xuc, hoa tam trang vao canh vat mot cach tu nhien."
 
-msgid ""
-"Taoist nature: Tinted with Taoist vocabulary, not obscure, focusing on a "
-"single thought."
-msgstr ""
-"Đạo pháp tự nhiên: Nhuốm chút từ vị Đạo môn, không tối nghĩa, quy tụ vào "
-"một niệm duy nhất."
+msgid "story_style.freehand_ancient"
+msgstr "Co phong viet y: Chu trong hinh anh va an du, viet gon, tranh dung co ngu toi nghia."
+
+msgid "story_style.marketplace_life"
+msgstr "Hoi tho cho doi: Van phong gan dat, co the dung loi noi doi thuong, moc mac va tu nhien, khong lam bo."
+
+msgid "story_style.poetic_lyricism"
+msgstr "Tru tinh thi vi: Dung cau ngan va doi xung vua phai, dien tich tiet che, tranh chau chuot hoa my."
+
+msgid "story_style.philosophical_fable"
+msgstr "Ngu ngon triet ly: De su viec goi ra cau hoi hoac mot hai su tinh ngo, khong len giong giao huan."
+
+msgid "story_style.chronicle"
+msgstr "But phap bien nien: Ke su viec ro rang theo trinh tu nhu su gia, dung it tinh tu."
+
+msgid "story_style.personified_scenery"
+msgstr "Nhan hoa canh vat: Khe trao tinh khi cho phong canh, gui chi huong vao canh nhung khong lam dung."
+
+msgid "story_style.taoist_nature"
+msgstr "Tu nhien Dao gia: Pha chut tu vung Dao gia de hieu, quy ve mot y niem trung tam."
+
+msgid "story_style.buddhist_emptiness"
+msgstr "Tinh khong Phat gia: Dan xen nhe nhang cam giac vo thuong va tinh khong, khong viet thanh bi hiem."
+
+msgid "story_style.folk_storytelling"
+msgstr "Giong ke dan gian: Viet nhu mot ke chuyen sinh dong, nhip nhanh, cuon hut va co suc song."
+
+msgid "story_style.elegant_scholarly"
+msgstr "Thanh lich nho phong: Giu khong khi sach vo, diem chut dan chieu nhung khong khoe hoc."
+
+msgid "story_style.bold_and_open"
+msgstr "Hao sang khoang dat: Dung tu rong lon va khi the hung vi, bay to cam xuc truc tiep."
+
+msgid "story_style.gorgeous_and_bizarre"
+msgstr "Ruc ro ky ao: Day manh mo ta giac quan, ngon tu long lay va me hoac, nhan manh anh sang mau sac ky la."
+
+msgid "story_style.cold_and_concise"
+msgstr "Lanh va gon: Chu yeu dung cau ngan, tung chu deu co trong luong nhu kim thach va cham, khong them cam xuc thua."
+
+msgid "story_style.fine_line_drawing"
+msgstr "Bach mieu tinh te: Khong trang suc, nam bat cu dong tac va net mat nho de toat ra than van bang chi tiet chan that."

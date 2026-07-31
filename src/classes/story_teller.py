@@ -1,26 +1,14 @@
 from __future__ import annotations
 
-import json
 from typing import Dict, TYPE_CHECKING
 from pathlib import Path
-import random
 
 if TYPE_CHECKING:
     from src.classes.core.avatar import Avatar
 
 from src.utils.config import CONFIG
 from src.utils.llm import call_llm_with_task_name
-from src.i18n import t
-from src.i18n.locale_registry import get_project_root
-
-
-def _load_story_style_msgids() -> tuple[str, ...]:
-    path = get_project_root() / "static" / "story_styles.json"
-    data = json.loads(path.read_text(encoding="utf-8"))
-    return tuple(str(item) for item in data if str(item).strip())
-
-
-STORY_STYLE_MSGIDS = _load_story_style_msgids()
+from src.i18n.story_styles import get_random_story_style
 
 
 class StoryTeller:
@@ -79,7 +67,7 @@ class StoryTeller:
             "avatar_name_2": avatar_name_2,
             "event": event,
             "res": res,
-            "style": t(random.choice(STORY_STYLE_MSGIDS)),
+            "style": get_random_story_style(),
             "story_prompt": prompt,
         }
 
@@ -157,7 +145,7 @@ class StoryTeller:
             "gathering_info": gathering_info,
             "events": events_text,
             "details": details_text,
-            "style": t(random.choice(STORY_STYLE_MSGIDS)),
+            "style": get_random_story_style(),
             "story_prompt": prompt
         }
         

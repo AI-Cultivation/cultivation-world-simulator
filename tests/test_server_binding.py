@@ -111,18 +111,6 @@ def test_update_paths_for_language_falls_back_when_resources_missing(monkeypatch
         app_config.CONFIG.resources = original_resources
 
 
-def test_story_style_loading_is_independent_from_current_working_directory(tmp_path, monkeypatch):
-    from src.classes.story_teller import _load_story_style_msgids
-
-    nested_dir = tmp_path / "nested" / "launcher"
-    nested_dir.mkdir(parents=True)
-    monkeypatch.chdir(nested_dir)
-
-    msgids = _load_story_style_msgids()
-
-    assert msgids
-
-
 def test_server_main_import_succeeds_from_non_project_cwd(tmp_path):
     from src.i18n.locale_registry import get_project_root
 

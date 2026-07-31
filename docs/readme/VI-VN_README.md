@@ -344,8 +344,11 @@ Chi tiết đóng góp vui lòng xem [CONTRIBUTORS.md](../../CONTRIBUTORS.md).
   - ✅ Thiên hạ võ đạo hội
   - ✅ Đại hội truyền đạo tông môn
 - [ ] Biến cố đột phát
-  - [ ] Bảo vật / động phủ xuất thế
-  - [ ] Thiên tai
+  - [ ] Bảo vật xuất thế
+  - [ ] Thiên tai / thiên kiếp
+  - [ ] Bảo vật xuất thế
+  - [ ] Động phủ xuất thế
+  - [ ] Thiên tai / thiên kiếp
 
 ### ⚔️ Hệ Thống Chiến Đấu
 - ✅ Quan hệ tương khắc và ưu thế
@@ -389,9 +392,9 @@ Chi tiết đóng góp vui lòng xem [CONTRIBUTORS.md](../../CONTRIBUTORS.md).
 - ✅ Bí mật thế giới
 - ✅ POI
 - ✅ NPC phông nền
-- [ ] Phi thăng thượng giới
 
 ### 🔭 Triển Vọng Dài Hạn
+- [ ] Phi thăng thượng giới
 - [ ] Tự lập tông môn / trở thành hoàng đế
 - [ ] Tiểu thuyết hóa / hình ảnh hóa / video hóa lịch sử và sự kiện
 - [ ] Agent hóa kỹ năng, để tu sĩ tự quy hoạch, tự phân tích, tự gọi công cụ và tự quyết sách

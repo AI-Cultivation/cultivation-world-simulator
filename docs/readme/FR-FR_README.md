@@ -346,8 +346,11 @@ Pour les détails de contribution, consultez [CONTRIBUTORS.md](../../CONTRIBUTOR
   - ✅ Tournoi martial mondial
   - ✅ Assemblée de prêche de secte
 - [ ] Événements soudains :
-  - [ ] Apparition de trésor ou de grotte
-  - [ ] Catastrophe naturelle
+  - [ ] Apparition de trésors
+  - [ ] Catastrophes naturelles / tribulations célestes
+  - [ ] Apparition de trésor
+  - [ ] Apparition de grotte
+  - [ ] Catastrophe naturelle / tribulation céleste
 
 ### ⚔️ Combat
 
@@ -394,10 +397,10 @@ Pour les détails de contribution, consultez [CONTRIBUTORS.md](../../CONTRIBUTOR
 - ✅ Secrets du monde
 - ✅ POI
 - ✅ PNJ d'arrière-plan
-- [ ] Ascension vers le royaume supérieur
 
 ### 🔭 Perspectives à long terme
 
+- [ ] Ascension vers le royaume supérieur
 - [ ] Fonder une secte / devenir empereur
 - [ ] Romanisation, illustration et vidéo de l'histoire et des événements
 - [ ] Agentification des compétences : les cultivateurs planifient, analysent, appellent des outils et décident seuls
