@@ -1,64 +1,18 @@
 from __future__ import annotations
 
-import copy
 import random
 from dataclasses import dataclass
 from typing import Any
 
 from src.classes.poi.poi import PointOfInterest
+from src.classes.poi.item_payload import build_equipment_payload, restore_equipment_item
 
 GRAVE_RETENTION_YEARS = 50
 GRAVE_ICON_IDS = tuple(f"grave_{idx:02d}" for idx in range(1, 10))
 
 
-def _item_payload(item: Any, kind: str) -> dict[str, Any] | None:
-    if item is None:
-        return None
-    if kind == "weapon":
-        from src.classes.items.weapon import Weapon
-
-        if not isinstance(item, Weapon):
-            return None
-    elif kind == "auxiliary":
-        from src.classes.items.auxiliary import Auxiliary
-
-        if not isinstance(item, Auxiliary):
-            return None
-    else:
-        return None
-    return {
-        "kind": kind,
-        "item_id": int(getattr(item, "id")),
-        "name": str(getattr(item, "name", "")),
-        "realm": str(getattr(getattr(item, "realm", ""), "value", getattr(item, "realm", ""))),
-        "special_data": dict(getattr(item, "special_data", {}) or {}),
-    }
-
-
 def restore_grave_item(payload: dict[str, Any] | None) -> Any | None:
-    if not payload:
-        return None
-    kind = str(payload.get("kind", ""))
-    try:
-        item_id = int(payload.get("item_id"))
-    except (TypeError, ValueError):
-        return None
-
-    if kind == "weapon":
-        from src.classes.items.weapon import weapons_by_id
-
-        proto = weapons_by_id.get(item_id)
-    elif kind == "auxiliary":
-        from src.classes.items.auxiliary import auxiliaries_by_id
-
-        proto = auxiliaries_by_id.get(item_id)
-    else:
-        proto = None
-    if proto is None:
-        return None
-    item = copy.copy(proto)
-    item.special_data = dict(payload.get("special_data", {}) or {})
-    return item
+    return restore_equipment_item(payload)
 
 
 @dataclass(kw_only=True)
@@ -111,8 +65,8 @@ class GravePOI(PointOfInterest):
             stage_at_death=str(getattr(getattr(getattr(avatar, "cultivation_progress", None), "stage", ""), "value", "")),
             sect_name_at_death=str(death_info.get("sect_name_at_death", "")),
             alignment_at_death=str(death_info.get("alignment_at_death", "")),
-            weapon_payload=_item_payload(getattr(avatar, "weapon", None), "weapon"),
-            auxiliary_payload=_item_payload(getattr(avatar, "auxiliary", None), "auxiliary"),
+            weapon_payload=build_equipment_payload(getattr(avatar, "weapon", None)),
+            auxiliary_payload=build_equipment_payload(getattr(avatar, "auxiliary", None)),
         )
 
     @classmethod

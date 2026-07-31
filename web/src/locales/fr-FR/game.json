@@ -563,7 +563,9 @@
       "sections": {
         "grave": "Tombe",
         "deceased": "Défunt",
-        "goods": "Objets funéraires"
+          "goods": "Objets funéraires",
+          "treasure": "Trésor",
+          "treasure_info": "Détails du trésor"
       },
       "location": "Lieu",
       "name": "Nom",
@@ -575,7 +577,11 @@
       "auxiliary": "Accessoire",
       "rogue": "Errant",
       "unknown": "Inconnu",
-      "empty_goods": "Aucun objet récupérable ne reste dans la tombe"
+        "empty_goods": "Aucun objet récupérable ne reste dans la tombe",
+        "source": "Origine",
+        "attempt_count": "Essais",
+        "expires_month": "Mois de dissipation",
+        "empty_treasure": "Le trésor a perdu son énergie spirituelle"
     }
   },
   "deceased": {

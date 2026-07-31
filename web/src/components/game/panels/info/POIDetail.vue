@@ -10,12 +10,13 @@ const props = defineProps<{
 const { t } = useI18n()
 const deceased = computed(() => props.data.deceased)
 const goods = computed(() => props.data.grave_goods)
+const treasure = computed(() => props.data.treasure)
 </script>
 
 <template>
   <div class="poi-detail">
     <div class="section">
-      <div class="section-title">{{ t('game.info_panel.poi.sections.grave') }}</div>
+      <div class="section-title">{{ t(data.kind === 'treasure' ? 'game.info_panel.poi.sections.treasure' : 'game.info_panel.poi.sections.grave') }}</div>
       <div class="kv">
         <span>{{ t('game.info_panel.poi.location') }}</span>
         <strong>({{ data.x }}, {{ data.y }})</strong>
@@ -47,7 +48,32 @@ const goods = computed(() => props.data.grave_goods)
       </div>
     </div>
 
-    <div class="section">
+    <div v-if="treasure" class="section">
+      <div class="section-title">{{ t('game.info_panel.poi.sections.treasure_info') }}</div>
+      <div class="kv">
+        <span>{{ t('game.info_panel.poi.source') }}</span>
+        <strong>{{ treasure.source_label || treasure.source }}</strong>
+      </div>
+      <div class="kv">
+        <span>{{ t('game.info_panel.poi.realm') }}</span>
+        <strong>{{ treasure.realm_name || treasure.realm }}</strong>
+      </div>
+      <div class="kv">
+        <span>{{ t('game.info_panel.poi.attempt_count') }}</span>
+        <strong>{{ treasure.attempt_count }}</strong>
+      </div>
+      <div class="kv" v-if="treasure.expires_month != null">
+        <span>{{ t('game.info_panel.poi.expires_month') }}</span>
+        <strong>{{ treasure.expires_month }}</strong>
+      </div>
+      <div class="item-row" v-if="treasure.item">
+        <span>{{ treasure.item.kind === 'weapon' ? t('game.info_panel.poi.weapon') : t('game.info_panel.poi.auxiliary') }}</span>
+        <strong>{{ treasure.item.name }}</strong>
+      </div>
+      <div v-else class="empty">{{ t('game.info_panel.poi.empty_treasure') }}</div>
+    </div>
+
+    <div v-if="goods" class="section">
       <div class="section-title">{{ t('game.info_panel.poi.sections.goods') }}</div>
       <div v-if="goods?.weapon" class="item-row">
         <span>{{ t('game.info_panel.poi.weapon') }}</span>

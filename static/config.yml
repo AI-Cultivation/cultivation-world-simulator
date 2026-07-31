@@ -77,6 +77,20 @@ world:
       injury: 10
   fate_revelation_probability: 0.005
   random_minor_event_prob: 0.05
+  treasure:
+    spawn_probability_per_month: 0.01
+    max_active_count: 3
+    duration_months: 120
+    realms: [FOUNDATION_ESTABLISHMENT, CORE_FORMATION, NASCENT_SOUL]
+    source_weights:
+      ancient_cultivator_relic: 20
+      spirit_vein_treasure: 20
+      demon_king_relic: 15
+      demonic_artifact: 15
+      meteorite_relic: 15
+      lost_sect_artifact: 15
+    backlash_probability: 0.10
+    backlash_hp_ratio: 0.12
   background_npc:
     enabled: true
     region_tick_prob: 0.25

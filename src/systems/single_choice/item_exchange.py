@@ -32,6 +32,7 @@ class ItemExchangeKind(Enum):
 class RejectMode(Enum):
     ABANDON_NEW = "abandon_new"
     SELL_NEW = "sell_new"
+    LEAVE_AT_SOURCE = "leave_at_source"
 
 
 class ItemDisposition(Enum):
@@ -40,6 +41,7 @@ class ItemDisposition(Enum):
     CONSUMED_NEW = "consumed_new"
     SOLD_NEW = "sold_new"
     ABANDONED_NEW = "abandoned_new"
+    LEFT_AT_SOURCE = "left_at_source"
 
 
 @dataclass(slots=True)
@@ -167,6 +169,8 @@ def _build_item_exchange_options(
         )
     elif current_item:
         reject_desc += t(", keep current『{old_name}』", old_name=old_name)
+    if request.reject_mode == RejectMode.LEAVE_AT_SOURCE:
+        reject_desc = t("Leave『{new_name}』where it was found", new_name=new_name)
 
     return [
         SingleChoiceOption(
@@ -318,6 +322,23 @@ class ItemExchangeScenario(SingleChoiceScenario[ItemExchangeOutcome]):
                 current_item_before=current_item,
                 current_item_after=current_item,
                 sold_price=sold_price,
+                new_item=new_item,
+            )
+
+        if self.request.reject_mode == RejectMode.LEAVE_AT_SOURCE:
+            return ItemExchangeOutcome(
+                decision=decision,
+                result_text=t(
+                    "{avatar_name} left {item_name} where it was found.",
+                    avatar_name=avatar.name,
+                    item_name=new_item.name,
+                ),
+                kind=self.request.kind,
+                accepted=False,
+                action=ItemDisposition.LEFT_AT_SOURCE,
+                current_item_before=current_item,
+                current_item_after=current_item,
+                sold_price=None,
                 new_item=new_item,
             )
 

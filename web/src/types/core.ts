@@ -333,6 +333,20 @@ export interface POIDetail extends POISummary {
     } | null;
   };
   dig_attempt_count?: number;
+  treasure?: {
+    source: string;
+    source_label?: string;
+    realm: string;
+    realm_name?: string;
+    item: {
+      kind?: 'weapon' | 'auxiliary' | string;
+      item_id?: number;
+      name: string;
+      realm?: string;
+    } | null;
+    attempt_count: number;
+    expires_month?: number | null;
+  };
 }
 
 export interface RegionFormationInfo {

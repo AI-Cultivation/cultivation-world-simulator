@@ -16,6 +16,7 @@ from src.systems.fate_revelation import try_trigger_fate_revelation
 from src.systems.random_minor_event import try_trigger_random_minor_event
 from src.systems.background_npc import try_trigger_background_npc_events
 from src.systems.sect_random_event import try_trigger_sect_random_event
+from src.systems.treasure import phase_treasure_lifecycle as run_treasure_lifecycle
 from src.systems.time import Month
 from src.systems.dynasty_generator import generate_emperor
 from src.systems.gu import process_avatar_gu_effects
@@ -134,6 +135,10 @@ async def phase_autonomous_custom_creation(world, living_avatars: list[Avatar]) 
 async def phase_sect_random_event(world) -> list[Event]:
     event = await try_trigger_sect_random_event(world)
     return [event] if event else []
+
+
+def phase_treasure_lifecycle(world) -> list[Event]:
+    return run_treasure_lifecycle(world)
 
 
 async def phase_process_gatherings(world) -> list[Event]:

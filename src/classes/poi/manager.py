@@ -5,6 +5,7 @@ from typing import Any
 
 from src.classes.poi.grave import GravePOI
 from src.classes.poi.poi import PointOfInterest
+from src.classes.poi.treasure import TreasurePOI
 
 
 @dataclass
@@ -70,6 +71,15 @@ class POIManager:
             self.remove(poi_id)
         return len(expired)
 
+    def pop_expired(self, current_month: int, *, kind: str | None = None) -> list[PointOfInterest]:
+        expired = [
+            poi for poi in self.pois.values()
+            if poi.is_expired(current_month) and (kind is None or poi.kind == kind)
+        ]
+        for poi in expired:
+            self.remove(poi.id)
+        return expired
+
     def create_grave_from_avatar(self, avatar: Any, current_month: int) -> GravePOI:
         grave = GravePOI.from_avatar(avatar, current_month)
         self.add(grave)
@@ -84,5 +94,9 @@ class POIManager:
         for item in data or []:
             if not isinstance(item, dict):
                 continue
-            if item.get("kind") == "grave":
-                self.add(GravePOI.from_save_dict(item), track_update=False)
+            loader = {
+                "grave": GravePOI.from_save_dict,
+                "treasure": TreasurePOI.from_save_dict,
+            }.get(str(item.get("kind", "")))
+            if loader is not None:
+                self.add(loader(item), track_update=False)

@@ -563,7 +563,9 @@
       "sections": {
         "grave": "墓",
         "deceased": "故人",
-        "goods": "副葬品"
+          "goods": "副葬品",
+          "treasure": "宝物",
+          "treasure_info": "宝物情報"
       },
       "location": "位置",
       "name": "名前",
@@ -575,7 +577,11 @@
       "auxiliary": "補助装備",
       "rogue": "野修",
       "unknown": "不明",
-      "empty_goods": "墓に回収できる品は残っていない"
+        "empty_goods": "墓に回収できる品は残っていない",
+        "source": "由来",
+        "attempt_count": "試行回数",
+        "expires_month": "消滅月",
+        "empty_treasure": "宝物は霊力を失った"
     }
   },
   "deceased": {

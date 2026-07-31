@@ -563,7 +563,9 @@
       "sections": {
         "grave": "Grave",
         "deceased": "Deceased",
-        "goods": "Grave Goods"
+          "goods": "Grave Goods",
+          "treasure": "Treasure",
+          "treasure_info": "Treasure Details"
       },
       "location": "Location",
       "name": "Name",
@@ -575,7 +577,11 @@
       "auxiliary": "Auxiliary",
       "rogue": "Rogue",
       "unknown": "Unknown",
-      "empty_goods": "No retrievable goods remain in the grave"
+        "empty_goods": "No retrievable goods remain in the grave",
+        "source": "Source",
+        "attempt_count": "Attempts",
+        "expires_month": "Fades in month",
+        "empty_treasure": "The treasure has lost its spiritual power"
     }
   },
   "deceased": {

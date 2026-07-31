@@ -20,6 +20,13 @@ def phase_discover_pois(world, living_avatars) -> list[Event]:
                     location=f"({poi.x}, {poi.y})",
                     poi=poi.name,
                 )
+            elif poi.kind == "treasure":
+                content = t(
+                    "{avatar} discovered a treasure at {location}: {poi}",
+                    avatar=avatar.name,
+                    location=f"({poi.x}, {poi.y})",
+                    poi=poi.name,
+                )
             else:
                 content = t(
                     "{avatar} discovered a point of interest at {location}: {poi}",

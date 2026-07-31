@@ -24,6 +24,7 @@ class ParamOptionSource(str, Enum):
     AVAILABLE_FORMATION_TYPE = "available_formation_type"
     KNOWN_POI_ID = "known_poi_id"
     KNOWN_GRAVE_POI_ID = "known_grave_poi_id"
+    KNOWN_TREASURE_POI_ID = "known_treasure_poi_id"
 
 
 def build_param_options(action_cls: type, avatar: "Avatar") -> dict[str, list[dict[str, Any]]]:
@@ -98,6 +99,8 @@ def _options_for_source(action_cls: type, avatar: "Avatar", source: ParamOptionS
         return _known_poi_options(avatar)
     if source == ParamOptionSource.KNOWN_GRAVE_POI_ID:
         return _known_poi_options(avatar, kind="grave")
+    if source == ParamOptionSource.KNOWN_TREASURE_POI_ID:
+        return _known_poi_options(avatar, kind="treasure")
     return []
 
 

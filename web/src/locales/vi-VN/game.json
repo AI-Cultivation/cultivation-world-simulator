@@ -563,7 +563,9 @@
       "sections": {
         "grave": "Mộ",
         "deceased": "Người đã mất",
-        "goods": "Di vật trong mộ"
+          "goods": "Di vật trong mộ",
+          "treasure": "Báu vật",
+          "treasure_info": "Thông tin báu vật"
       },
       "location": "Vị trí",
       "name": "Tên",
@@ -575,7 +577,11 @@
       "auxiliary": "Pháp bảo phụ trợ",
       "rogue": "Tán tu",
       "unknown": "Không rõ",
-      "empty_goods": "Trong mộ không còn vật gì có thể lấy"
+        "empty_goods": "Trong mộ không còn vật gì có thể lấy",
+        "source": "Nguồn gốc",
+        "attempt_count": "Lần thử",
+        "expires_month": "Tháng tiêu tán",
+        "empty_treasure": "Báu vật đã mất linh lực"
     }
   },
   "deceased": {

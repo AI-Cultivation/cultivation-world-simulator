@@ -4872,6 +4872,90 @@ msgstr "Earth List 1st Place"
 msgid "tournament_human"
 msgstr "Human List 1st Place"
 
+msgid "take_treasure_action_name"
+msgstr ""
+
+msgid "take_treasure_description"
+msgstr ""
+
+msgid "take_treasure_requirements"
+msgstr ""
+
+msgid "Cannot resolve treasure: {poi}"
+msgstr ""
+
+msgid "Treasure has faded away"
+msgstr ""
+
+msgid "Treasure is unknown"
+msgstr ""
+
+msgid "Treasure has already been claimed"
+msgstr ""
+
+msgid "Must be at the treasure to claim it"
+msgstr ""
+
+msgid "{avatar} failed to claim {treasure}."
+msgstr ""
+
+msgid ""
+"{avatar} triggered the treasure's restriction at {treasure} and was injured "
+"for {damage} HP."
+msgstr ""
+
+msgid "{avatar} found that the treasure at {treasure} had decayed beyond use."
+msgstr ""
+
+msgid "{avatar} successfully claimed {item} from {treasure}."
+msgstr ""
+
+msgid "{avatar} claimed {item} from {treasure}. {result}"
+msgstr ""
+
+msgid "Leave『{new_name}』where it was found"
+msgstr ""
+
+msgid "{avatar_name} left {item_name} where it was found."
+msgstr ""
+
+msgid "{realm} treasure"
+msgstr ""
+
+msgid "An ancient treasure shines with a restrained spiritual radiance."
+msgstr ""
+
+msgid ""
+"A strange spiritual radiance appeared somewhere in the world. A {realm} "
+"treasure seems to have emerged."
+msgstr ""
+
+msgid ""
+"The spiritual radiance of a treasure faded away before anyone could claim "
+"it."
+msgstr ""
+
+msgid "{avatar} discovered a treasure at {location}: {poi}"
+msgstr ""
+
+msgid "treasure_source_ancient_cultivator_relic"
+msgstr ""
+
+msgid "treasure_source_spirit_vein_treasure"
+msgstr ""
+
+msgid "treasure_source_demon_king_relic"
+msgstr ""
+
+msgid "treasure_source_demonic_artifact"
+msgstr ""
+
+msgid "treasure_source_meteorite_relic"
+msgstr ""
+
+msgid "treasure_source_lost_sect_artifact"
+msgstr ""
+
 # Frontend UI Translations
 msgid "Sect Headquarters"
 msgstr "Sect Headquarters"

@@ -579,10 +579,12 @@
       "runtime_effect_meta_permanent": "来源：{source} - 持续：长期"
     },
     "poi": {
-      "sections": {
-        "grave": "墓碑",
-        "deceased": "死者",
-        "goods": "墓中遗物"
+        "sections": {
+          "grave": "墓碑",
+          "deceased": "死者",
+          "goods": "墓中遗物",
+          "treasure": "宝物",
+          "treasure_info": "宝物信息"
       },
       "location": "位置",
       "name": "姓名",
@@ -594,7 +596,11 @@
       "auxiliary": "辅助装备",
       "rogue": "散修",
       "unknown": "未知",
-      "empty_goods": "墓中已无可取之物"
+        "empty_goods": "墓中已无可取之物",
+        "source": "来源",
+        "attempt_count": "尝试次数",
+        "expires_month": "消散月份",
+        "empty_treasure": "宝物已经失去灵性"
     }
   },
   "deceased": {

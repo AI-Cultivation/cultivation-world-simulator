@@ -269,6 +269,84 @@ msgstr "墓碑已经消失"
 msgid "Grave is unknown"
 msgstr "尚不知晓该墓碑"
 
+msgid "take_treasure_action_name"
+msgstr "取宝"
+
+msgid "take_treasure_description"
+msgstr "尝试取走当前位置已发现的宝物，成功后可替换武器或辅助装备。"
+
+msgid "take_treasure_requirements"
+msgstr "需要位于已发现宝物所在位置。"
+
+msgid "Cannot resolve treasure: {poi}"
+msgstr "无法识别宝物：{poi}"
+
+msgid "Treasure has faded away"
+msgstr "宝物已经消散"
+
+msgid "Treasure is unknown"
+msgstr "尚不知晓该宝物"
+
+msgid "Treasure has already been claimed"
+msgstr "宝物已经被取走"
+
+msgid "Must be at the treasure to claim it"
+msgstr "必须抵达宝物所在位置才能取宝"
+
+msgid "{avatar} failed to claim {treasure}."
+msgstr "{avatar} 未能取走 {treasure}。"
+
+msgid "{avatar} triggered the treasure's restriction at {treasure} and was injured for {damage} HP."
+msgstr "{avatar} 触动了 {treasure} 的禁制，受伤 {damage} 点气血。"
+
+msgid "{avatar} found that the treasure at {treasure} had decayed beyond use."
+msgstr "{avatar} 发现 {treasure} 已经灵性尽失。"
+
+msgid "{avatar} successfully claimed {item} from {treasure}."
+msgstr "{avatar} 成功从 {treasure} 中取出 {item}。"
+
+msgid "{avatar} claimed {item} from {treasure}. {result}"
+msgstr "{avatar} 从 {treasure} 中取走了 {item}。{result}"
+
+msgid "Leave『{new_name}』where it was found"
+msgstr "暂不取用『{new_name}』，宝物仍留在原处"
+
+msgid "{avatar_name} left {item_name} where it was found."
+msgstr "{avatar_name} 暂不取用 {item_name}，宝物仍留在原处。"
+
+msgid "{realm} treasure"
+msgstr "{realm}宝物"
+
+msgid "An ancient treasure shines with a restrained spiritual radiance."
+msgstr "一件古老宝物正散发着内敛灵光。"
+
+msgid "A strange spiritual radiance appeared somewhere in the world. A {realm} treasure seems to have emerged."
+msgstr "天地间似有异样灵光闪过，一件{realm}宝物疑似出世。"
+
+msgid "The spiritual radiance of a treasure faded away before anyone could claim it."
+msgstr "一处宝物的灵光无人收取，终于消散于天地之间。"
+
+msgid "{avatar} discovered a treasure at {location}: {poi}"
+msgstr "{avatar} 在{location}发现了宝物：{poi}"
+
+msgid "treasure_source_ancient_cultivator_relic"
+msgstr "古修遗兵"
+
+msgid "treasure_source_spirit_vein_treasure"
+msgstr "灵脉孕宝"
+
+msgid "treasure_source_demon_king_relic"
+msgstr "妖王遗宝"
+
+msgid "treasure_source_demonic_artifact"
+msgstr "魔道凶器"
+
+msgid "treasure_source_meteorite_relic"
+msgstr "天外陨宝"
+
+msgid "treasure_source_lost_sect_artifact"
+msgstr "宗门失传器"
+
 msgid "Must be at the grave to dig"
 msgstr "必须抵达墓碑所在位置才能掘墓"
 

@@ -563,7 +563,9 @@
       "sections": {
         "grave": "墓碑",
         "deceased": "死者",
-        "goods": "墓中遺物"
+          "goods": "墓中遺物",
+          "treasure": "寶物",
+          "treasure_info": "寶物資訊"
       },
       "location": "位置",
       "name": "姓名",
@@ -575,7 +577,11 @@
       "auxiliary": "輔助裝備",
       "rogue": "散修",
       "unknown": "未知",
-      "empty_goods": "墓中已無可取之物"
+        "empty_goods": "墓中已無可取之物",
+        "source": "來源",
+        "attempt_count": "嘗試次數",
+        "expires_month": "消散月份",
+        "empty_treasure": "寶物已失去靈性"
     }
   },
   "deceased": {
