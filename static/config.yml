@@ -78,9 +78,9 @@ world:
   fate_revelation_probability: 0.005
   random_minor_event_prob: 0.05
   treasure:
-    spawn_probability_per_month: 0.01
+    spawn_probability_per_month: 0.005
     max_active_count: 3
-    duration_months: 120
+    duration_months: 240
     realms: [FOUNDATION_ESTABLISHMENT, CORE_FORMATION, NASCENT_SOUL]
     source_weights:
       ancient_cultivator_relic: 20

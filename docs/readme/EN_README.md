@@ -344,11 +344,8 @@ For more contribution details, please check [CONTRIBUTORS.md](../../CONTRIBUTORS
   - ✅ World Martial Arts Tournament
   - ✅ Sect preaching assembly
 - [ ] Sudden events
-  - [ ] Treasure emergence
+  - ✅ Treasure emergence
   - [ ] Natural disasters / celestial tribulations
-  - [ ] Treasure emergence
-  - [ ] Hidden abode emergence
-  - [ ] Natural disaster / celestial tribulation
 
 ### ⚔️ Combat System
 - ✅ Advantage and counter relationship

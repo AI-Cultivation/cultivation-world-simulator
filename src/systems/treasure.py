@@ -102,7 +102,7 @@ def try_spawn_treasure(world: Any) -> TreasurePOI | None:
         return None
     if len(_active_treasures(world)) >= int(_config_value("max_active_count", 3)):
         return None
-    if random.random() >= float(_config_value("spawn_probability_per_month", 0.01)):
+    if random.random() >= float(_config_value("spawn_probability_per_month", 0.005)):
         return None
 
     realm = _pick_realm()
@@ -119,7 +119,7 @@ def try_spawn_treasure(world: Any) -> TreasurePOI | None:
         name=t("{realm} treasure", realm=str(realm)),
         desc=t("An ancient treasure shines with a restrained spiritual radiance."),
         created_month=current_month,
-        expires_month=current_month + int(_config_value("duration_months", 120)),
+        expires_month=current_month + int(_config_value("duration_months", 240)),
         icon_key=icon_key,
         treasure_icon_id=icon_key,
         treasure_source=_pick_source(),

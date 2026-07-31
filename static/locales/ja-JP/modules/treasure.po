@@ -4,80 +4,79 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "take_treasure_action_name"
-msgstr ""
+msgstr "宝を取る"
 
 msgid "take_treasure_description"
-msgstr ""
+msgstr "現在地で発見済みの宝物を取ろうとする。"
 
 msgid "take_treasure_requirements"
-msgstr ""
+msgstr "発見済みの宝物の場所にいる必要がある。"
 
 msgid "Cannot resolve treasure: {poi}"
-msgstr ""
+msgstr "宝物を特定できない：{poi}"
 
 msgid "Treasure has faded away"
-msgstr ""
+msgstr "宝物は消散した"
 
 msgid "Treasure is unknown"
-msgstr ""
+msgstr "この宝物は未発見だ"
 
 msgid "Treasure has already been claimed"
-msgstr ""
+msgstr "宝物はすでに取られた"
 
 msgid "Must be at the treasure to claim it"
-msgstr ""
+msgstr "宝物の場所にいなければ取れない"
 
 msgid "{avatar} failed to claim {treasure}."
-msgstr ""
+msgstr "{avatar}は{treasure}を取れなかった。"
 
 msgid "{avatar} triggered the treasure's restriction at {treasure} and was injured for {damage} HP."
-msgstr ""
+msgstr "{avatar}は{treasure}の禁制に触れ、{damage}の気血を失った。"
 
 msgid "{avatar} found that the treasure at {treasure} had decayed beyond use."
-msgstr ""
+msgstr "{avatar}は{treasure}がすでに使えないと知った。"
 
 msgid "{avatar} successfully claimed {item} from {treasure}."
-msgstr ""
+msgstr "{avatar}は{treasure}から{item}を得た。"
 
 msgid "{avatar} claimed {item} from {treasure}. {result}"
-msgstr ""
+msgstr "{avatar}は{treasure}から{item}を取った。{result}"
 
 msgid "Leave『{new_name}』where it was found"
-msgstr ""
+msgstr "『{new_name}』をその場に残す"
 
 msgid "{avatar_name} left {item_name} where it was found."
-msgstr ""
+msgstr "{avatar_name}は{item_name}をその場に残した。"
 
 msgid "{realm} treasure"
-msgstr ""
+msgstr "{realm}の宝物"
 
 msgid "An ancient treasure shines with a restrained spiritual radiance."
-msgstr ""
+msgstr "古い宝物が抑えた霊光を放っている。"
 
 msgid "A strange spiritual radiance appeared somewhere in the world. A {realm} treasure seems to have emerged."
-msgstr ""
+msgstr "世界のどこかに異様な霊光が現れ、{realm}の宝物が出世したようだ。"
 
 msgid "The spiritual radiance of a treasure faded away before anyone could claim it."
-msgstr ""
+msgstr "誰にも取られぬまま、宝物の霊光は消えた。"
 
 msgid "{avatar} discovered a treasure at {location}: {poi}"
-msgstr ""
+msgstr "{avatar}は{location}で宝物を発見した：{poi}"
 
 msgid "treasure_source_ancient_cultivator_relic"
-msgstr ""
+msgstr "古の修士の遺宝"
 
 msgid "treasure_source_spirit_vein_treasure"
-msgstr ""
+msgstr "霊脈の宝"
 
 msgid "treasure_source_demon_king_relic"
-msgstr ""
+msgstr "妖王の遺宝"
 
 msgid "treasure_source_demonic_artifact"
-msgstr ""
+msgstr "魔道の凶器"
 
 msgid "treasure_source_meteorite_relic"
-msgstr ""
+msgstr "天外隕石の宝"
 
 msgid "treasure_source_lost_sect_artifact"
-msgstr ""
-
+msgstr "失伝宗門の宝"

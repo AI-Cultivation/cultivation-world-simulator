@@ -5009,88 +5009,91 @@ msgid "tournament_human"
 msgstr "1ère Place de la Liste Humaine"
 
 msgid "take_treasure_action_name"
-msgstr ""
+msgstr "Prendre le trésor"
 
 msgid "take_treasure_description"
-msgstr ""
+msgstr "Tenter de prendre le trésor découvert à cet endroit."
 
 msgid "take_treasure_requirements"
-msgstr ""
+msgstr "Doit se trouver sur un trésor découvert."
 
 msgid "Cannot resolve treasure: {poi}"
-msgstr ""
+msgstr "Trésor introuvable : {poi}"
 
 msgid "Treasure has faded away"
-msgstr ""
+msgstr "Le trésor s est dissipé"
 
 msgid "Treasure is unknown"
-msgstr ""
+msgstr "Ce trésor est inconnu"
 
 msgid "Treasure has already been claimed"
-msgstr ""
+msgstr "Le trésor a déjà été pris"
 
 msgid "Must be at the treasure to claim it"
-msgstr ""
+msgstr "Doit être sur le trésor pour le prendre"
 
 msgid "{avatar} failed to claim {treasure}."
-msgstr ""
+msgstr "{avatar} n a pas réussi à prendre {treasure}."
 
 msgid ""
 "{avatar} triggered the treasure's restriction at {treasure} and was injured "
 "for {damage} HP."
 msgstr ""
+"{avatar} a déclenché la restriction de {treasure} et a perdu {damage} PV."
 
 msgid "{avatar} found that the treasure at {treasure} had decayed beyond use."
-msgstr ""
+msgstr "{avatar} a constaté que {treasure} était inutilisable."
 
 msgid "{avatar} successfully claimed {item} from {treasure}."
-msgstr ""
+msgstr "{avatar} a obtenu {item} de {treasure}."
 
 msgid "{avatar} claimed {item} from {treasure}. {result}"
-msgstr ""
+msgstr "{avatar} a pris {item} de {treasure}. {result}"
 
 msgid "Leave『{new_name}』where it was found"
-msgstr ""
+msgstr "Laisser『{new_name}』sur place"
 
 msgid "{avatar_name} left {item_name} where it was found."
-msgstr ""
+msgstr "{avatar_name} a laissé {item_name} sur place."
 
 msgid "{realm} treasure"
-msgstr ""
+msgstr "Trésor de {realm}"
 
 msgid "An ancient treasure shines with a restrained spiritual radiance."
-msgstr ""
+msgstr "Un ancien trésor brille d une lueur spirituelle contenue."
 
 msgid ""
 "A strange spiritual radiance appeared somewhere in the world. A {realm} "
 "treasure seems to have emerged."
 msgstr ""
+"Une lueur étrange est apparue dans le monde. Un trésor de {realm} semble "
+"avoir émergé."
 
 msgid ""
 "The spiritual radiance of a treasure faded away before anyone could claim "
 "it."
-msgstr ""
+msgstr "La lueur spirituelle d un trésor s est dissipée avant d être prise."
 
 msgid "{avatar} discovered a treasure at {location}: {poi}"
-msgstr ""
+msgstr "{avatar} a découvert un trésor à {location} : {poi}"
 
 msgid "treasure_source_ancient_cultivator_relic"
-msgstr ""
+msgstr "Relique d ancien cultivant"
 
 msgid "treasure_source_spirit_vein_treasure"
-msgstr ""
+msgstr "Trésor de veine spirituelle"
 
 msgid "treasure_source_demon_king_relic"
-msgstr ""
+msgstr "Relique du roi démon"
 
 msgid "treasure_source_demonic_artifact"
-msgstr ""
+msgstr "Artefact démoniaque"
 
 msgid "treasure_source_meteorite_relic"
-msgstr ""
+msgstr "Relique météoritique"
 
 msgid "treasure_source_lost_sect_artifact"
-msgstr ""
+msgstr "Artefact de secte perdue"
 
 # Frontend UI Translations
 msgid "Sect Headquarters"

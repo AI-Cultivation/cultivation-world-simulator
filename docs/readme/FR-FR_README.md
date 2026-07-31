@@ -346,11 +346,8 @@ Pour les détails de contribution, consultez [CONTRIBUTORS.md](../../CONTRIBUTOR
   - ✅ Tournoi martial mondial
   - ✅ Assemblée de prêche de secte
 - [ ] Événements soudains :
-  - [ ] Apparition de trésors
+  - ✅ Apparition de trésors
   - [ ] Catastrophes naturelles / tribulations célestes
-  - [ ] Apparition de trésor
-  - [ ] Apparition de grotte
-  - [ ] Catastrophe naturelle / tribulation céleste
 
 ### ⚔️ Combat
 

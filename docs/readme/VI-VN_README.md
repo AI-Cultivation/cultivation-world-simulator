@@ -344,10 +344,7 @@ Chi tiết đóng góp vui lòng xem [CONTRIBUTORS.md](../../CONTRIBUTORS.md).
   - ✅ Thiên hạ võ đạo hội
   - ✅ Đại hội truyền đạo tông môn
 - [ ] Biến cố đột phát
-  - [ ] Bảo vật xuất thế
-  - [ ] Thiên tai / thiên kiếp
-  - [ ] Bảo vật xuất thế
-  - [ ] Động phủ xuất thế
+  - ✅ Bảo vật xuất thế
   - [ ] Thiên tai / thiên kiếp
 
 ### ⚔️ Hệ Thống Chiến Đấu

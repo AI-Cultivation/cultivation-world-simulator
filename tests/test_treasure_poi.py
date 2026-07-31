@@ -142,3 +142,4 @@ def test_spawned_treasure_is_limited_to_equipment_realms(monkeypatch, base_world
         Realm.Nascent_Soul.value,
     }
     assert treasure.treasure_payload["kind"] in {"weapon", "auxiliary"}
+    assert treasure.expires_month == int(base_world.month_stamp) + 240

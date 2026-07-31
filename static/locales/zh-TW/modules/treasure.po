@@ -4,80 +4,79 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "take_treasure_action_name"
-msgstr ""
+msgstr "取寶"
 
 msgid "take_treasure_description"
-msgstr ""
+msgstr "嘗試取走目前位置已發現的寶物。"
 
 msgid "take_treasure_requirements"
-msgstr ""
+msgstr "需要位於已發現寶物所在位置。"
 
 msgid "Cannot resolve treasure: {poi}"
-msgstr ""
+msgstr "無法識別寶物：{poi}"
 
 msgid "Treasure has faded away"
-msgstr ""
+msgstr "寶物已經消散"
 
 msgid "Treasure is unknown"
-msgstr ""
+msgstr "尚不知曉該寶物"
 
 msgid "Treasure has already been claimed"
-msgstr ""
+msgstr "寶物已被取走"
 
 msgid "Must be at the treasure to claim it"
-msgstr ""
+msgstr "必須抵達寶物所在位置才能取寶"
 
 msgid "{avatar} failed to claim {treasure}."
-msgstr ""
+msgstr "{avatar}未能取走{treasure}。"
 
 msgid "{avatar} triggered the treasure's restriction at {treasure} and was injured for {damage} HP."
-msgstr ""
+msgstr "{avatar}觸動了{treasure}的禁制，受傷{damage}點氣血。"
 
 msgid "{avatar} found that the treasure at {treasure} had decayed beyond use."
-msgstr ""
+msgstr "{avatar}發現{treasure}已經靈性盡失。"
 
 msgid "{avatar} successfully claimed {item} from {treasure}."
-msgstr ""
+msgstr "{avatar}成功從{treasure}中取出{item}。"
 
 msgid "{avatar} claimed {item} from {treasure}. {result}"
-msgstr ""
+msgstr "{avatar}從{treasure}中取走了{item}。{result}"
 
 msgid "Leave『{new_name}』where it was found"
-msgstr ""
+msgstr "暫不取用『{new_name}』，寶物仍留在原處"
 
 msgid "{avatar_name} left {item_name} where it was found."
-msgstr ""
+msgstr "{avatar_name}暫不取用{item_name}，寶物仍留在原處。"
 
 msgid "{realm} treasure"
-msgstr ""
+msgstr "{realm}寶物"
 
 msgid "An ancient treasure shines with a restrained spiritual radiance."
-msgstr ""
+msgstr "一件古老寶物正散發著內斂靈光。"
 
 msgid "A strange spiritual radiance appeared somewhere in the world. A {realm} treasure seems to have emerged."
-msgstr ""
+msgstr "天地間似有異樣靈光閃過，一件{realm}寶物疑似出世。"
 
 msgid "The spiritual radiance of a treasure faded away before anyone could claim it."
-msgstr ""
+msgstr "一處寶物的靈光無人收取，終於消散於天地之間。"
 
 msgid "{avatar} discovered a treasure at {location}: {poi}"
-msgstr ""
+msgstr "{avatar}在{location}發現了寶物：{poi}"
 
 msgid "treasure_source_ancient_cultivator_relic"
-msgstr ""
+msgstr "古修遺兵"
 
 msgid "treasure_source_spirit_vein_treasure"
-msgstr ""
+msgstr "靈脈孕寶"
 
 msgid "treasure_source_demon_king_relic"
-msgstr ""
+msgstr "妖王遺寶"
 
 msgid "treasure_source_demonic_artifact"
-msgstr ""
+msgstr "魔道凶器"
 
 msgid "treasure_source_meteorite_relic"
-msgstr ""
+msgstr "天外隕寶"
 
 msgid "treasure_source_lost_sect_artifact"
-msgstr ""
-
+msgstr "宗門失傳器"

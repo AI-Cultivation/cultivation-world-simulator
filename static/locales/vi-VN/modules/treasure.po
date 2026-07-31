@@ -4,80 +4,79 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "take_treasure_action_name"
-msgstr ""
+msgstr "Lấy báu vật"
 
 msgid "take_treasure_description"
-msgstr ""
+msgstr "Thử lấy báu vật đã phát hiện tại vị trí hiện tại."
 
 msgid "take_treasure_requirements"
-msgstr ""
+msgstr "Phải đứng tại báu vật đã phát hiện."
 
 msgid "Cannot resolve treasure: {poi}"
-msgstr ""
+msgstr "Không xác định được báu vật: {poi}"
 
 msgid "Treasure has faded away"
-msgstr ""
+msgstr "Báu vật đã tiêu tán"
 
 msgid "Treasure is unknown"
-msgstr ""
+msgstr "Chưa biết báu vật này"
 
 msgid "Treasure has already been claimed"
-msgstr ""
+msgstr "Báu vật đã bị lấy"
 
 msgid "Must be at the treasure to claim it"
-msgstr ""
+msgstr "Phải đến vị trí báu vật để lấy"
 
 msgid "{avatar} failed to claim {treasure}."
-msgstr ""
+msgstr "{avatar} không lấy được {treasure}."
 
 msgid "{avatar} triggered the treasure's restriction at {treasure} and was injured for {damage} HP."
-msgstr ""
+msgstr "{avatar} chạm vào cấm chế của {treasure} và mất {damage} HP."
 
 msgid "{avatar} found that the treasure at {treasure} had decayed beyond use."
-msgstr ""
+msgstr "{avatar} phát hiện {treasure} đã mất tác dụng."
 
 msgid "{avatar} successfully claimed {item} from {treasure}."
-msgstr ""
+msgstr "{avatar} đã lấy {item} từ {treasure}."
 
 msgid "{avatar} claimed {item} from {treasure}. {result}"
-msgstr ""
+msgstr "{avatar} lấy {item} từ {treasure}. {result}"
 
 msgid "Leave『{new_name}』where it was found"
-msgstr ""
+msgstr "Để『{new_name}』lại tại chỗ"
 
 msgid "{avatar_name} left {item_name} where it was found."
-msgstr ""
+msgstr "{avatar_name} để {item_name} lại tại chỗ."
 
 msgid "{realm} treasure"
-msgstr ""
+msgstr "Báu vật {realm}"
 
 msgid "An ancient treasure shines with a restrained spiritual radiance."
-msgstr ""
+msgstr "Một báu vật cổ tỏa linh quang nội liễm."
 
 msgid "A strange spiritual radiance appeared somewhere in the world. A {realm} treasure seems to have emerged."
-msgstr ""
+msgstr "Một linh quang lạ xuất hiện trong thiên hạ. Dường như báu vật {realm} đã xuất thế."
 
 msgid "The spiritual radiance of a treasure faded away before anyone could claim it."
-msgstr ""
+msgstr "Linh quang của một báu vật tiêu tán trước khi có người lấy được."
 
 msgid "{avatar} discovered a treasure at {location}: {poi}"
-msgstr ""
+msgstr "{avatar} phát hiện báu vật tại {location}: {poi}"
 
 msgid "treasure_source_ancient_cultivator_relic"
-msgstr ""
+msgstr "Di bảo cổ tu"
 
 msgid "treasure_source_spirit_vein_treasure"
-msgstr ""
+msgstr "Báu vật linh mạch"
 
 msgid "treasure_source_demon_king_relic"
-msgstr ""
+msgstr "Di bảo yêu vương"
 
 msgid "treasure_source_demonic_artifact"
-msgstr ""
+msgstr "Hung khí ma đạo"
 
 msgid "treasure_source_meteorite_relic"
-msgstr ""
+msgstr "Dị bảo thiên thạch"
 
 msgid "treasure_source_lost_sect_artifact"
-msgstr ""
-
+msgstr "Di vật tông môn thất truyền"

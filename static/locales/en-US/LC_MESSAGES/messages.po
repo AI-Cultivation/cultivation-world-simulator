@@ -4873,88 +4873,95 @@ msgid "tournament_human"
 msgstr "Human List 1st Place"
 
 msgid "take_treasure_action_name"
-msgstr ""
+msgstr "Claim Treasure"
 
 msgid "take_treasure_description"
-msgstr ""
+msgstr "Attempt to claim a discovered treasure at your current location."
 
 msgid "take_treasure_requirements"
-msgstr ""
+msgstr "Must stand at a discovered treasure."
 
 msgid "Cannot resolve treasure: {poi}"
-msgstr ""
+msgstr "Cannot resolve treasure: {poi}"
 
 msgid "Treasure has faded away"
-msgstr ""
+msgstr "The treasure has faded away"
 
 msgid "Treasure is unknown"
-msgstr ""
+msgstr "The treasure is unknown"
 
 msgid "Treasure has already been claimed"
-msgstr ""
+msgstr "The treasure has already been claimed"
 
 msgid "Must be at the treasure to claim it"
-msgstr ""
+msgstr "Must stand at the treasure to claim it"
 
 msgid "{avatar} failed to claim {treasure}."
-msgstr ""
+msgstr "{avatar} failed to claim {treasure}."
 
 msgid ""
 "{avatar} triggered the treasure's restriction at {treasure} and was injured "
 "for {damage} HP."
 msgstr ""
+"{avatar} triggered the treasure's restriction at {treasure} and was injured "
+"for {damage} HP."
 
 msgid "{avatar} found that the treasure at {treasure} had decayed beyond use."
 msgstr ""
+"{avatar} found that the treasure at {treasure} had decayed beyond use."
 
 msgid "{avatar} successfully claimed {item} from {treasure}."
-msgstr ""
+msgstr "{avatar} successfully claimed {item} from {treasure}."
 
 msgid "{avatar} claimed {item} from {treasure}. {result}"
-msgstr ""
+msgstr "{avatar} claimed {item} from {treasure}. {result}"
 
 msgid "Leave『{new_name}』where it was found"
-msgstr ""
+msgstr "Leave『{new_name}』where it was found"
 
 msgid "{avatar_name} left {item_name} where it was found."
-msgstr ""
+msgstr "{avatar_name} left {item_name} where it was found."
 
 msgid "{realm} treasure"
-msgstr ""
+msgstr "{realm} treasure"
 
 msgid "An ancient treasure shines with a restrained spiritual radiance."
-msgstr ""
+msgstr "An ancient treasure shines with a restrained spiritual radiance."
 
 msgid ""
 "A strange spiritual radiance appeared somewhere in the world. A {realm} "
 "treasure seems to have emerged."
 msgstr ""
+"A strange spiritual radiance appeared somewhere in the world. A {realm} "
+"treasure seems to have emerged."
 
 msgid ""
 "The spiritual radiance of a treasure faded away before anyone could claim "
 "it."
 msgstr ""
+"The spiritual radiance of a treasure faded away before anyone could claim "
+"it."
 
 msgid "{avatar} discovered a treasure at {location}: {poi}"
-msgstr ""
+msgstr "{avatar} discovered a treasure at {location}: {poi}"
 
 msgid "treasure_source_ancient_cultivator_relic"
-msgstr ""
+msgstr "Ancient Cultivator Relic"
 
 msgid "treasure_source_spirit_vein_treasure"
-msgstr ""
+msgstr "Spirit Vein Treasure"
 
 msgid "treasure_source_demon_king_relic"
-msgstr ""
+msgstr "Demon King Relic"
 
 msgid "treasure_source_demonic_artifact"
-msgstr ""
+msgstr "Demonic Artifact"
 
 msgid "treasure_source_meteorite_relic"
-msgstr ""
+msgstr "Meteorite Relic"
 
 msgid "treasure_source_lost_sect_artifact"
-msgstr ""
+msgstr "Lost Sect Artifact"
 
 # Frontend UI Translations
 msgid "Sect Headquarters"

@@ -16,7 +16,7 @@
 ### 1.1 目标
 
 1. 世界中会随机出现限时宝物 POI。
-2. 宝物存在十年，即 `120` 个游戏月；到期无人取走时，宝光消散并移除。
+2. 宝物存在二十年，即 `240` 个游戏月；到期无人取走时，宝光消散并移除。
 3. 出世可产生全局模糊异象，公开宝物大境界但不公开坐标、具体物品或来源。
 4. 角色进入 POI 的既有观察范围时，必定发现宝物。
 5. 地图上帝视角始终显示有效宝物 POI；但角色的行动参数只包含自己已发现的宝物。
@@ -43,9 +43,9 @@
 | 项目 | 确认值 |
 |---|---|
 | 检查频率 | 每月一次 |
-| 出世概率 | `1%` / 月 |
+| 出世概率 | `0.5%` / 月 |
 | 活跃上限 | 全世界最多 `3` 个有效宝物 POI |
-| 持续时间 | `120` 月（十年） |
+| 持续时间 | `240` 月（二十年） |
 | 坐标 | 在随机有效地图格生成 |
 | 地图显示 | 上帝视角地图显示全部有效宝物 |
 | 角色认知 | 仅进入观察范围的角色被写入 `discovered_by` |
@@ -203,9 +203,9 @@ POI_LOADERS = {
 ```yaml
 world:
   treasure:
-    spawn_probability_per_month: 0.01
+    spawn_probability_per_month: 0.005
     max_active_count: 3
-    duration_months: 120
+    duration_months: 240
     realms:
       - FOUNDATION_ESTABLISHMENT
       - CORE_FORMATION
@@ -249,7 +249,7 @@ world:
       a. 在观察范围的角色自动发现新旧宝物
 ```
 
-新增相位后必须重排后续 `SimulationPhase.index`，`step()` 仍只负责编排。宝物到期清理不能继续只依赖年度维护，因为年度清理无法保证“第 120 个月”精确消散。墓碑是否继续走年度清理由墓碑系统自身决定，本改动不改变其 50 年语义。
+新增相位后必须重排后续 `SimulationPhase.index`，`step()` 仍只负责编排。宝物到期清理不能继续只依赖年度维护，因为年度清理无法保证“第 240 个月”精确消散。墓碑是否继续走年度清理由墓碑系统自身决定，本改动不改变其 50 年语义。
 
 ### 4.4 事件
 
@@ -261,7 +261,7 @@ world:
 | 角色发现 | 坐标、名称、来源可见 | 发现者 | `False` |
 | 取宝失败 | 失败或禁制反震 | 尝试者 | `False` |
 | 取宝成功并接受 | 获得具体物品 | 取宝者 | `True` |
-| 十年消散 | 宝光消散，不必公开坐标 | 无 | `False` |
+| 二十年消散 | 宝光消散，不必公开坐标 | 无 | `False` |
 
 事件先产生事实结果；本阶段不为宝物另加 LLM 小故事。未来需要扩写时再以 `StoryEventService` 在基础事件之后追加 `is_story=True` 正文。
 
@@ -463,7 +463,7 @@ poi.treasure.empty
 1. 完成 POI 共享装备 payload helper，并迁移墓碑调用。
 2. 新增 `TreasurePOI`、POI loader 分发、序列化和 detail payload。
 3. 新增 `TreasureService`、配置与 `treasure_lifecycle` 月度相位。
-4. 扩展发现事件文案和精确 120 月消散事件。
+4. 扩展发现事件文案和精确 240 月消散事件。
 5. 新增 `KNOWN_TREASURE_POI_ID` 和 `TakeTreasure` 动作，并在 action 包导入注册。
 6. 为 item exchange 加入 `LEAVE_AT_SOURCE`，让拒绝不消耗宝物。
 7. 扩展 map/detail DTO、mapper、图标映射和 POI detail 展示。
@@ -489,7 +489,7 @@ poi.treasure.empty
 12. 失败保留 POI 与 payload；反震只影响 HP，且伤害致死走正常死亡入口。
 13. 成功接受后更新角色装备、移除整个 POI、产生 major event 与 remove 增量。
 14. 成功但拒绝后 POI/payload 仍在，且返回 `LEFT_AT_SOURCE`。
-15. 第 120 个月恰好移除宝物并产生消散事件，不等到年度维护。
+15. 第 240 个月恰好移除宝物并产生消散事件，不等到年度维护。
 
 ### 8.2 前端
 
