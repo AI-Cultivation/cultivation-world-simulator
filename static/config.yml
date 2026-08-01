@@ -76,7 +76,7 @@ world:
       empty: 20
       injury: 10
   fate_revelation_probability: 0.005
-  random_minor_event_prob: 0.05
+  random_minor_event_prob: 0.01
   treasure:
     spawn_probability_per_month: 0.005
     max_active_count: 3
@@ -223,7 +223,7 @@ save:
 
 frontend_defaults:
   water_speed: low
-  cloud_freq: low
+  cloud_frequency: low
 
 df:
   ids_separator: ";"
