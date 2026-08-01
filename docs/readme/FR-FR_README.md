@@ -345,9 +345,8 @@ Pour les détails de contribution, consultez [CONTRIBUTORS.md](../../CONTRIBUTOR
   - ✅ Exploration de domaine secret
   - ✅ Tournoi martial mondial
   - ✅ Assemblée de prêche de secte
-- [ ] Événements soudains :
+- ✅ Événements soudains :
   - ✅ Apparition de trésors
-  - [ ] Catastrophes naturelles / tribulations célestes
 
 ### ⚔️ Combat
 

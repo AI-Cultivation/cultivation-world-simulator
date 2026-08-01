@@ -343,9 +343,8 @@ For more contribution details, please check [CONTRIBUTORS.md](../../CONTRIBUTORS
   - ✅ Secret realm exploration
   - ✅ World Martial Arts Tournament
   - ✅ Sect preaching assembly
-- [ ] Sudden events
+- ✅ Sudden events
   - ✅ Treasure emergence
-  - [ ] Natural disasters / celestial tribulations
 
 ### ⚔️ Combat System
 - ✅ Advantage and counter relationship

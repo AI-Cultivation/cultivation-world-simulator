@@ -343,9 +343,8 @@ Chi tiết đóng góp vui lòng xem [CONTRIBUTORS.md](../../CONTRIBUTORS.md).
   - ✅ Thám hiểm bí cảnh
   - ✅ Thiên hạ võ đạo hội
   - ✅ Đại hội truyền đạo tông môn
-- [ ] Biến cố đột phát
+- ✅ Biến cố đột phát
   - ✅ Bảo vật xuất thế
-  - [ ] Thiên tai / thiên kiếp
 
 ### ⚔️ Hệ Thống Chiến Đấu
 - ✅ Quan hệ tương khắc và ưu thế
