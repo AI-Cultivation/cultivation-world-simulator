@@ -8,7 +8,7 @@ from src.utils.llm.connectivity import check_llm_profile_connectivity
 
 def create_llm_runtime_handlers(
     *,
-    game_state: dict[str, Any],
+    runtime: Any,
     manager: Any,
     settings_service: Any,
     create_llm_updated_handler: Callable[..., Any],
@@ -29,17 +29,17 @@ def create_llm_runtime_handlers(
         return {"status": "error", "message": error_msg}
 
     handle_llm_updated = create_llm_updated_handler(
-        game_instance=game_state,
+        runtime=runtime,
         manager=manager,
     )
 
     async def handle_global_llm_failure(error_message: str) -> None:
-        if game_state.get("llm_check_failed") and game_state.get("llm_error_message") == error_message:
+        failed, current_error = runtime.get_llm_failure_state()
+        if failed and current_error == error_message:
             return
 
-        game_state["llm_check_failed"] = True
-        game_state["llm_error_message"] = error_message
-        game_state["is_paused"] = True
+        runtime.set_llm_check_state(failed=True, error_message=error_message)
+        runtime.set_paused(True)
         await manager.broadcast(
             {
                 "type": "llm_config_required",

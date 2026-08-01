@@ -59,12 +59,14 @@ class GameSessionRuntime:
 
     @property
     def state(self) -> dict[str, Any]:
+        """Deprecated test compatibility access to the mutable backing state."""
         return self._state
 
     def get(self, key: str, default: Any = None) -> Any:
         return self._state.get(key, default)
 
     def update(self, values: dict[str, Any]) -> None:
+        """Deprecated test compatibility helper; production code uses named methods."""
         self._state.update(values)
 
     def get_world(self) -> Any:
@@ -86,6 +88,46 @@ class GameSessionRuntime:
     def set_world_and_sim(self, world: Any, sim: Any) -> None:
         self._state["world"] = world
         self._state["sim"] = sim
+
+    def set_run_config(self, run_config: dict[str, Any] | None) -> None:
+        self._state["run_config"] = run_config
+
+    def set_current_save_path(self, save_path: Any | None) -> None:
+        self._state["current_save_path"] = save_path
+
+    def set_initialization_progress(
+        self,
+        *,
+        phase: int | None = None,
+        phase_name: str | None = None,
+        progress: int | None = None,
+    ) -> None:
+        if phase is not None:
+            self._state["init_phase"] = int(phase)
+        if phase_name is not None:
+            self._state["init_phase_name"] = str(phase_name)
+        if progress is not None:
+            self._state["init_progress"] = int(progress)
+
+    def set_llm_check_state(
+        self,
+        *,
+        pending: bool | None = None,
+        failed: bool | None = None,
+        error_message: str | None = None,
+    ) -> None:
+        if pending is not None:
+            self._state["llm_check_pending"] = bool(pending)
+        if failed is not None:
+            self._state["llm_check_failed"] = bool(failed)
+        if error_message is not None:
+            self._state["llm_error_message"] = str(error_message)
+
+    def get_llm_failure_state(self) -> tuple[bool, str]:
+        return (
+            bool(self._state.get("llm_check_failed", False)),
+            str(self._state.get("llm_error_message", "") or ""),
+        )
 
     def replace_with_defaults(self) -> None:
         self._state.clear()

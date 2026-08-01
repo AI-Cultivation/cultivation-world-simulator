@@ -50,15 +50,15 @@ def create_lifespan(
     return lifespan
 
 
-def create_llm_updated_handler(*, game_instance: dict, manager):
+def create_llm_updated_handler(*, runtime, manager):
     async def handle_llm_updated() -> None:
-        if not game_instance.get("llm_check_failed", False):
+        failed, _ = runtime.get_llm_failure_state()
+        if not failed:
             return
 
         print("Detected previous LLM connection failure, resuming Simulator...")
-        game_instance["llm_check_failed"] = False
-        game_instance["llm_error_message"] = ""
-        game_instance["is_paused"] = False
+        runtime.set_llm_check_state(failed=False, error_message="")
+        runtime.set_paused(False)
         print("Simulator resumed")
         await manager.broadcast(
             {

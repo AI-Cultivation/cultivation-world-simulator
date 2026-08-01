@@ -3,6 +3,12 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
+from src.sim.runtime_capabilities import (
+    DecisionBoundaryGateway,
+    RuntimeDecisionBoundaryGateway,
+    get_decision_boundary_gateway,
+)
+
 
 @dataclass(slots=True)
 class CancellationToken:
@@ -24,24 +30,9 @@ class RuntimePauseController:
 
 
 @dataclass(slots=True)
-class RoleplayDecisionGateway:
-    runtime: Any
-
-    def get_session(self) -> dict[str, Any]:
-        return self.runtime.get_roleplay_session()
-
-    def get_controlled_avatar_id(self) -> str:
-        return str(self.get_session().get("controlled_avatar_id") or "")
-
-    def controls_avatar(self, avatar_id: str) -> bool:
-        return self.get_controlled_avatar_id() == str(avatar_id)
-
-    def clear_session(self) -> None:
-        self.runtime.clear_roleplay_session()
+class RoleplayDecisionGateway(RuntimeDecisionBoundaryGateway):
+    """Deprecated server alias for the domain-facing runtime gateway."""
 
 
-def get_roleplay_gateway_from_world(world: Any) -> RoleplayDecisionGateway | None:
-    runtime = getattr(world, "runtime", None)
-    if runtime is None or not hasattr(runtime, "get_roleplay_session"):
-        return None
-    return RoleplayDecisionGateway(runtime)
+def get_roleplay_gateway_from_world(world: Any) -> DecisionBoundaryGateway | None:
+    return get_decision_boundary_gateway(world)

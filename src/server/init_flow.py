@@ -141,7 +141,7 @@ async def _run_llm_check_background(
 ) -> None:
     if int(runtime.get("init_generation", 0) or 0) != init_generation:
         return
-    runtime.update({"llm_check_pending": True})
+    runtime.set_llm_check_state(pending=True)
     try:
         print("Checking LLM connectivity in background...")
         success, error_msg = await asyncio.to_thread(check_llm_connectivity)
@@ -149,31 +149,17 @@ async def _run_llm_check_background(
             return
         if not success:
             print(f"[Warning] LLM connectivity check failed: {error_msg}")
-            runtime.update(
-                {
-                    "llm_check_failed": True,
-                    "llm_error_message": error_msg,
-                    "llm_check_pending": False,
-                }
-            )
+            runtime.set_llm_check_state(pending=False, failed=True, error_message=error_msg)
         else:
             print("LLM connectivity check passed")
-            runtime.update(
-                {
-                    "llm_check_failed": False,
-                    "llm_error_message": "",
-                    "llm_check_pending": False,
-                }
-            )
+            runtime.set_llm_check_state(pending=False, failed=False, error_message="")
     except Exception as exc:
         if int(runtime.get("init_generation", 0) or 0) != init_generation:
             return
-        runtime.update(
-            {
-                "llm_check_failed": True,
-                "llm_error_message": f"连通性检测异常：{exc}",
-                "llm_check_pending": False,
-            }
+        runtime.set_llm_check_state(
+            pending=False,
+            failed=True,
+            error_message=f"连通性检测异常：{exc}",
         )
         print(f"[Warning] LLM connectivity check failed: {exc}")
 
@@ -240,7 +226,7 @@ async def perform_game_initialization(
             config=config,
             get_events_db_path=get_events_db_path,
             )
-            runtime.update({"current_save_path": save_path})
+            runtime.set_current_save_path(save_path)
             print(f"Events database: {events_db_path}")
 
             start_year = getattr(config.world, "start_year", 100)
@@ -297,7 +283,7 @@ async def perform_game_initialization(
             world.sect_context.from_existed_sects(existed_sects)
             from src.systems.world_secret import initialize_world_secret
             initialize_world_secret(world, getattr(run_config, "world_secret_id", "none"))
-            runtime.update({"world": world, "sim": sim})
+            runtime.set_world_and_sim(world, sim)
 
             update_init_progress(5, "preparing_character_profiles")
             await _prepare_initial_character_profiles(world=world)
@@ -306,13 +292,11 @@ async def perform_game_initialization(
             runtime.set_paused(True)
             await _generate_initial_events(sim=sim)
             runtime.finish_initialization(phase_name="complete")
-            runtime.update(
-                {
-                    "init_progress": 100,
-                    "llm_check_failed": False,
-                    "llm_error_message": "",
-                    "llm_check_pending": not bool(getattr(run_config, "test_mode", False)),
-                }
+            runtime.set_initialization_progress(progress=100)
+            runtime.set_llm_check_state(
+                pending=not bool(getattr(run_config, "test_mode", False)),
+                failed=False,
+                error_message="",
             )
             init_generation = int(runtime.get("init_generation", 0) or 0)
             if not getattr(run_config, "test_mode", False):

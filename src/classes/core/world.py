@@ -18,7 +18,8 @@ from src.utils.df import game_configs
 from src.classes.language import language_manager
 from src.i18n import t
 from src.classes.ranking import RankingManager
-from src.classes.war import SectWar, STATUS_PEACE, STATUS_WAR
+from src.classes.sect_diplomacy_state import SectDiplomacyState
+from src.classes.war import STATUS_PEACE, STATUS_WAR
 from src.systems.opportunity import OpportunityManager
 
 if TYPE_CHECKING:
@@ -63,8 +64,7 @@ class World():
     ranking_manager: RankingManager = field(default_factory=RankingManager)
     # 游玩单局 ID，用于区分存档
     playthrough_id: str = field(default_factory=lambda: str(uuid.uuid4()))
-    sect_relation_modifiers: list[dict[str, Any]] = field(default_factory=list)
-    sect_wars: list[dict[str, Any]] = field(default_factory=list)
+    sect_diplomacy: SectDiplomacyState = field(default_factory=SectDiplomacyState)
     # 机缘管理器：维护单人限时机缘状态与冷却。
     opportunity_manager: OpportunityManager = field(default_factory=OpportunityManager)
     # 宗门上下文（惰性初始化），用于统一本局启用宗门作用域
@@ -118,11 +118,21 @@ class World():
                 self._sect_context.from_existed_sects(existed)
         return self._sect_context
 
-    @staticmethod
-    def _normalize_sect_pair(sect_a_id: int, sect_b_id: int) -> tuple[int, int]:
-        a = int(sect_a_id)
-        b = int(sect_b_id)
-        return (a, b) if a <= b else (b, a)
+    @property
+    def sect_relation_modifiers(self) -> list[dict[str, Any]]:
+        return self.sect_diplomacy.relation_modifiers
+
+    @sect_relation_modifiers.setter
+    def sect_relation_modifiers(self, value: Iterable[dict[str, Any]]) -> None:
+        self.sect_diplomacy.set_relation_modifiers(value)
+
+    @property
+    def sect_wars(self) -> list[dict[str, Any]]:
+        return self.sect_diplomacy.wars
+
+    @sect_wars.setter
+    def sect_wars(self, value: Iterable[dict[str, Any]]) -> None:
+        self.sect_diplomacy.set_wars(value)
 
     def add_sect_relation_modifier(
         self,
@@ -134,44 +144,10 @@ class World():
         reason: str,
         meta: Optional[dict] = None,
     ) -> None:
-        if int(duration) <= 0 or int(delta) == 0:
-            return
-        a, b = self._normalize_sect_pair(sect_a_id, sect_b_id)
-        self.sect_relation_modifiers.append(
-            {
-                "sect_a_id": a,
-                "sect_b_id": b,
-                "delta": int(delta),
-                "reason": str(reason),
-                "meta": dict(meta or {}),
-                "start_month": int(self.month_stamp),
-                "duration": int(duration),
-            }
-        )
-
-    def _iter_sect_wars(self) -> list[SectWar]:
-        records: list[SectWar] = []
-        for item in getattr(self, "sect_wars", []) or []:
-            if isinstance(item, SectWar):
-                records.append(item)
-                continue
-            if not isinstance(item, dict):
-                continue
-            try:
-                records.append(SectWar.from_dict(item))
-            except Exception:
-                continue
-        return records
-
-    def _set_sect_wars(self, wars: Iterable[SectWar]) -> None:
-        self.sect_wars = [war.to_dict() for war in wars]
+        self.sect_diplomacy.add_relation_modifier(sect_a_id=sect_a_id, sect_b_id=sect_b_id, delta=delta, duration=duration, reason=reason, current_month=int(self.month_stamp), meta=meta)
 
     def get_sect_war(self, sect_a_id: int, sect_b_id: int) -> Optional[dict[str, Any]]:
-        pair = SectWar.normalize_pair(sect_a_id, sect_b_id)
-        for war in self._iter_sect_wars():
-            if (int(war.sect_a_id), int(war.sect_b_id)) == pair:
-                return war.to_dict()
-        return None
+        return self.sect_diplomacy.get_war(sect_a_id, sect_b_id)
 
     def are_sects_at_war(self, sect_a_id: int, sect_b_id: int) -> bool:
         war = self.get_sect_war(sect_a_id, sect_b_id)
@@ -185,29 +161,7 @@ class World():
         reason: str = "",
         start_month: Optional[int] = None,
     ) -> dict[str, Any]:
-        pair = SectWar.normalize_pair(sect_a_id, sect_b_id)
-        current_month = int(self.month_stamp if start_month is None else start_month)
-        updated: list[SectWar] = []
-        target: Optional[SectWar] = None
-        for war in self._iter_sect_wars():
-            if (int(war.sect_a_id), int(war.sect_b_id)) == pair:
-                war.status = STATUS_WAR
-                war.start_month = current_month
-                war.reason = str(reason or war.reason or "")
-                war.peace_start_month = None
-                target = war
-            updated.append(war)
-        if target is None:
-            target = SectWar.create(
-                sect_a_id=pair[0],
-                sect_b_id=pair[1],
-                status=STATUS_WAR,
-                current_month=current_month,
-                reason=reason,
-            )
-            updated.append(target)
-        self._set_sect_wars(updated)
-        return target.to_dict()
+        return self.sect_diplomacy.declare_war(sect_a_id=sect_a_id, sect_b_id=sect_b_id, current_month=int(self.month_stamp if start_month is None else start_month), reason=reason)
 
     def make_sect_peace(
         self,
@@ -217,51 +171,10 @@ class World():
         reason: str = "",
         peace_start_month: Optional[int] = None,
     ) -> dict[str, Any]:
-        pair = SectWar.normalize_pair(sect_a_id, sect_b_id)
-        current_month = int(self.month_stamp if peace_start_month is None else peace_start_month)
-        updated: list[SectWar] = []
-        target: Optional[SectWar] = None
-        for war in self._iter_sect_wars():
-            if (int(war.sect_a_id), int(war.sect_b_id)) == pair:
-                war.status = STATUS_PEACE
-                war.peace_start_month = current_month
-                war.reason = str(reason or war.reason or "")
-                target = war
-            updated.append(war)
-        if target is None:
-            target = SectWar.create(
-                sect_a_id=pair[0],
-                sect_b_id=pair[1],
-                status=STATUS_PEACE,
-                current_month=current_month,
-                reason=reason,
-                peace_start_month=current_month,
-            )
-            updated.append(target)
-        self._set_sect_wars(updated)
-        return target.to_dict()
+        return self.sect_diplomacy.make_peace(sect_a_id=sect_a_id, sect_b_id=sect_b_id, current_month=int(self.month_stamp if peace_start_month is None else peace_start_month), reason=reason)
 
     def record_sect_battle(self, sect_a_id: int, sect_b_id: int, *, battle_month: Optional[int] = None) -> None:
-        pair = SectWar.normalize_pair(sect_a_id, sect_b_id)
-        current_month = int(self.month_stamp if battle_month is None else battle_month)
-        updated: list[SectWar] = []
-        found = False
-        for war in self._iter_sect_wars():
-            if (int(war.sect_a_id), int(war.sect_b_id)) == pair:
-                war.last_battle_month = current_month
-                found = True
-            updated.append(war)
-        if not found:
-            updated.append(
-                SectWar.create(
-                    sect_a_id=pair[0],
-                    sect_b_id=pair[1],
-                    status=STATUS_WAR,
-                    current_month=current_month,
-                    last_battle_month=current_month,
-                )
-            )
-        self._set_sect_wars(updated)
+        self.sect_diplomacy.record_battle(sect_a_id, sect_b_id, current_month=int(self.month_stamp if battle_month is None else battle_month))
 
     def get_sect_diplomacy_state(
         self,
@@ -270,167 +183,35 @@ class World():
         *,
         current_month: Optional[int] = None,
     ) -> dict[str, Any]:
-        pair = SectWar.normalize_pair(sect_a_id, sect_b_id)
-        war = self.get_sect_war(pair[0], pair[1])
-        now = int(self.month_stamp if current_month is None else current_month)
-        if war is None:
-            peace_start = int(getattr(self, "start_year", 0)) * 12
-            peace_months = max(0, now - peace_start)
-            return {
-                "status": STATUS_PEACE,
-                "start_month": peace_start,
-                "peace_start_month": peace_start,
-                "peace_months": peace_months,
-                "war_months": 0,
-                "last_battle_month": None,
-                "reason": "",
-            }
-
-        status = str(war.get("status", STATUS_PEACE) or STATUS_PEACE)
-        war_start = int(war.get("start_month", now) or now)
-        peace_start = war.get("peace_start_month")
-        peace_start_int = int(peace_start) if peace_start is not None else None
-        if status == STATUS_WAR:
-            return {
-                "status": STATUS_WAR,
-                "start_month": war_start,
-                "peace_start_month": None,
-                "peace_months": 0,
-                "war_months": max(0, now - war_start),
-                "last_battle_month": war.get("last_battle_month"),
-                "reason": str(war.get("reason", "") or ""),
-            }
-
-        effective_peace_start = peace_start_int if peace_start_int is not None else war_start
-        return {
-            "status": STATUS_PEACE,
-            "start_month": war_start,
-            "peace_start_month": effective_peace_start,
-            "peace_months": max(0, now - effective_peace_start),
-            "war_months": 0,
-            "last_battle_month": war.get("last_battle_month"),
-            "reason": str(war.get("reason", "") or ""),
-        }
+        return self.sect_diplomacy.get_state(
+            sect_a_id,
+            sect_b_id,
+            current_month=int(self.month_stamp if current_month is None else current_month),
+            start_year=self.start_year,
+        )
 
     def prune_expired_sect_relation_modifiers(self, current_month: Optional[int] = None) -> None:
-        if not self.sect_relation_modifiers:
-            return
-        now = int(self.month_stamp if current_month is None else current_month)
-        self.sect_relation_modifiers = [
-            item
-            for item in self.sect_relation_modifiers
-            if now < int(item.get("start_month", 0)) + int(item.get("duration", 0))
-        ]
+        self.sect_diplomacy.prune_relation_modifiers(
+            current_month=int(self.month_stamp if current_month is None else current_month)
+        )
 
     def get_active_sect_relation_breakdown(
         self, current_month: Optional[int] = None
     ) -> dict[tuple[int, int], list[dict[str, Any]]]:
-        self.prune_expired_sect_relation_modifiers(current_month)
-        result: dict[tuple[int, int], list[dict[str, Any]]] = {}
-        for item in self.sect_relation_modifiers:
-            pair = self._normalize_sect_pair(
-                int(item.get("sect_a_id", 0)),
-                int(item.get("sect_b_id", 0)),
-            )
-            if pair[0] <= 0 or pair[1] <= 0:
-                continue
-            result.setdefault(pair, []).append(
-                {
-                    "reason": str(item.get("reason", "")),
-                    "delta": int(item.get("delta", 0)),
-                    "meta": dict(item.get("meta", {}) or {}),
-                }
-            )
-        return result
+        return self.sect_diplomacy.relation_breakdown(
+            current_month=int(self.month_stamp if current_month is None else current_month)
+        )
 
     def get_active_sect_diplomacy_breakdown(
         self,
         current_month: Optional[int] = None,
         sect_ids: Optional[Iterable[int]] = None,
     ) -> dict[tuple[int, int], list[dict[str, Any]]]:
-        now = int(self.month_stamp if current_month is None else current_month)
-        result: dict[tuple[int, int], list[dict[str, Any]]] = {}
-        normalized_ids = sorted({int(sid) for sid in (sect_ids or []) if int(sid) > 0})
-        for war in self._iter_sect_wars():
-            pair = SectWar.normalize_pair(war.sect_a_id, war.sect_b_id)
-            if pair[0] <= 0 or pair[1] <= 0:
-                continue
-            if war.status == STATUS_WAR:
-                war_years = max(0, (now - int(war.start_month)) // 12)
-                delta = -20 - min(20, war_years * 2)
-                result.setdefault(pair, []).append(
-                    {
-                        "reason": "WAR_STATE",
-                        "delta": delta,
-                        "meta": {
-                            "status": STATUS_WAR,
-                            "war_months": max(0, now - int(war.start_month)),
-                        },
-                    }
-                )
-                continue
-
-            peace_start = (
-                int(war.peace_start_month)
-                if war.peace_start_month is not None
-                else int(war.start_month)
-            )
-            peace_months = max(0, now - peace_start)
-            peace_bonus = min(20, peace_months // 12)
-            result.setdefault(pair, []).append(
-                {
-                    "reason": "PEACE_STATE",
-                    "delta": 0,
-                    "meta": {
-                        "status": STATUS_PEACE,
-                        "peace_months": peace_months,
-                    },
-                }
-            )
-            if peace_bonus > 0:
-                result[pair].append(
-                    {
-                        "reason": "LONG_PEACE",
-                        "delta": peace_bonus,
-                        "meta": {
-                            "status": STATUS_PEACE,
-                            "peace_months": peace_months,
-                            "capped": peace_bonus >= 20,
-                        },
-                    }
-                )
-        if len(normalized_ids) >= 2:
-            for idx in range(len(normalized_ids)):
-                for jdx in range(idx + 1, len(normalized_ids)):
-                    pair = (normalized_ids[idx], normalized_ids[jdx])
-                    if pair in result:
-                        continue
-                    peace_start = int(getattr(self, "start_year", 0)) * 12
-                    peace_months = max(0, now - peace_start)
-                    peace_bonus = min(20, peace_months // 12)
-                    result[pair] = [
-                        {
-                            "reason": "PEACE_STATE",
-                            "delta": 0,
-                            "meta": {
-                                "status": STATUS_PEACE,
-                                "peace_months": peace_months,
-                            },
-                        }
-                    ]
-                    if peace_bonus > 0:
-                        result[pair].append(
-                            {
-                                "reason": "LONG_PEACE",
-                                "delta": peace_bonus,
-                                "meta": {
-                                    "status": STATUS_PEACE,
-                                    "peace_months": peace_months,
-                                    "capped": peace_bonus >= 20,
-                                },
-                            }
-                        )
-        return result
+        return self.sect_diplomacy.diplomacy_breakdown(
+            current_month=int(self.month_stamp if current_month is None else current_month),
+            start_year=self.start_year,
+            sect_ids=sect_ids,
+        )
 
     def set_world_lore(self, lore_text: str) -> None:
         """设置本局的世界观与历史输入文本。"""

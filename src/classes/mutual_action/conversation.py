@@ -113,14 +113,15 @@ class Conversation(MutualAction):
         if target is None or self._is_dead_avatar(target):
             return ActionResult(status=ActionStatus.FAILED, events=[])
 
-        runtime = getattr(self.world, "runtime", None)
-        if runtime is None:
+        from src.sim.runtime_capabilities import get_decision_boundary_gateway
+
+        gateway = get_decision_boundary_gateway(self.world)
+        if gateway is None:
             return super().step(target_avatar=target_avatar)
-        from src.server.services.roleplay_service import begin_roleplay_conversation, is_player_controlled_avatar
-        if not is_player_controlled_avatar(avatar=self.avatar):
+        if not gateway.controls_avatar(str(self.avatar.id)):
             return super().step(target_avatar=target_avatar)
 
-        session = runtime.get_roleplay_session()
+        session = gateway.get_session()
         conversation_session = session.get("conversation_session") or {}
         is_matching_session = (
             str(conversation_session.get("avatar_id") or "") == str(self.avatar.id)
@@ -152,7 +153,7 @@ class Conversation(MutualAction):
             return ActionResult(status=ActionStatus.COMPLETED, events=events_to_return)
 
         if not is_matching_session:
-            begin_roleplay_conversation(runtime, avatar=self.avatar, target_avatar=target)
+            gateway.begin_conversation(avatar=self.avatar, target_avatar=target)
 
         return ActionResult(status=ActionStatus.RUNNING, events=[])
 

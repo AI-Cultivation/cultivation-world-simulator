@@ -96,7 +96,7 @@ def reset_game_instance():
 @pytest.fixture
 def fresh_manager():
     """Create a fresh ConnectionManager for testing."""
-    return ConnectionManager()
+    return ConnectionManager(runtime=main.runtime)
 
 
 class TestConnectionManager:

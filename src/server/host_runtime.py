@@ -63,17 +63,7 @@ class ConnectionManager:
     def _set_pause_state(self, should_pause: bool, log_msg: str):
         runtime = self.runtime
         if runtime is None:
-            try:
-                from src.server import main as server_main
-
-                game_instance = server_main.game_instance
-
-                if game_instance.get("is_paused") != should_pause:
-                    game_instance["is_paused"] = should_pause
-                    print(f"[Auto-Control] {log_msg}")
-                return
-            except Exception:
-                return
+            return
 
         if runtime.get("is_paused") != should_pause:
             runtime.set_paused(should_pause)

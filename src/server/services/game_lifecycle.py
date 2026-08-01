@@ -20,7 +20,7 @@ async def start_game_lifecycle(
     apply_runtime_content_locale(run_config.content_locale)
 
     def _prepare_start() -> None:
-        runtime.update({"run_config": run_config.model_dump()})
+        runtime.set_run_config(run_config.model_dump())
         runtime.mark_pending_initialization(clear_world=current_status == "ready")
 
     await runtime.run_mutation(_prepare_start)

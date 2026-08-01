@@ -5,18 +5,13 @@ from src.classes.core.avatar import Avatar
 from src.classes.event import Event, is_null_event
 from src.config.providers import StaticConfigProvider
 from src.run.log import get_logger
-from src.server.runtime.capabilities import get_roleplay_gateway_from_world
+from src.sim.runtime_capabilities import get_decision_boundary_gateway
 
 
 async def phase_decide_actions(world, living_avatars: list[Avatar]) -> None:
-    try:
-        from src.server.services.roleplay_service import maybe_request_roleplay_decision
-
-        maybe_request_roleplay_decision(world)
-    except Exception:
-        pass
-
-    gateway = get_roleplay_gateway_from_world(world)
+    gateway = get_decision_boundary_gateway(world)
+    if gateway is not None:
+        gateway.before_ai_decision(world)
     controlled_avatar_id = gateway.get_controlled_avatar_id() if gateway is not None else ""
 
     # 只给“既没在执行动作，也没有待执行计划”的角色补决策，

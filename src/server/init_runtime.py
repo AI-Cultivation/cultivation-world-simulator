@@ -76,12 +76,10 @@ def check_llm_connectivity() -> tuple[bool, str]:
 def update_init_progress(*, runtime, phase: int, phase_name: str = "") -> None:
     """Update initialization phase/progress on the shared runtime state."""
     resolved_name = phase_name or INIT_PHASE_NAMES.get(phase, "")
-    runtime.update(
-        {
-            "init_phase": phase,
-            "init_phase_name": resolved_name,
-            "init_progress": INIT_PROGRESS_MAP.get(phase, phase * 14),
-        }
+    runtime.set_initialization_progress(
+        phase=phase,
+        phase_name=resolved_name,
+        progress=INIT_PROGRESS_MAP.get(phase, phase * 14),
     )
     print(
         f"[Init] Phase {phase}: "

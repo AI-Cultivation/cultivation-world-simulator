@@ -637,7 +637,7 @@ def get_runtime_run_config() -> object:
 
 
 llm_handlers = create_llm_runtime_handlers(
-    game_state=game_instance,
+    runtime=runtime,
     manager=manager,
     settings_service=settings_service,
     create_llm_updated_handler=create_llm_updated_handler,

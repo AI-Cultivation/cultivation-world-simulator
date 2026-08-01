@@ -53,10 +53,7 @@ def create_configured_app(
         reset_settings=reset_settings_model,
         get_llm_view=context.settings_service.get_llm_view,
         get_llm_runtime_config=context.settings_service.get_llm_runtime_config,
-        get_llm_failure_state=lambda: (
-            bool(context.game_state.get("llm_check_failed", False)),
-            str(context.game_state.get("llm_error_message", "") or ""),
-        ),
+        get_llm_failure_state=context.runtime.get_llm_failure_state,
         get_llm_test_payload=context.settings_service.get_llm_test_payload,
         test_connectivity=llm_handlers.test_connectivity,
         update_llm=context.settings_service.update_llm,

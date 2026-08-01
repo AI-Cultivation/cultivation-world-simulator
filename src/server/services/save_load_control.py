@@ -143,13 +143,13 @@ async def load_game_into_runtime(
                     await asyncio.to_thread(apply_runtime_content_locale, save_lang)
 
         runtime.begin_initialization()
-        runtime.update({"init_phase": 0, "init_phase_name": "scanning_assets"})
+        runtime.set_initialization_progress(phase=0, phase_name="scanning_assets", progress=0)
         await asyncio.to_thread(scan_avatar_assets)
-        runtime.update({"init_phase_name": "loading_save", "init_progress": 10})
+        runtime.set_initialization_progress(phase_name="loading_save", progress=10)
         runtime.set_paused(True)
         await asyncio.sleep(0)
 
-        runtime.update({"init_progress": 30, "init_phase_name": "parsing_data"})
+        runtime.set_initialization_progress(phase_name="parsing_data", progress=30)
         await asyncio.sleep(0)
 
         old_world = runtime.get("world")
@@ -158,26 +158,23 @@ async def load_game_into_runtime(
 
         new_world, new_sim, new_sects = load_game(target_path)
         new_world.runtime = runtime
-        runtime.update({"init_progress": 70, "init_phase_name": "restoring_state"})
+        runtime.set_initialization_progress(phase_name="restoring_state", progress=70)
         await asyncio.sleep(0)
 
         new_world.existed_sects = new_sects
-        runtime.update(
-            {
-                "world": new_world,
-                "sim": new_sim,
-                "current_save_path": target_path,
-                "run_config": getattr(
-                    new_world,
-                    "run_config_snapshot",
-                    _model_to_dict(get_settings_service().get_default_run_config()),
-                ),
-            }
+        runtime.set_world_and_sim(new_world, new_sim)
+        runtime.set_current_save_path(target_path)
+        runtime.set_run_config(
+            getattr(
+                new_world,
+                "run_config_snapshot",
+                _model_to_dict(get_settings_service().get_default_run_config()),
+            )
         )
-        runtime.update({"init_progress": 90, "init_phase_name": "finalizing"})
+        runtime.set_initialization_progress(phase_name="finalizing", progress=90)
         await asyncio.sleep(0)
         runtime.finish_initialization(phase_name="complete")
-        runtime.update({"init_progress": 100})
+        runtime.set_initialization_progress(progress=100)
         return {"status": "ok", "message": t("Game loaded")}
 
     try:

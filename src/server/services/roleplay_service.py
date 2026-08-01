@@ -283,25 +283,12 @@ def stop_roleplay(runtime, *, avatar_id: str | None = None) -> dict[str, Any]:
 
 
 def maybe_request_roleplay_decision(world) -> bool:
-    runtime = getattr(world, "runtime", None)
-    if runtime is None:
+    from src.sim.runtime_capabilities import DecisionBoundaryResult, get_decision_boundary_gateway
+
+    gateway = get_decision_boundary_gateway(world)
+    if gateway is None:
         return False
-
-    session = runtime.get_roleplay_session()
-    controlled_avatar_id = session.get("controlled_avatar_id")
-    if not controlled_avatar_id or str(session.get("status", "")) == "awaiting_decision":
-        return False
-
-    avatar = world.avatar_manager.get_avatar(str(controlled_avatar_id))
-    if avatar is None or getattr(avatar, "is_dead", False):
-        runtime.clear_roleplay_session()
-        return False
-
-    if avatar.current_action is None and not avatar.has_plans():
-        _set_waiting_decision(runtime, avatar=avatar, prompt_context=_build_prompt_context(avatar))
-        return True
-
-    return False
+    return gateway.before_ai_decision(world) == DecisionBoundaryResult.WAITING_FOR_PLAYER
 
 
 async def submit_roleplay_decision(runtime, *, avatar_id: str, request_id: str, command_text: str) -> dict[str, Any]:
