@@ -211,7 +211,7 @@ async def test_roleplay_choice_waits_for_player_submission_and_resumes():
         }
     )
     avatar.world.runtime = runtime
-    runtime.update({"world": avatar.world})
+    runtime.set_world_and_sim(avatar.world, None)
     runtime.get_roleplay_session()["controlled_avatar_id"] = avatar.id
     runtime.get_roleplay_session()["status"] = "observing"
 

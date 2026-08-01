@@ -84,7 +84,7 @@ class TestActionSocial:
     async def test_conversation_uses_roleplay_session_when_avatar_controlled(self, dummy_avatar, target_avatar):
         runtime = GameSessionRuntime(dict(DEFAULT_GAME_STATE))
         dummy_avatar.world.runtime = runtime
-        runtime.update({"world": dummy_avatar.world})
+        runtime.set_world_and_sim(dummy_avatar.world, None)
         runtime.get_roleplay_session()["controlled_avatar_id"] = dummy_avatar.id
         runtime.get_roleplay_session()["status"] = "observing"
 

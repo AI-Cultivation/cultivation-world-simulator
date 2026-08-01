@@ -175,18 +175,18 @@ class TestTalk:
 
         runtime = GameSessionRuntime(dict(DEFAULT_GAME_STATE))
         dummy_avatar.world.runtime = runtime
-        runtime.update({"world": dummy_avatar.world})
+        runtime.set_world_and_sim(dummy_avatar.world, None)
         dummy_avatar.world.avatar_manager.get_avatar = MagicMock(
             side_effect=lambda avatar_id: target_avatar if str(avatar_id) == str(target_avatar.id) else None
         )
-        runtime.update(
+        session = runtime.get_roleplay_session()
+        session.clear()
+        session.update(
             {
-                "roleplay_session": {
-                    "controlled_avatar_id": target_avatar.id,
-                    "status": "observing",
-                    "pending_request": None,
-                    "last_prompt_context": None,
-                }
+                "controlled_avatar_id": target_avatar.id,
+                "status": "observing",
+                "pending_request": None,
+                "last_prompt_context": None,
             }
         )
 

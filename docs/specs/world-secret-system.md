@@ -752,8 +752,7 @@ sync_avatar_public_world_secret_knowledge(world, avatar)
 - `src/sim/load/avatar_load_mixin.py`：恢复 avatar secret knowledge
 - `src/sim/simulator_engine/phases/world.py`：新增被动发现 phase
 - `src/sim/simulator_engine/simulator.py`：接入 phase
-- `src/server/services/game_queries.py`：新增查询组装
-- `src/server/public_query_builders.py`：接入 query builder
+- `src/server/services/game_query_service.py`：新增查询组装
 - `src/server/api/public_v1/query.py`：新增 v1 query 路由
 
 ## 21. 测试建议

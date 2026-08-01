@@ -97,75 +97,15 @@ def test_static_data_registry_is_shared_phase3_dependency_source():
     assert static_data.celestial_phenomena_by_id
 
 
-def test_public_query_builder_module_is_legacy_adapter_only():
-    import inspect
-    import src.server.public_query_builders as builders
-
-    source = inspect.getsource(builders)
-
-    assert "Legacy adapter" in source
-    assert "GameQueryService.from_dependencies" in source
-    assert "def build_public_world_state" not in source
-
-
-def test_public_query_builder_legacy_static_args_are_adapted(monkeypatch):
-    import src.server.public_query_builders as builders
-
-    captured = {}
-
-    class Service:
-        def __init__(self, static_data, **dependencies):
-            captured["static_data"] = static_data
-            captured["dependencies"] = dependencies
-            self.builders = object()
-
-        @classmethod
-        def from_dependencies(cls, *, static_data, **dependencies):
-            return cls(static_data, **dependencies)
-
-    monkeypatch.setattr(
-        "src.server.services.game_query_service.GameQueryService",
-        Service,
-    )
-
-    result = builders.create_public_query_builders(
-        runtime=object(),
-        sects_by_id={1: "sect"},
-        races_by_id={"human": "race"},
-        personas_by_id={},
-        techniques_by_id={},
-        weapons_by_id={},
-        auxiliaries_by_id={},
-        celestial_phenomena_by_id={},
-    )
-
-    assert result is captured["static_data"] or result is not None
-    assert captured["static_data"].sects_by_id == {1: "sect"}
-    assert captured["static_data"].races_by_id == {"human": "race"}
-    assert "sects_by_id" not in captured["dependencies"]
-
-
-
-def test_command_handler_module_is_legacy_adapter_only():
-    import inspect
-    import src.server.command_handlers as handlers
-
-    source = inspect.getsource(handlers)
-
-    assert "Legacy adapter" in source
-    assert "GameCommandService.from_dependencies" in source
-    assert "def run_start_game" not in source
-
-
-def test_main_uses_context_factory_and_keeps_legacy_exports_concentrated():
+def test_main_uses_context_factory_without_legacy_exports():
     import inspect
     import src.server.main as main
 
     source = inspect.getsource(main)
 
     assert "create_server_context(" in source
-    assert "_install_legacy_query_exports(query_service)" in source
-    assert "_install_legacy_command_exports(command_service)" in source
+    assert "_install_legacy_query_exports" not in source
+    assert "_install_legacy_command_exports" not in source
     assert "from src.server.public_query_builders" not in source
     assert "from src.server.command_handlers" not in source
 

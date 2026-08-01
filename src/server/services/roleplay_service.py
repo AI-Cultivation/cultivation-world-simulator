@@ -117,9 +117,9 @@ def is_player_controlled_choice_target(*, avatar) -> bool:
 
 
 def is_player_controlled_avatar(*, avatar) -> bool:
-    from src.server.runtime.capabilities import get_roleplay_gateway_from_world
+    from src.sim.runtime_capabilities import get_decision_boundary_gateway
 
-    gateway = get_roleplay_gateway_from_world(getattr(avatar, "world", None))
+    gateway = get_decision_boundary_gateway(getattr(avatar, "world", None))
     if gateway is None:
         return False
     return gateway.controls_avatar(str(getattr(avatar, "id", "")))

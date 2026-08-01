@@ -8,7 +8,6 @@ from fastapi import HTTPException
 from src.config.providers import RunConfigProvider, StaticConfigProvider
 from src.server.loop import TickPayloadBuilder
 from src.server.runtime import GameSessionRuntime
-from src.server.runtime.capabilities import CancellationToken, RoleplayDecisionGateway, RuntimePauseController
 from src.server.services.roleplay_state import RoleplayStatus
 from src.server.services.roleplay_state_machine import require_status, set_observing
 from src.sim.simulator_engine.phase_registry import get_simulation_phases
@@ -45,18 +44,6 @@ def test_roleplay_state_machine_sets_observing_and_clears_runtime_pause():
     assert session["status"] == RoleplayStatus.OBSERVING.value
     assert session["pending_request"] is None
     assert runtime.get("roleplay_auto_paused") is False
-
-
-def test_runtime_capabilities_wrap_existing_runtime_surface():
-    runtime = GameSessionRuntime({"reset_requested": True, "roleplay_auto_paused": False})
-    runtime.get_roleplay_session()["controlled_avatar_id"] = "avatar-1"
-
-    assert CancellationToken(runtime).is_cancelled() is True
-    assert RoleplayDecisionGateway(runtime).controls_avatar("avatar-1") is True
-
-    pause = RuntimePauseController(runtime)
-    pause.set_roleplay_paused(True)
-    assert pause.is_effectively_paused() is True
 
 
 def test_config_providers_read_current_config_and_run_snapshot(monkeypatch):

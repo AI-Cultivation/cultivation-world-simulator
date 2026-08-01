@@ -162,13 +162,13 @@
 
 - `src/server/main.py`
   - 仓库默认入口与 composition root
-  - 负责组装 runtime、builder、handler、app 与启动入口
-- `src/server/public_query_builders.py`
-  - 聚合 public v1 query builders
-  - 统一拼装 runtime、assembler、serializer 与 DTO 来源
-- `src/server/command_handlers.py`
-  - 聚合 public v1 command handlers
-  - 统一承接 lifecycle / avatar / save-load / custom content 等写操作编排
+  - 负责组装 runtime、service、app 与启动入口
+- `src/server/services/game_query_service.py`
+  - 聚合 public v1 query 与 DTO 组装
+  - 统一承接 runtime、assembler、serializer 与静态数据依赖
+- `src/server/services/game_command_service.py`
+  - 聚合 public v1 command 编排
+  - 统一承接 lifecycle / avatar / save-load / custom content 等写操作
 - `src/server/init_flow.py`
   - 聚合开局初始化流程
   - 包含资源扫描、地图加载、世界创建、世界观应用、宗门/NPC 初始化、LLM 检测与首步事件生成
@@ -185,8 +185,8 @@
 
 这意味着后续新增外接能力时，应优先遵循：
 
-- 新只读接口先考虑落到 `public_query_builders.py` 及对应 service / assembler。
-- 新写接口先考虑落到 `command_handlers.py` 及对应 service。
+- 新只读接口先考虑落到 `GameQueryService` 及对应 assembler。
+- 新写接口先考虑落到 `GameCommandService`。
 - 新初始化步骤优先扩展 `init_flow.py`，不要把 phase 逻辑重新塞回 `main.py`。
 - 新宿主/启动行为优先扩展 `host_app.py` / `bootstrap.py`。
 
@@ -642,11 +642,11 @@ src/server/
 如果后续要新增一个接口，推荐按下面判断：
 
 - 新只读能力：
-  - service / assembler 准备好后，接到 `src/server/public_query_builders.py`
+  - service / assembler 准备好后，接到 `src/server/services/game_query_service.py`
   - 再挂到 `src/server/api/public_v1/query.py`
 - 新写能力：
   - 业务逻辑优先落 service
-  - command 编排接到 `src/server/command_handlers.py`
+  - command 编排接到 `src/server/services/game_command_service.py`
   - 再挂到 `src/server/api/public_v1/command.py`
 - 若会改 world / sim：
   - 必须走 runtime mutation 串行化

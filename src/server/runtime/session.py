@@ -57,17 +57,8 @@ class GameSessionRuntime:
         self._world_revision = 0
         self._ensure_owned_roleplay_session()
 
-    @property
-    def state(self) -> dict[str, Any]:
-        """Deprecated test compatibility access to the mutable backing state."""
-        return self._state
-
     def get(self, key: str, default: Any = None) -> Any:
         return self._state.get(key, default)
-
-    def update(self, values: dict[str, Any]) -> None:
-        """Deprecated test compatibility helper; production code uses named methods."""
-        self._state.update(values)
 
     def get_world(self) -> Any:
         return self._state.get("world")

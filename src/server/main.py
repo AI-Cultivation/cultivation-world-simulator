@@ -375,40 +375,6 @@ server_context = create_server_context(
 query_service = server_context.query_service
 command_service = server_context.command_service
 
-def _install_legacy_query_exports(service):
-    """Expose historical query helper names for old tests/imports only."""
-    builders = service.builders
-    globals().update(
-        public_query_builders=builders,
-        build_public_world_state=builders.build_public_world_state,
-        build_public_world_map=builders.build_public_world_map,
-        build_public_map_presets=builders.build_public_map_presets,
-        build_public_runtime_status=builders.build_public_runtime_status,
-        build_public_current_run=builders.build_public_current_run,
-        build_public_events_page=builders.build_public_events_page,
-        build_public_game_data=builders.build_public_game_data,
-        build_public_detail=builders.build_public_detail,
-        build_public_avatar_adjust_options=builders.build_public_avatar_adjust_options,
-        build_public_avatar_meta=builders.build_public_avatar_meta,
-        build_public_avatar_list=builders.build_public_avatar_list,
-        build_public_phenomena=builders.build_public_phenomena,
-        build_public_sect_territories=builders.build_public_sect_territories,
-        build_public_saves=builders.build_public_saves,
-        build_public_rankings=builders.build_public_rankings,
-        build_public_sect_relations=builders.build_public_sect_relations,
-        build_public_mortal_overview=builders.build_public_mortal_overview,
-        build_public_dynasty_overview=builders.build_public_dynasty_overview,
-        build_public_dynasty_detail=builders.build_public_dynasty_detail,
-        build_public_avatar_overview=builders.build_public_avatar_overview,
-        build_public_deceased_list=builders.build_public_deceased_list,
-        build_public_roleplay_session=builders.build_public_roleplay_session,
-        build_public_world_secret_meta=builders.build_public_world_secret_meta,
-        build_public_world_secret_overview=builders.build_public_world_secret_overview,
-    )
-
-
-_install_legacy_query_exports(query_service)
-
 
 settings_handlers = create_settings_handlers(
     game_state=game_instance,
@@ -540,42 +506,6 @@ async def game_loop():
         get_logger=_get_logger,
     )
 
-def _install_legacy_command_exports(service):
-    """Expose historical command helper names for old tests/imports only."""
-    handlers = service.handlers
-    globals().update(
-        command_handlers=handlers,
-        run_start_game=handlers.run_start_game,
-        run_reinit_game=handlers.run_reinit_game,
-        run_reset_game=handlers.run_reset_game,
-        run_pause_game=handlers.run_pause_game,
-        run_pause_game_and_drain=handlers.run_pause_game_and_drain,
-        run_resume_game=handlers.run_resume_game,
-        run_cleanup_events=handlers.run_cleanup_events,
-        run_set_phenomenon=handlers.run_set_phenomenon,
-        run_create_avatar=handlers.run_create_avatar,
-        run_delete_avatar=handlers.run_delete_avatar,
-        run_update_avatar_adjustment=handlers.run_update_avatar_adjustment,
-        run_update_avatar_portrait=handlers.run_update_avatar_portrait,
-        run_generate_custom_content=handlers.run_generate_custom_content,
-        run_create_custom_content=handlers.run_create_custom_content,
-        run_set_long_term_objective=handlers.run_set_long_term_objective,
-        run_clear_long_term_objective=handlers.run_clear_long_term_objective,
-        run_save_game=handlers.run_save_game,
-        run_delete_save=handlers.run_delete_save,
-        run_load_game=handlers.run_load_game,
-        run_start_roleplay=handlers.run_start_roleplay,
-        run_stop_roleplay=handlers.run_stop_roleplay,
-        run_submit_roleplay_decision=handlers.run_submit_roleplay_decision,
-        run_submit_roleplay_choice=handlers.run_submit_roleplay_choice,
-        run_send_roleplay_conversation=handlers.run_send_roleplay_conversation,
-        run_end_roleplay_conversation=handlers.run_end_roleplay_conversation,
-    )
-
-
-_install_legacy_command_exports(command_service)
-
-
 def get_settings() -> dict:
     """兼容保留：返回当前应用设置视图。"""
     return settings_handlers.get_settings()
@@ -623,12 +553,12 @@ def reset_settings() -> dict:
 
 async def start_game(req: GameStartRequest) -> dict:
     """兼容保留：启动游戏初始化流程。"""
-    return await run_start_game(req)
+    return await command_service.start_game(req)
 
 
 async def api_load_game(req: LoadGameRequest) -> dict:
     """兼容保留：加载指定存档。"""
-    return await run_load_game(filename=req.filename)
+    return await command_service.load_game(filename=req.filename)
 
 
 def get_runtime_run_config() -> object:

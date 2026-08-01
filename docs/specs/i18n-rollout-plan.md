@@ -119,7 +119,7 @@
 执行：
 
 1. 运行 `python tools/i18n/generate_missing_report.py`
-2. 阅读生成的 `i18n_missing_report.md`
+2. 阅读命令生成的缺失报告输出
 3. 按语言、文件类型、功能模块拆分缺口
 
 产出：

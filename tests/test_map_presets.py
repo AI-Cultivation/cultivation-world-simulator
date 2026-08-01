@@ -188,7 +188,7 @@ def test_public_map_data_uses_renderable_tile_types():
             map=load_cultivation_world_map(preset.id),
             month_stamp=create_month_stamp(Year(1), Month.JANUARY),
         )
-        runtime.update({"world": world})
+        runtime.set_world_and_sim(world, None)
 
         response = get_world_map(runtime, sects_by_id={}, render_config={})
         tile_types = {tile_type for row in response["data"] for tile_type in row}
@@ -205,7 +205,7 @@ def test_public_map_region_coordinates_use_landmarks():
         map=game_map,
         month_stamp=create_month_stamp(Year(1), Month.JANUARY),
     )
-    runtime.update({"world": world})
+    runtime.set_world_and_sim(world, None)
 
     response = get_world_map(runtime, sects_by_id={}, render_config={})
     city = next(region for region in response["regions"] if region["id"] == 301)

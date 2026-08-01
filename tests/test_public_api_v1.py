@@ -552,7 +552,7 @@ def test_v1_world_secret_meta_localizes_special_options():
     original_language = str(main.language_manager)
     try:
         main.apply_runtime_content_locale("fr-FR")
-        data = main.build_public_world_secret_meta()
+        data = main.query_service.get_world_secret_meta()
 
         assert data["options"][0] == {"id": "none", "title": "Aucun"}
         assert data["options"][1] == {"id": "random", "title": "Aléatoire"}
@@ -962,10 +962,11 @@ def test_v1_roleplay_submit_choice_resolves_pending_future():
         main.game_instance["is_paused"] = False
 
         pending_future = loop.create_future()
-        main.runtime.update(
+        main.runtime.set_roleplay_auto_paused(True)
+        session = main.runtime.get_roleplay_session()
+        session.clear()
+        session.update(
             {
-                "roleplay_auto_paused": True,
-                "roleplay_session": {
                     "controlled_avatar_id": avatar.id,
                     "status": "awaiting_choice",
                     "pending_request": {
@@ -985,7 +986,6 @@ def test_v1_roleplay_submit_choice_resolves_pending_future():
                         {"type": "choice_prompt", "text": "desc", "created_at": 1.0},
                     ],
                     "_choice_future": pending_future,
-                },
             }
         )
 
@@ -1151,10 +1151,11 @@ def test_v1_roleplay_submit_choice_rejects_stale_request_after_stop():
 
         loop = asyncio.new_event_loop()
         pending_future = loop.create_future()
-        main.runtime.update(
+        main.runtime.set_roleplay_auto_paused(True)
+        session = main.runtime.get_roleplay_session()
+        session.clear()
+        session.update(
             {
-                "roleplay_auto_paused": True,
-                "roleplay_session": {
                     "controlled_avatar_id": avatar.id,
                     "status": "awaiting_choice",
                     "pending_request": {
@@ -1167,7 +1168,6 @@ def test_v1_roleplay_submit_choice_rejects_stale_request_after_stop():
                     },
                     "last_prompt_context": None,
                     "_choice_future": pending_future,
-                },
             }
         )
 
