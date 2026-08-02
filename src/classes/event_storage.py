@@ -14,6 +14,7 @@ from contextlib import contextmanager
 from datetime import datetime, timezone
 
 from src.run.log import get_logger
+from src.classes.event_query import EventAudience, EventMemoryScope, EventQuery
 
 if TYPE_CHECKING:
     from src.classes.event import Event
@@ -548,8 +549,7 @@ class EventStorage:
 
         返回最新的 N 条，按时间正序排列。
         """
-        events, _ = self.get_events(avatar_id=avatar_id, limit=limit)
-        return list(reversed(events))  # 转为时间正序。
+        return self.query_events(EventQuery(avatar_ids=(str(avatar_id),), limit=limit, chronological=True))
 
     def get_events_between(self, id1: str, id2: str, limit: int = 50) -> list["Event"]:
         """
@@ -557,156 +557,74 @@ class EventStorage:
 
         返回最新的 N 条，按时间正序排列。
         """
-        events, _ = self.get_events(avatar_id_pair=(id1, id2), limit=limit)
-        return list(reversed(events))  # 转为时间正序。
+        return self.query_events(EventQuery(avatar_ids=(str(id1), str(id2)), limit=limit, chronological=True))
 
     def get_major_events_by_avatar(self, avatar_id: str, limit: int = 10) -> list["Event"]:
         """获取角色的大事（长期记忆）。"""
-        if self._conn is None:
-            return []
-
-        query = """
-                SELECT DISTINCT
-                    e.id, e.month_stamp, e.content, e.is_major, e.is_story, e.event_type,
-                    e.created_at, e.render_key, e.render_params, e.subject_snapshots, eo.propagation_kind,
-                    eo.observer_avatar_id, eo.subject_avatar_id, eo.relation_type, eo.id AS observation_id
-                FROM events e
-                JOIN event_observations eo ON e.id = eo.event_id AND eo.observer_avatar_id = ?
-                WHERE e.is_major = TRUE AND e.is_story = FALSE
-                ORDER BY e.month_stamp DESC, e.rowid DESC
-                LIMIT ?
-                """
-        params = (avatar_id, limit)
-        try:
-            with self._db_lock:
-                rows = self._conn.execute(query, params).fetchall()
-
-                from src.classes.event_renderer import render_observed_event
-
-                events = self._build_events_from_rows(rows)
-                for event, row in zip(events, rows):
-                    event.content = render_observed_event(event, row)
-
-                return list(reversed(events))  # 时间正序。
-        except Exception as e:
-            self._logger.exception(
-                "Failed to query major events: %s | avatar_id=%r limit=%r sql=%r params=%r",
-                e,
-                avatar_id,
-                limit,
-                query,
-                params,
-            )
-            return []
+        return self.query_events(EventQuery(
+            avatar_ids=(str(avatar_id),), audience=EventAudience.OBSERVED,
+            memory_scope=EventMemoryScope.MAJOR, limit=limit, chronological=True,
+        ))
 
     def get_minor_events_by_avatar(self, avatar_id: str, limit: int = 10) -> list["Event"]:
         """获取角色的小事（短期记忆，包括故事）。"""
-        if self._conn is None:
-            return []
-
-        query = """
-                SELECT DISTINCT
-                    e.id, e.month_stamp, e.content, e.is_major, e.is_story, e.event_type,
-                    e.created_at, e.render_key, e.render_params, e.subject_snapshots, eo.propagation_kind,
-                    eo.observer_avatar_id, eo.subject_avatar_id, eo.relation_type, eo.id AS observation_id
-                FROM events e
-                JOIN event_observations eo ON e.id = eo.event_id AND eo.observer_avatar_id = ?
-                WHERE e.is_major = FALSE OR e.is_story = TRUE
-                ORDER BY e.month_stamp DESC, e.rowid DESC
-                LIMIT ?
-                """
-        params = (avatar_id, limit)
-        try:
-            with self._db_lock:
-                rows = self._conn.execute(query, params).fetchall()
-
-                from src.classes.event_renderer import render_observed_event
-
-                events = self._build_events_from_rows(rows)
-                for event, row in zip(events, rows):
-                    event.content = render_observed_event(event, row)
-
-                return list(reversed(events))  # 时间正序。
-        except Exception as e:
-            self._logger.exception(
-                "Failed to query minor events: %s | avatar_id=%r limit=%r sql=%r params=%r",
-                e,
-                avatar_id,
-                limit,
-                query,
-                params,
-            )
-            return []
+        return self.query_events(EventQuery(
+            avatar_ids=(str(avatar_id),), audience=EventAudience.OBSERVED,
+            memory_scope=EventMemoryScope.MINOR, limit=limit, chronological=True,
+        ))
 
     def get_major_events_between(self, id1: str, id2: str, limit: int = 10) -> list["Event"]:
         """获取两个角色之间的大事（长期记忆）。"""
-        if self._conn is None:
-            return []
-
-        query = """
-                SELECT DISTINCT e.id, e.month_stamp, e.content, e.is_major, e.is_story, e.event_type, e.created_at
-                , e.render_key, e.render_params, e.subject_snapshots
-                FROM events e
-                JOIN event_avatars ea1 ON e.id = ea1.event_id AND ea1.avatar_id = ?
-                JOIN event_avatars ea2 ON e.id = ea2.event_id AND ea2.avatar_id = ?
-                WHERE e.is_major = TRUE AND e.is_story = FALSE
-                ORDER BY e.month_stamp DESC
-                LIMIT ?
-                """
-        params = (id1, id2, limit)
-        try:
-            with self._db_lock:
-                rows = self._conn.execute(query, params).fetchall()
-
-                events = self._build_events_from_rows(rows)
-
-                return list(reversed(events))  # 时间正序。
-        except Exception as e:
-            self._logger.exception(
-                "Failed to query major events between: %s | id1=%r id2=%r limit=%r sql=%r params=%r",
-                e,
-                id1,
-                id2,
-                limit,
-                query,
-                params,
-            )
-            return []
+        return self.query_events(EventQuery(
+            avatar_ids=(str(id1), str(id2)), memory_scope=EventMemoryScope.MAJOR,
+            limit=limit, chronological=True,
+        ))
 
     def get_minor_events_between(self, id1: str, id2: str, limit: int = 10) -> list["Event"]:
         """获取两个角色之间的小事（短期记忆）。"""
+        return self.query_events(EventQuery(
+            avatar_ids=(str(id1), str(id2)), memory_scope=EventMemoryScope.MINOR,
+            limit=limit, chronological=True,
+        ))
+
+    def query_events(self, query: EventQuery) -> list["Event"]:
+        """Execute the shared event query contract for the SQLite backend."""
         if self._conn is None:
             return []
-
-        query = """
-                SELECT DISTINCT e.id, e.month_stamp, e.content, e.is_major, e.is_story, e.event_type, e.created_at
-                , e.render_key, e.render_params, e.subject_snapshots
-                FROM events e
-                JOIN event_avatars ea1 ON e.id = ea1.event_id AND ea1.avatar_id = ?
-                JOIN event_avatars ea2 ON e.id = ea2.event_id AND ea2.avatar_id = ?
-                WHERE e.is_major = FALSE OR e.is_story = TRUE
-                ORDER BY e.month_stamp DESC
-                LIMIT ?
-                """
-        params = (id1, id2, limit)
-        try:
-            with self._db_lock:
-                rows = self._conn.execute(query, params).fetchall()
-
-                events = self._build_events_from_rows(rows)
-
-                return list(reversed(events))  # 时间正序。
-        except Exception as e:
-            self._logger.exception(
-                "Failed to query minor events between: %s | id1=%r id2=%r limit=%r sql=%r params=%r",
-                e,
-                id1,
-                id2,
-                limit,
-                query,
-                params,
+        if query.audience is EventAudience.DIRECT:
+            avatar_ids = query.avatar_ids
+            events, _ = self.get_events(
+                avatar_id=avatar_ids[0] if len(avatar_ids) == 1 else None,
+                avatar_id_pair=(avatar_ids[0], avatar_ids[1]) if len(avatar_ids) == 2 else None,
+                sect_id=query.sect_id,
+                major_scope=None if query.memory_scope is EventMemoryScope.ALL else query.memory_scope.value,
+                cursor=query.cursor,
+                limit=query.limit,
             )
-            return []
+        else:
+            if len(query.avatar_ids) != 1:
+                raise ValueError("Observed event queries require exactly one avatar")
+            scope_sql = {
+                EventMemoryScope.ALL: "1=1",
+                EventMemoryScope.MAJOR: "e.is_major = TRUE AND e.is_story = FALSE",
+                EventMemoryScope.MINOR: "e.is_major = FALSE OR e.is_story = TRUE",
+            }[query.memory_scope]
+            sql = f"""
+                SELECT DISTINCT e.rowid, e.id, e.month_stamp, e.content, e.is_major, e.is_story,
+                    e.event_type, e.render_key, e.render_params, e.subject_snapshots, e.created_at,
+                    eo.propagation_kind, eo.observer_avatar_id, eo.subject_avatar_id, eo.relation_type
+                FROM events e JOIN event_observations eo
+                    ON e.id = eo.event_id AND eo.observer_avatar_id = ?
+                WHERE {scope_sql}
+                ORDER BY e.month_stamp DESC, e.rowid DESC LIMIT ?
+            """
+            with self._db_lock:
+                rows = self._conn.execute(sql, (query.avatar_ids[0], query.limit)).fetchall()
+            events = self._build_events_from_rows(rows)
+            from src.classes.event_renderer import render_observed_event
+            for event, row in zip(events, rows):
+                event.content = render_observed_event(event, row)
+        return list(reversed(events)) if query.chronological else events
 
     def get_recent_events(self, limit: int = 100) -> list["Event"]:
         """获取最近的事件（供初始状态 API 使用）。"""

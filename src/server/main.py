@@ -116,7 +116,7 @@ from src.server.host_runtime import (
     patch_sys_streams,
     trigger_process_shutdown,
 )
-from src.server.app_factory import create_configured_app
+from src.server.app_factory import HostDependencies, create_configured_app
 from src.server.app_context import create_server_context
 from src.server.auto_save import trigger_auto_save as _trigger_auto_save
 from src.server.bootstrap import (
@@ -599,8 +599,7 @@ register_llm_failure_handler(handle_global_llm_failure)
 def get_runtime_mode_label() -> str:
     return "Frozen/Packaged" if getattr(sys, "frozen", False) else "Development"
 
-app, lifespan = create_configured_app(
-    context=server_context,
+host_dependencies = HostDependencies(
     endpoint_filter=EndpointFilter,
     apply_runtime_content_locale=apply_runtime_content_locale,
     language_manager=language_manager,
@@ -624,6 +623,7 @@ app, lifespan = create_configured_app(
     assets_path=ASSETS_PATH,
     web_dist_path=WEB_DIST_PATH,
 )
+app, lifespan = create_configured_app(context=server_context, host=host_dependencies)
 
 def start():
     """启动服务的入口函数"""

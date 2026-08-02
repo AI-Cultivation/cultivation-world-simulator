@@ -7,6 +7,7 @@ from __future__ import annotations
 
 from pathlib import Path
 from typing import Callable, List, Optional, TYPE_CHECKING
+from src.classes.event_query import EventAudience, EventMemoryScope, EventQuery, matches_memory_scope
 
 if TYPE_CHECKING:
     from src.classes.event import Event
@@ -149,90 +150,54 @@ class EventManager:
 
     def get_events_by_avatar(self, avatar_id: str, *, limit: int = 50) -> List["Event"]:
         """获取角色相关的事件（时间正序）。"""
-        if self._storage:
-            return self._storage.get_events_by_avatar(avatar_id, limit=limit)
-        else:
-            # 内存后备模式：简单过滤。
-            result = []
-            for e in reversed(self._memory_events):
-                if e.related_avatars and avatar_id in e.related_avatars:
-                    result.append(e)
-                    if len(result) >= limit:
-                        break
-            return list(reversed(result))
+        return self.query_events(EventQuery(avatar_ids=(str(avatar_id),), limit=limit, chronological=True))
 
     def get_events_between(self, avatar_id1: str, avatar_id2: str, *, limit: int = 50) -> List["Event"]:
         """获取两个角色之间的事件（时间正序）。"""
-        if self._storage:
-            return self._storage.get_events_between(avatar_id1, avatar_id2, limit=limit)
-        else:
-            # 内存后备模式：简单过滤。
-            result = []
-            for e in reversed(self._memory_events):
-                if e.related_avatars:
-                    if avatar_id1 in e.related_avatars and avatar_id2 in e.related_avatars:
-                        result.append(e)
-                        if len(result) >= limit:
-                            break
-            return list(reversed(result))
+        return self.query_events(EventQuery(avatar_ids=(str(avatar_id1), str(avatar_id2)), limit=limit, chronological=True))
 
     def get_major_events_by_avatar(self, avatar_id: str, *, limit: int = 10) -> List["Event"]:
         """获取角色的大事（长期记忆，时间正序）。"""
-        if self._storage:
-            return self._storage.get_major_events_by_avatar(avatar_id, limit=limit)
-        else:
-            result = []
-            for e in reversed(self._memory_events):
-                if e.is_major and not e.is_story:
-                    if self._is_observed_by(e, avatar_id):
-                        result.append(self._render_for_observer(e, avatar_id))
-                        if len(result) >= limit:
-                            break
-            return list(reversed(result))
+        return self.query_events(EventQuery(avatar_ids=(str(avatar_id),), audience=EventAudience.OBSERVED,
+                                            memory_scope=EventMemoryScope.MAJOR, limit=limit, chronological=True))
 
     def get_minor_events_by_avatar(self, avatar_id: str, *, limit: int = 10) -> List["Event"]:
         """获取角色的小事（短期记忆，时间正序）。"""
-        if self._storage:
-            return self._storage.get_minor_events_by_avatar(avatar_id, limit=limit)
-        else:
-            result = []
-            for e in reversed(self._memory_events):
-                if not e.is_major or e.is_story:
-                    if self._is_observed_by(e, avatar_id):
-                        result.append(self._render_for_observer(e, avatar_id))
-                        if len(result) >= limit:
-                            break
-            return list(reversed(result))
+        return self.query_events(EventQuery(avatar_ids=(str(avatar_id),), audience=EventAudience.OBSERVED,
+                                            memory_scope=EventMemoryScope.MINOR, limit=limit, chronological=True))
 
     def get_major_events_between(self, avatar_id1: str, avatar_id2: str, *, limit: int = 10) -> List["Event"]:
         """获取两个角色之间的大事（长期记忆，时间正序）。"""
-        if self._storage:
-            return self._storage.get_major_events_between(avatar_id1, avatar_id2, limit=limit)
-        else:
-            result = []
-            for e in reversed(self._memory_events):
-                if e.is_major and not e.is_story:
-                    if e.related_avatars:
-                        if avatar_id1 in e.related_avatars and avatar_id2 in e.related_avatars:
-                            result.append(e)
-                            if len(result) >= limit:
-                                break
-            return list(reversed(result))
+        return self.query_events(EventQuery(avatar_ids=(str(avatar_id1), str(avatar_id2)),
+                                            memory_scope=EventMemoryScope.MAJOR, limit=limit, chronological=True))
 
     def get_minor_events_between(self, avatar_id1: str, avatar_id2: str, *, limit: int = 10) -> List["Event"]:
         """获取两个角色之间的小事（短期记忆，时间正序）。"""
+        return self.query_events(EventQuery(avatar_ids=(str(avatar_id1), str(avatar_id2)),
+                                            memory_scope=EventMemoryScope.MINOR, limit=limit, chronological=True))
+
+    def query_events(self, query: EventQuery) -> List["Event"]:
+        """Execute the same semantic query contract in either storage backend."""
         if self._storage:
-            return self._storage.get_minor_events_between(avatar_id1, avatar_id2, limit=limit)
-        else:
-            result = []
-            for e in reversed(self._memory_events):
-                if not e.is_major or e.is_story:
-                    if e.related_avatars:
-                        if avatar_id1 in e.related_avatars and avatar_id2 in e.related_avatars:
-                            result.append(e)
-                            if len(result) >= limit:
-                                break
-            return list(reversed(result))
+            return self._storage.query_events(query)
+
+        if query.audience is EventAudience.OBSERVED and len(query.avatar_ids) != 1:
+            raise ValueError("Observed event queries require exactly one avatar")
+        result: list["Event"] = []
+        for event in reversed(self._memory_events):
+            related = {str(item) for item in (event.related_avatars or [])}
+            if query.audience is EventAudience.OBSERVED:
+                matched = self._is_observed_by(event, query.avatar_ids[0])
+            else:
+                matched = all(avatar_id in related for avatar_id in query.avatar_ids)
+            if not matched or not matches_memory_scope(event, query.memory_scope):
+                continue
+            if query.sect_id is not None and query.sect_id not in (getattr(event, "related_sects", None) or []):
+                continue
+            result.append(self._render_for_observer(event, query.avatar_ids[0]) if query.audience is EventAudience.OBSERVED else event)
+            if len(result) >= query.limit:
+                break
+        return list(reversed(result)) if query.chronological else result
 
     # --- 分页查询接口（新增）---
 

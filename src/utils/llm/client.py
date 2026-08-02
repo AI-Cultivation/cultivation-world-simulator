@@ -15,7 +15,7 @@ from src.utils.config import CONFIG
 from .config import LLMMode, LLMConfig, get_task_mode
 from .parser import parse_json
 from .prompt import build_prompt, load_template
-from .exceptions import LLMError, ParseError
+from .exceptions import LLMError, ParseError, ProviderCallError, ProviderFailureKind
 from .runtime_mode import is_test_mode_enabled
 from .test_mode_fallbacks import TestModeLLMUnavailable, resolve_test_mode_task
 
@@ -176,7 +176,26 @@ def _build_quota_message(
     )
 
 
-def classify_llm_error(error_raw: str, *, base_url: str = "") -> LLMFailureInfo:
+def classify_llm_error(error_raw: str | ProviderCallError, *, base_url: str = "") -> LLMFailureInfo:
+    if isinstance(error_raw, ProviderCallError):
+        if error_raw.kind is ProviderFailureKind.NETWORK:
+            return LLMFailureInfo(
+                kind=LLMFailureKind.TEMPORARY_NETWORK,
+                user_message=f"网络连接失败，请检查 Base URL 是否可达或本地代理设置。(底层错误: {error_raw.message})",
+                provider_message=error_raw.message,
+            )
+        if error_raw.kind is ProviderFailureKind.HTTP:
+            return _classify_http_error(
+                str(error_raw.status_code or ""),
+                error_raw.response_body,
+                base_url=base_url,
+            )
+        return LLMFailureInfo(
+            kind=LLMFailureKind.UNKNOWN,
+            user_message=f"未知错误: {error_raw.message}",
+            provider_message=error_raw.message,
+        )
+
     if error_raw.startswith("NETWORK_ERROR::"):
         reason = error_raw.split("::", 1)[1]
         return LLMFailureInfo(
@@ -189,69 +208,73 @@ def classify_llm_error(error_raw: str, *, base_url: str = "") -> LLMFailureInfo:
         parts = error_raw.split("::", 1)
         code_str = parts[0].replace("HTTP_", "")
         body_str = parts[1] if len(parts) > 1 else ""
-        provider_msg = _extract_provider_message(body_str)
-        try:
-            http_status = int(code_str)
-        except ValueError:
-            http_status = None
+        return _classify_http_error(code_str, body_str, base_url=base_url)
 
-        if _has_billing_or_quota_signal(body_str, provider_msg, http_status):
-            return LLMFailureInfo(
-                kind=LLMFailureKind.RATE_LIMITED,
-                http_status=http_status,
-                provider_message=provider_msg,
-                user_message=_build_quota_message(
-                    code_str=code_str,
-                    provider_msg=provider_msg,
-                    base_url=base_url,
-                ),
-            )
-        if code_str == "401":
+    return LLMFailureInfo(
+        kind=LLMFailureKind.UNKNOWN,
+        user_message=f"未知错误: {error_raw}",
+        provider_message=error_raw,
+    )
+
+
+def _classify_http_error(code_str: str, body_str: str, *, base_url: str) -> LLMFailureInfo:
+    provider_msg = _extract_provider_message(body_str)
+    try:
+        http_status = int(code_str)
+    except ValueError:
+        http_status = None
+
+    if _has_billing_or_quota_signal(body_str, provider_msg, http_status):
+        return LLMFailureInfo(
+            kind=LLMFailureKind.RATE_LIMITED,
+            http_status=http_status,
+            provider_message=provider_msg,
+            user_message=_build_quota_message(
+                code_str=code_str,
+                provider_msg=provider_msg,
+                base_url=base_url,
+            ),
+        )
+    if code_str == "401":
             return LLMFailureInfo(
                 kind=LLMFailureKind.CONFIG_REQUIRED,
                 http_status=http_status,
                 provider_message=provider_msg,
                 user_message=f"身份验证失败(401)，请检查 API Key 是否填写正确。服务商返回: {provider_msg}",
             )
-        if code_str == "403":
+    if code_str == "403":
             return LLMFailureInfo(
                 kind=LLMFailureKind.CONFIG_REQUIRED,
                 http_status=http_status,
                 provider_message=provider_msg,
                 user_message=f"访问被拒绝(403)，可能是模型未授权或 IP 受限。服务商返回: {provider_msg}",
             )
-        if code_str == "404":
+    if code_str == "404":
             return LLMFailureInfo(
                 kind=LLMFailureKind.CONFIG_REQUIRED,
                 http_status=http_status,
                 provider_message=provider_msg,
                 user_message=f"找不到服务(404)，请检查 Base URL 是否正确(通常需要以 /v1 结尾)，或模型名是否存在。服务商返回: {provider_msg}",
             )
-        if code_str == "429":
+    if code_str == "429":
             return LLMFailureInfo(
                 kind=LLMFailureKind.RATE_LIMITED,
                 http_status=http_status,
                 provider_message=provider_msg,
                 user_message=f"额度超限或请求频繁(429)，请检查账号余额。服务商返回: {provider_msg}",
             )
-        if code_str.startswith("5"):
+    if code_str.startswith("5"):
             return LLMFailureInfo(
                 kind=LLMFailureKind.PROVIDER_UNAVAILABLE,
                 http_status=http_status,
                 provider_message=provider_msg,
                 user_message=f"服务商内部异常({code_str})，请稍后重试。服务商返回: {provider_msg}",
             )
-        return LLMFailureInfo(
-            kind=LLMFailureKind.UNKNOWN,
-            http_status=http_status,
-            provider_message=provider_msg,
-            user_message=f"请求失败({code_str})。服务商返回: {provider_msg}",
-        )
-
     return LLMFailureInfo(
         kind=LLMFailureKind.UNKNOWN,
-        user_message=f"未知错误: {error_raw}",
-        provider_message=error_raw,
+        http_status=http_status,
+        provider_message=provider_msg,
+        user_message=f"请求失败({code_str})。服务商返回: {provider_msg}",
     )
 
 
@@ -304,14 +327,21 @@ def _call_openai(config: LLMConfig, prompt: str) -> str:
             return result["choices"][0]["message"]["content"]
     except urllib.error.HTTPError as e:
         error_body = e.read().decode("utf-8")
-        raise Exception(f"HTTP_{e.code}::{error_body}")
+        raise ProviderCallError(
+            ProviderFailureKind.HTTP,
+            f"HTTP {e.code}: {_extract_provider_message(error_body)}",
+            status_code=e.code,
+            response_body=error_body,
+            provider_message=_extract_provider_message(error_body),
+            cause=e,
+        ) from e
     except (urllib.error.URLError, TimeoutError, ConnectionError) as e:
         reason = getattr(e, "reason", str(e))
-        raise Exception(f"NETWORK_ERROR::{reason}")
+        raise ProviderCallError(ProviderFailureKind.NETWORK, str(reason), cause=e) from e
     except Exception as e:
-        if str(e).startswith(("HTTP_", "NETWORK_ERROR::")):
+        if isinstance(e, ProviderCallError):
             raise
-        raise Exception(f"UNKNOWN_ERROR::{str(e)}")
+        raise ProviderCallError(ProviderFailureKind.UNKNOWN, str(e), cause=e) from e
 
 
 def _call_anthropic(config: LLMConfig, prompt: str) -> str:
@@ -356,14 +386,21 @@ def _call_anthropic(config: LLMConfig, prompt: str) -> str:
         raise Exception("UNKNOWN_ERROR::Anthropic 响应中未找到 text 内容")
     except urllib.error.HTTPError as e:
         error_body = e.read().decode("utf-8")
-        raise Exception(f"HTTP_{e.code}::{error_body}")
+        raise ProviderCallError(
+            ProviderFailureKind.HTTP,
+            f"HTTP {e.code}: {_extract_provider_message(error_body)}",
+            status_code=e.code,
+            response_body=error_body,
+            provider_message=_extract_provider_message(error_body),
+            cause=e,
+        ) from e
     except (urllib.error.URLError, TimeoutError, ConnectionError) as e:
         reason = getattr(e, "reason", str(e))
-        raise Exception(f"NETWORK_ERROR::{reason}")
+        raise ProviderCallError(ProviderFailureKind.NETWORK, str(reason), cause=e) from e
     except Exception as e:
-        if str(e).startswith(("HTTP_", "NETWORK_ERROR::", "UNKNOWN_ERROR::")):
+        if isinstance(e, ProviderCallError):
             raise
-        raise Exception(f"UNKNOWN_ERROR::{str(e)}")
+        raise ProviderCallError(ProviderFailureKind.UNKNOWN, str(e), cause=e) from e
 
 
 def _call_with_requests(config: LLMConfig, prompt: str) -> str:
@@ -388,7 +425,7 @@ async def call_llm(prompt: str, mode: LLMMode = LLMMode.NORMAL) -> str:
         async with semaphore:
             result = await asyncio.to_thread(_call_with_requests, config, prompt)
     except Exception as exc:
-        failure = classify_llm_error(str(exc), base_url=config.base_url)
+        failure = classify_llm_error(exc if isinstance(exc, ProviderCallError) else str(exc), base_url=config.base_url)
         if failure.is_config_required:
             await _notify_config_required(failure.user_message)
         raise
@@ -477,7 +514,7 @@ def test_connectivity(mode: LLMMode = LLMMode.NORMAL, config: Optional[LLMConfig
         _call_with_requests(config, "Hello, this is a connectivity test. Please reply 'OK'.")
         return True, ""
     except Exception as e:
-        error_raw = str(e)
-        print(f"Connectivity test failed: {error_raw}")
-        
-        return False, classify_llm_error(error_raw, base_url=config.base_url).user_message
+        return False, classify_llm_error(
+            e if isinstance(e, ProviderCallError) else str(e),
+            base_url=config.base_url,
+        ).user_message
