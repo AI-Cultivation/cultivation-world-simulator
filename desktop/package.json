@@ -7,7 +7,8 @@
   "type": "module",
   "main": "build/main.js",
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "clean": "node scripts/clean-build.cjs",
+    "build": "npm run clean && tsc -p tsconfig.json",
     "test": "npm run build && node --test \"build/**/*.test.js\"",
     "dist:desktop": "npm run build && electron-builder --config electron-builder.config.cjs --win dir"
   },
