@@ -52,6 +52,7 @@ module.exports = {
     'package.json',
   ],
   asar: true,
+  electronLanguages: ['zh-CN', 'zh-TW', 'en-US', 'ja', 'fr', 'vi'],
   extraResources,
   win: {
     signAndEditExecutable: false,

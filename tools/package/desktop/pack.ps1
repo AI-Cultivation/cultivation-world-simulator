@@ -194,12 +194,22 @@ $DistRoot = Join-Path $RepoRoot ("tmp\" + $tag + "_desktop")
 $BackendDistRoot = Join-Path $DistRoot "backend_dist"
 $BackendBuildDir = Join-Path $RepoRoot ("tmp\build\" + $tag + "_desktop_backend")
 $BackendSpecDir = Join-Path $RepoRoot ("tmp\spec\" + $tag + "_desktop_backend")
+$ReleaseResourcesDir = Join-Path $RepoRoot ("tmp\build\" + $tag + "_release_resources")
+$ReleaseResourcesReport = Join-Path $DistRoot "release-resource-report.json"
+$ReleaseResourcesScript = Join-Path $PackageDir "release_resources.py"
+$PackageSizeReportScript = Join-Path $PackageDir "package_size_report.py"
 $SeedFile = Join-Path $DistRoot "desktop-seed.json"
 $DistributionManifestFile = Join-Path $DistRoot "desktop-distribution.json"
 $EosRuntimeFile = Join-Path $DistRoot "eos-runtime.json"
 $ContentRootFile = Join-Path $RepoRoot "tmp\desktop_content_root.txt"
 
 New-Item -ItemType Directory -Force -Path $DistRoot, $BackendDistRoot, $BackendBuildDir, $BackendSpecDir | Out-Null
+
+Write-Host "Preparing shared release resources..." -ForegroundColor Cyan
+& python $ReleaseResourcesScript --project-root $RepoRoot --output $ReleaseResourcesDir --report $ReleaseResourcesReport --markdown-report (Join-Path $DistRoot "release-resource-report.md")
+if ($LASTEXITCODE -ne 0) {
+    throw "Release resource staging failed."
+}
 
 Write-Host ">>> Desktop Electron package tag: $tag" -ForegroundColor Cyan
 Write-Host ">>> Build desc: $BuildDesc" -ForegroundColor Cyan
@@ -273,20 +283,22 @@ try {
         Write-Host "Installing web npm dependencies..."
         cmd /c "npm install"
     }
-    Write-Host "Building web frontend..."
+    $env:CWS_RELEASE_PUBLIC_DIR = Join-Path $ReleaseResourcesDir "public"
+    Write-Host "Building web frontend from shared release resources..."
     cmd /c "npm run build"
     if ($LASTEXITCODE -ne 0) {
         throw "Web build failed."
     }
 }
 finally {
+    Remove-Item Env:CWS_RELEASE_PUBLIC_DIR -ErrorAction SilentlyContinue
     Pop-Location
 }
 
 # --- Backend PyInstaller Build ---
 $EntryPy = Join-Path $RepoRoot "src\server\main.py"
 $AppName = "AICultivationSimulator_Backend"
-$AssetsPath = Join-Path $RepoRoot "assets"
+$AssetsPath = Join-Path $ReleaseResourcesDir "assets"
 $StaticPath = Join-Path $RepoRoot "static"
 $IconPath = Join-Path $AssetsPath "icon.ico"
 $RuntimeHookPath = Join-Path $PackageDir "runtime_hook_setcwd.py"
@@ -361,9 +373,6 @@ if (-not (Test-Path $BackendExeDir)) {
     throw "Backend build finished but executable directory was not found: $BackendExeDir"
 }
 
-if (Test-Path $StaticPath) {
-    Copy-Item -Path $StaticPath -Destination $BackendExeDir -Recurse -Force
-}
 if (Test-Path $WebDistDir) {
     $DestWeb = Join-Path $BackendExeDir "web_static"
     if (Test-Path $DestWeb) {
@@ -431,6 +440,10 @@ $SourceMaps = Get-ChildItem -Path $FinalContentRoot -Include "*.map" -Recurse -F
 if ($SourceMaps) {
     $List = ($SourceMaps | ForEach-Object { $_.FullName }) -join "`n"
     throw "Source maps remain in desktop Electron package:`n$List"
+}
+& python $PackageSizeReportScript --root $FinalContentRoot --output (Join-Path $DistRoot "package-size-report.json") --markdown-output (Join-Path $DistRoot "package-size-report.md")
+if ($LASTEXITCODE -ne 0) {
+    throw "Package size report generation failed."
 }
 
 $ResolvedContentRoot = (Resolve-Path $FinalContentRoot).Path

@@ -25,8 +25,18 @@ if (-not $tag) {
 $DistDir = Join-Path $RepoRoot ("tmp\" + $tag + "_github")
 $BuildDir = Join-Path $RepoRoot ("tmp\build\" + $tag + "_github")
 $SpecDir = Join-Path $RepoRoot ("tmp\spec\" + $tag + "_github")
+$ReleaseResourcesDir = Join-Path $RepoRoot ("tmp\build\" + $tag + "_release_resources")
+$ReleaseResourcesReport = Join-Path $DistDir "release-resource-report.json"
+$ReleaseResourcesScript = Join-Path $ScriptDir "release_resources.py"
+$PackageSizeReportScript = Join-Path $ScriptDir "package_size_report.py"
 $GitHubBuildMarker = Join-Path $RepoRoot "tmp\github_build_dir.txt"
 New-Item -ItemType Directory -Force -Path $DistDir, $BuildDir, $SpecDir | Out-Null
+
+Write-Host "Preparing shared release resources..." -ForegroundColor Cyan
+& python $ReleaseResourcesScript --project-root $RepoRoot --output $ReleaseResourcesDir --report $ReleaseResourcesReport --markdown-report (Join-Path $DistDir "release-resource-report.md")
+if ($LASTEXITCODE -ne 0) {
+    throw "Release resource staging failed."
+}
 
 # --- Web Frontend Build ---
 $WebDir = Join-Path $RepoRoot "web"
@@ -41,7 +51,8 @@ if (Test-Path $WebDir) {
             # Use cmd /c to ensure npm is found on Windows
             cmd /c "npm install"
         }
-        Write-Host "Building web frontend..."
+        $env:CWS_RELEASE_PUBLIC_DIR = Join-Path $ReleaseResourcesDir "public"
+        Write-Host "Building web frontend from shared release resources..."
         cmd /c "npm run build"
         
         if ($LASTEXITCODE -ne 0) {
@@ -52,6 +63,7 @@ if (Test-Path $WebDir) {
         Write-Error "Web build process failed: $_"
         exit 1
     } finally {
+        Remove-Item Env:CWS_RELEASE_PUBLIC_DIR -ErrorAction SilentlyContinue
         Pop-Location
     }
 } else {
@@ -69,7 +81,7 @@ if (-not (Test-Path $EntryPy)) {
 }
 
 # Assets and static paths
-$AssetsPath = Join-Path $RepoRoot "assets"
+$AssetsPath = Join-Path $ReleaseResourcesDir "assets"
 $StaticPath = Join-Path $RepoRoot "static"
 
 # Icon path
@@ -176,25 +188,6 @@ try {
         $ExeDir = Join-Path $DistDir $AppName
         
         if (Test-Path $ExeDir) {        
-            if (Test-Path $StaticPath) {
-                Copy-Item -Path $StaticPath -Destination $ExeDir -Recurse -Force
-                $SensitiveConfigNames = @("local_config.yml", "settings.json", "secrets.json")
-                $RemovedSensitiveConfigs = $false
-                foreach ($SensitiveName in $SensitiveConfigNames) {
-                    $MatchedFiles = Get-ChildItem -Path $ExeDir -Include $SensitiveName -Recurse -Force -ErrorAction SilentlyContinue
-                    foreach ($MatchedFile in $MatchedFiles) {
-                        Remove-Item -Path $MatchedFile.FullName -Force
-                        $RemovedSensitiveConfigs = $true
-                    }
-                }
-                if ($RemovedSensitiveConfigs) {
-                    Write-Host "✓ Copied static to exe directory (excluded sensitive config files)" -ForegroundColor Green
-                }
-                else {
-                    Write-Host "✓ Copied static to exe directory" -ForegroundColor Green
-                }
-            }
-    
             if (Test-Path $WebDistDir) {
                  $DestWeb = Join-Path $ExeDir "web_static"
                  Copy-Item -Path $WebDistDir -Destination $DestWeb -Recurse -Force
@@ -203,6 +196,10 @@ try {
 
             Assert-NoSensitiveConfigs -RootPath $ExeDir
             Write-Host "✓ Verified package contains no sensitive config files" -ForegroundColor Green
+            & python $PackageSizeReportScript --root $ExeDir --output (Join-Path $DistDir "package-size-report.json") --markdown-output (Join-Path $DistDir "package-size-report.md")
+            if ($LASTEXITCODE -ne 0) {
+                throw "Package size report generation failed."
+            }
             
             $BuildDirRoot = Join-Path $RepoRoot "tmp\build"
             if (Test-Path $BuildDirRoot) {

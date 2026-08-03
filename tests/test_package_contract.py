@@ -43,6 +43,10 @@ def test_desktop_packaging_contract():
     assert "CWS_DEFAULT_LLM_API_KEY" in content
     assert "desktop_seed.env" in content
     assert "AICultivationSimulator_Backend" in content
+    assert "release_resources.py" in content
+    assert "release-resource-report.json" in content
+    assert "package_size_report.py" in content
+    assert 'Copy-Item -Path $StaticPath -Destination $BackendExeDir' not in content
     assert "Publish Steam: powershell ./tools/package/publish_steam.ps1 -NoBuild" in content
     assert "Prepare Epic:  powershell ./tools/package/publish_epic.ps1 -NoBuild" in content
     assert 'Remove-Item -Path $DestWeb -Recurse -Force' in content
@@ -63,6 +67,28 @@ def test_desktop_sandboxed_preload_is_commonjs():
     assert (project_root / "desktop" / "src" / "preload.cts").exists()
     assert not (project_root / "desktop" / "src" / "preload.ts").exists()
     assert '"clean": "node scripts/clean-build.cjs"' in package
+
+
+def test_release_resource_manifest_excludes_non_runtime_assets():
+    project_root = get_project_root()
+    manifest = (project_root / "tools" / "package" / "release_resources.json").read_text(encoding="utf-8")
+
+    assert '"saves"' in manifest
+    assert '"screenshot.gif"' in manifest
+    assert '"screenshot.png"' in manifest
+    assert '"avatars": 384' in manifest
+    assert '"yao": 384' in manifest
+    assert (project_root / "tools" / "package" / "release_resources.py").exists()
+    assert (project_root / "tools" / "package" / "package_size_report.py").exists()
+
+
+def test_electron_builder_limits_locales_to_enabled_product_languages():
+    project_root = get_project_root()
+    config = (project_root / "desktop" / "electron-builder.config.cjs").read_text(encoding="utf-8")
+
+    assert "electronLanguages" in config
+    for locale in ("zh-CN", "zh-TW", "en-US", "ja", "fr", "vi"):
+        assert f"'{locale}'" in config
 
 
 def test_steam_frontend_build_avoids_fragile_vendor_chunks():

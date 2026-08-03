@@ -8,8 +8,10 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd())
   const API_TARGET = env.VITE_API_TARGET || 'http://localhost:8002'
   const WS_TARGET = env.VITE_WS_TARGET || 'ws://localhost:8002'
+  const releasePublicDir = process.env.CWS_RELEASE_PUBLIC_DIR
 
   return {
+    publicDir: releasePublicDir ? path.resolve(releasePublicDir) : 'public',
     plugins: [
       vue({
         template: {

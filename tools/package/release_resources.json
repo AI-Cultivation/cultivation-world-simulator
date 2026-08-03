@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "assets": {
+    "source": "assets",
+    "exclude": [
+      "saves",
+      "screenshot.gif",
+      "screenshot.png"
+    ],
+    "resize": {
+      "avatars": 384,
+      "yao": 384
+    }
+  },
+  "public": {
+    "source": "web/public",
+    "exclude": []
+  }
+}

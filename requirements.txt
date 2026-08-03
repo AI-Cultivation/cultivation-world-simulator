@@ -6,3 +6,4 @@ pytest-asyncio>=0.23.0  # Required for async tests
 pytest-cov>=4.1.0       # Required for coverage reporting
 httpx>=0.27.0           # Required for FastAPI TestClient
 polib>=1.2.0            # Required for i18n tests
+Pillow>=11.0.0          # Required for release-resource PNG optimization
