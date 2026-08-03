@@ -54,6 +54,15 @@ def test_desktop_packaging_contract():
     assert "-Distribution" in wrapper_content
 
 
+def test_desktop_sandboxed_preload_is_commonjs():
+    project_root = get_project_root()
+    main = (project_root / "desktop" / "src" / "main.ts").read_text(encoding="utf-8")
+
+    assert "'preload.cjs'" in main
+    assert (project_root / "desktop" / "src" / "preload.cts").exists()
+    assert not (project_root / "desktop" / "src" / "preload.ts").exists()
+
+
 def test_steam_frontend_build_avoids_fragile_vendor_chunks():
     project_root = get_project_root()
     config = project_root / "web" / "vite.config.ts"

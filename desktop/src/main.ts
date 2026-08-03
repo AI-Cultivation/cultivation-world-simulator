@@ -23,7 +23,9 @@ function createWindow(targetUrl: string): BrowserWindow {
     show: false,
     backgroundColor: '#050608',
     webPreferences: {
-      preload: path.join(app.getAppPath(), 'build', 'preload.js'),
+      // Sandboxed Electron preloads are executed as CommonJS, even though the
+      // application main process uses ESM. `preload.cts` emits this `.cjs` file.
+      preload: path.join(app.getAppPath(), 'build', 'preload.cjs'),
       nodeIntegration: false,
       contextIsolation: true,
       sandbox: true,
