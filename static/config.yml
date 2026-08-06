@@ -1,5 +1,5 @@
 meta:
-  version: "4.0.3"
+  version: "4.1.0"
 
 resources:
   locales_dir: static/locales/
