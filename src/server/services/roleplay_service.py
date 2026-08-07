@@ -27,7 +27,6 @@ from src.server.services.roleplay_state_machine import (
     set_submitting,
     set_waiting_decision as _set_waiting_decision,
 )
-from src.utils.config import CONFIG
 from src.utils.llm import call_llm_with_task_name
 
 
@@ -291,7 +290,7 @@ def maybe_request_roleplay_decision(world) -> bool:
     return gateway.before_ai_decision(world) == DecisionBoundaryResult.WAITING_FOR_PLAYER
 
 
-async def submit_roleplay_decision(runtime, *, avatar_id: str, request_id: str, command_text: str) -> dict[str, Any]:
+def _prepare_roleplay_decision(runtime, *, avatar_id: str, request_id: str, command_text: str) -> dict[str, Any]:
     from src.classes.actions import get_action_infos_str
     from src.classes.core.avatar.info_presenter import get_avatar_ai_context
 
@@ -330,9 +329,27 @@ async def submit_roleplay_decision(runtime, *, avatar_id: str, request_id: str, 
         "general_action_infos": get_action_infos_str(avatar),
         "player_command": command_text,
     }
-    template_path = CONFIG.paths.templates / "ai.txt"
-    response = await call_llm_with_task_name("action_decision", template_path, info)
-    payload = response.get(avatar.name, {}) if isinstance(response, dict) else {}
+    return {
+        "avatar_id": str(avatar.id),
+        "avatar_name": avatar.name,
+        "request_id": request_id,
+        "command_text": command_text,
+        "info": info,
+    }
+
+
+def _commit_roleplay_decision(runtime, *, prepared: dict[str, Any], response: Any) -> dict[str, Any]:
+    world = _require_world(runtime)
+    avatar = _find_avatar_or_raise(world, prepared["avatar_id"])
+    session = runtime.get_roleplay_session()
+    pending = session.get("pending_request") or {}
+    require_controlled_avatar(session, prepared["avatar_id"])
+    require_status(session, RoleplayStatus.SUBMITTING, "The roleplay request is no longer being submitted")
+    require_pending_request(pending, prepared["request_id"], "Roleplay request does not exist or has expired")
+
+    command_text = prepared["command_text"]
+    avatar_name = prepared["avatar_name"]
+    payload = response.get(avatar_name, {}) if isinstance(response, dict) else {}
     raw_pairs = payload.get("action_name_params_pairs", [])
     pairs = []
     for item in raw_pairs:
@@ -384,6 +401,46 @@ async def submit_roleplay_decision(runtime, *, avatar_id: str, request_id: str, 
     }
 
 
+def _restore_roleplay_decision_wait(runtime, *, avatar_id: str, request_id: str) -> None:
+    session = runtime.get_roleplay_session()
+    pending = session.get("pending_request") or {}
+    if (
+        str(session.get("controlled_avatar_id") or "") == str(avatar_id)
+        and str(session.get("status") or "") == RoleplayStatus.SUBMITTING.value
+        and str(pending.get("request_id") or "") == str(request_id)
+    ):
+        session["status"] = RoleplayStatus.AWAITING_DECISION.value
+        runtime.set_roleplay_auto_paused(True)
+
+
+async def submit_roleplay_decision(runtime, *, avatar_id: str, request_id: str, command_text: str) -> dict[str, Any]:
+    """Submit a decision without holding the mutation lock during LLM I/O."""
+    prepared = await runtime.run_mutation(
+        _prepare_roleplay_decision,
+        runtime,
+        avatar_id=avatar_id,
+        request_id=request_id,
+        command_text=command_text,
+    )
+    try:
+        from src.utils.config import CONFIG as current_config
+
+        response = await call_llm_with_task_name(
+            "action_decision",
+            current_config.paths.templates / "ai.txt",
+            prepared["info"],
+        )
+    except Exception:
+        await runtime.run_mutation(
+            _restore_roleplay_decision_wait,
+            runtime,
+            avatar_id=avatar_id,
+            request_id=request_id,
+        )
+        raise
+    return await runtime.run_mutation(_commit_roleplay_decision, runtime, prepared=prepared, response=response)
+
+
 async def submit_roleplay_choice(runtime, *, avatar_id: str, request_id: str, selected_key: str) -> dict[str, Any]:
     world = _require_world(runtime)
     _find_avatar_or_raise(world, avatar_id)
@@ -416,7 +473,7 @@ async def submit_roleplay_choice(runtime, *, avatar_id: str, request_id: str, se
     }
 
 
-async def submit_roleplay_conversation_turn(runtime, *, avatar_id: str, request_id: str, message: str) -> dict[str, Any]:
+def _prepare_roleplay_conversation_turn(runtime, *, avatar_id: str, request_id: str, message: str) -> dict[str, Any]:
     world = _require_world(runtime)
     avatar = _find_avatar_or_raise(world, avatar_id)
     session = runtime.get_roleplay_session()
@@ -452,11 +509,30 @@ async def submit_roleplay_conversation_turn(runtime, *, avatar_id: str, request_
         },
     )
 
-    reply_payload = await _generate_roleplay_conversation_reply(
-        avatar=avatar,
-        target_avatar=target_avatar,
-        messages=messages,
-    )
+    return {
+        "avatar_id": str(avatar.id),
+        "target_avatar_id": str(target_avatar.id),
+        "request_id": request_id,
+        "messages": messages,
+        "player_message": player_message,
+    }
+
+
+def _commit_roleplay_conversation_turn(runtime, *, prepared: dict[str, Any], reply_payload: dict[str, str]) -> dict[str, Any]:
+    world = _require_world(runtime)
+    avatar = _find_avatar_or_raise(world, prepared["avatar_id"])
+    target_avatar = _find_avatar_or_raise(world, prepared["target_avatar_id"])
+    session = runtime.get_roleplay_session()
+    pending = session.get("pending_request") or {}
+    conversation_session = session.get("conversation_session") or {}
+    require_controlled_avatar(session, prepared["avatar_id"])
+    require_status(session, RoleplayStatus.SUBMITTING, "The roleplay request is no longer being submitted")
+    require_pending_request(pending, prepared["request_id"], "Roleplay conversation request does not exist or has expired")
+    if str(conversation_session.get("request_id") or "") != str(prepared["request_id"]):
+        raise HTTPException(status_code=404, detail=t("Roleplay conversation session does not exist or has expired"))
+
+    messages = list(prepared["messages"])
+    player_message = prepared["player_message"]
     reply_text = str(reply_payload.get("reply_content", "") or "").strip()
     ai_thinking = str(reply_payload.get("speaker_thinking", "") or "").strip()
     reply_message = {
@@ -498,7 +574,50 @@ async def submit_roleplay_conversation_turn(runtime, *, avatar_id: str, request_
     }
 
 
-async def end_roleplay_conversation(runtime, *, avatar_id: str, request_id: str) -> dict[str, Any]:
+def _restore_roleplay_conversation_wait(runtime, *, avatar_id: str, request_id: str) -> None:
+    session = runtime.get_roleplay_session()
+    pending = session.get("pending_request") or {}
+    if (
+        str(session.get("controlled_avatar_id") or "") == str(avatar_id)
+        and str(session.get("status") or "") == RoleplayStatus.SUBMITTING.value
+        and str(pending.get("request_id") or "") == str(request_id)
+    ):
+        session["status"] = RoleplayStatus.CONVERSING.value
+        runtime.set_roleplay_auto_paused(True)
+
+
+async def submit_roleplay_conversation_turn(runtime, *, avatar_id: str, request_id: str, message: str) -> dict[str, Any]:
+    """Send one turn while allowing unrelated world mutations during LLM I/O."""
+    prepared = await runtime.run_mutation(
+        _prepare_roleplay_conversation_turn,
+        runtime,
+        avatar_id=avatar_id,
+        request_id=request_id,
+        message=message,
+    )
+    try:
+        reply_payload = await _generate_roleplay_conversation_reply(
+            avatar=_find_avatar_or_raise(_require_world(runtime), prepared["avatar_id"]),
+            target_avatar=_find_avatar_or_raise(_require_world(runtime), prepared["target_avatar_id"]),
+            messages=prepared["messages"],
+        )
+    except Exception:
+        await runtime.run_mutation(
+            _restore_roleplay_conversation_wait,
+            runtime,
+            avatar_id=avatar_id,
+            request_id=request_id,
+        )
+        raise
+    return await runtime.run_mutation(
+        _commit_roleplay_conversation_turn,
+        runtime,
+        prepared=prepared,
+        reply_payload=reply_payload,
+    )
+
+
+def _prepare_end_roleplay_conversation(runtime, *, avatar_id: str, request_id: str) -> dict[str, Any]:
     world = _require_world(runtime)
     avatar = _find_avatar_or_raise(world, avatar_id)
     session = runtime.get_roleplay_session()
@@ -513,11 +632,28 @@ async def end_roleplay_conversation(runtime, *, avatar_id: str, request_id: str)
 
     target_avatar = _find_avatar_or_raise(world, str(conversation_session.get("target_avatar_id") or ""))
     messages = list(conversation_session.get("messages") or [])
-    summary_payload = await _summarize_roleplay_conversation(
-        avatar=avatar,
-        target_avatar=target_avatar,
-        messages=messages,
-    )
+    set_submitting(session)
+    return {
+        "avatar_id": str(avatar.id),
+        "target_avatar_id": str(target_avatar.id),
+        "request_id": request_id,
+        "messages": messages,
+    }
+
+
+def _commit_end_roleplay_conversation(runtime, *, prepared: dict[str, Any], summary_payload: dict[str, str]) -> dict[str, Any]:
+    world = _require_world(runtime)
+    avatar = _find_avatar_or_raise(world, prepared["avatar_id"])
+    target_avatar = _find_avatar_or_raise(world, prepared["target_avatar_id"])
+    session = runtime.get_roleplay_session()
+    pending = session.get("pending_request") or {}
+    conversation_session = session.get("conversation_session") or {}
+    require_controlled_avatar(session, prepared["avatar_id"])
+    require_status(session, RoleplayStatus.SUBMITTING, "The roleplay request is no longer being submitted")
+    require_pending_request(pending, prepared["request_id"], "Roleplay conversation request does not exist or has expired")
+    if str(conversation_session.get("request_id") or "") != str(prepared["request_id"]):
+        raise HTTPException(status_code=404, detail=t("Roleplay conversation session does not exist or has expired"))
+
     summary_text = str(summary_payload.get("summary", "") or "").strip()
     _append_interaction_history(
         runtime,
@@ -545,3 +681,32 @@ async def end_roleplay_conversation(runtime, *, avatar_id: str, request_id: str)
         "relation_hint": str(summary_payload.get("relation_hint", "") or ""),
         "story_hint": str(summary_payload.get("story_hint", "") or ""),
     }
+
+
+async def end_roleplay_conversation(runtime, *, avatar_id: str, request_id: str) -> dict[str, Any]:
+    prepared = await runtime.run_mutation(
+        _prepare_end_roleplay_conversation,
+        runtime,
+        avatar_id=avatar_id,
+        request_id=request_id,
+    )
+    try:
+        summary_payload = await _summarize_roleplay_conversation(
+            avatar=_find_avatar_or_raise(_require_world(runtime), prepared["avatar_id"]),
+            target_avatar=_find_avatar_or_raise(_require_world(runtime), prepared["target_avatar_id"]),
+            messages=prepared["messages"],
+        )
+    except Exception:
+        await runtime.run_mutation(
+            _restore_roleplay_conversation_wait,
+            runtime,
+            avatar_id=avatar_id,
+            request_id=request_id,
+        )
+        raise
+    return await runtime.run_mutation(
+        _commit_end_roleplay_conversation,
+        runtime,
+        prepared=prepared,
+        summary_payload=summary_payload,
+    )

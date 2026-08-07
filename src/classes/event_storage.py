@@ -16,6 +16,14 @@ from datetime import datetime, timezone
 from src.run.log import get_logger
 from src.classes.event_query import EventAudience, EventMemoryScope, EventQuery
 
+
+class EventStorageError(RuntimeError):
+    """A persistent event-store operation failed.
+
+    An empty result means that no event matched a query; it must never hide a
+    SQLite failure.  Callers can now distinguish these two cases reliably.
+    """
+
 if TYPE_CHECKING:
     from src.classes.event import Event
     from src.classes.event_observation import EventObservation
@@ -541,7 +549,7 @@ class EventStorage:
                 base_query,
                 params,
             )
-            return [], None
+            raise EventStorageError("Failed to query events") from e
 
     def get_events_by_avatar(self, avatar_id: str, limit: int = 50) -> list["Event"]:
         """

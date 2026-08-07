@@ -1,8 +1,10 @@
+import asyncio
 from types import SimpleNamespace
 
 import pytest
 
 from src.server.services.game_command_service import GameCommandService
+from src.server.runtime import GameSessionRuntime, create_default_game_state
 
 
 class FakeRuntime:
@@ -81,3 +83,28 @@ async def test_delete_avatar_broadcasts_current_revision_delta():
             "world_revision": 1,
         }
     ]
+
+
+@pytest.mark.asyncio
+async def test_roleplay_llm_work_does_not_hold_world_mutation_lock():
+    runtime = GameSessionRuntime(create_default_game_state())
+    started = asyncio.Event()
+    release = asyncio.Event()
+
+    async def slow_roleplay(_runtime, **_kwargs):
+        started.set()
+        await release.wait()
+        return {"status": "ok"}
+
+    service = GameCommandService(SimpleNamespace(runtime=runtime, submit_roleplay_decision=slow_roleplay))
+    request = asyncio.create_task(
+        service.submit_roleplay_decision(avatar_id="a", request_id="r", command_text="wait")
+    )
+    await started.wait()
+
+    completed = []
+    await runtime.run_mutation(lambda: completed.append("world mutation"))
+    assert completed == ["world mutation"]
+
+    release.set()
+    assert await request == {"status": "ok"}

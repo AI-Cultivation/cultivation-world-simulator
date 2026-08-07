@@ -118,6 +118,8 @@ from src.server.host_runtime import (
 )
 from src.server.app_factory import HostDependencies, create_configured_app
 from src.server.app_context import create_server_context
+from src.server.services.game_command_service import GameCommandDependencies
+from src.server.services.game_query_service import GameQueryDependencies
 from src.server.auto_save import trigger_auto_save as _trigger_auto_save
 from src.server.bootstrap import (
     is_browser_auto_open_disabled,
@@ -248,7 +250,8 @@ print(f"Runtime mode: {'Frozen/Packaged' if getattr(sys, 'frozen', False) else '
 print(f"Assets path: {ASSETS_PATH}")
 print(f"Web dist path: {WEB_DIST_PATH}")
 
-query_dependencies = dict(
+query_dependencies = GameQueryDependencies(
+    static_data=static_data,
     runtime=runtime,
     avatar_assets=AVATAR_ASSETS,
     config=CONFIG,
@@ -306,7 +309,8 @@ query_dependencies = dict(
 )
 settings_service = SettingsServiceProxy(get_settings_service)
 
-command_dependencies = dict(
+command_dependencies = GameCommandDependencies(
+    static_data=static_data,
     runtime=runtime,
     manager=manager,
     avatar_assets=AVATAR_ASSETS,
@@ -344,7 +348,7 @@ command_dependencies = dict(
     set_user_long_term_objective=set_user_long_term_objective,
     clear_user_long_term_objective=clear_user_long_term_objective,
     save_current_game=save_current_game,
-    save_game=save_game,
+    save_game_impl=save_game,
     delete_save_file=delete_save_file,
     get_config=get_current_config,
     get_fallback_saves_dirs=get_fallback_saves_dirs,

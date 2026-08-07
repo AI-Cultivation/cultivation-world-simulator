@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import Any, Callable
 
 from src.i18n import t
-from src.utils.config import CONFIG
 from src.utils.llm import call_llm_with_task_name
 from src.utils.strings import to_json_str_with_intent
 
@@ -47,6 +46,10 @@ async def generate_roleplay_conversation_reply(
         ),
         "conversation_history": to_json_str_with_intent(build_conversation_history_payload(messages)),
     }
+    # Read at call time: locale/resource configuration may change while the
+    # server remains alive.
+    from src.utils.config import CONFIG
+
     template_path = CONFIG.paths.templates / "roleplay_conversation_turn.txt"
     try:
         response = await call_llm("roleplay_conversation_turn", template_path, info)
@@ -104,6 +107,8 @@ async def summarize_roleplay_conversation(
         ),
         "conversation_history": to_json_str_with_intent(build_conversation_history_payload(messages)),
     }
+    from src.utils.config import CONFIG
+
     template_path = CONFIG.paths.templates / "roleplay_conversation_summary.txt"
     try:
         response = await call_llm("roleplay_conversation_summary", template_path, info)

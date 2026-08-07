@@ -6,7 +6,9 @@ from typing import Any
 from src.server.host_runtime import ConnectionManager
 from src.server.runtime import GameSessionRuntime
 from src.server.services.game_command_service import GameCommandService
+from src.server.services.game_command_service import GameCommandDependencies
 from src.server.services.game_query_service import GameQueryService
+from src.server.services.game_query_service import GameQueryDependencies
 
 
 @dataclass(slots=True)
@@ -32,19 +34,13 @@ def create_server_context(
     avatar_assets: dict[str, Any],
     settings_service: Any,
     static_data: Any,
-    query_dependencies: dict[str, Any],
-    command_dependencies: dict[str, Any],
+    query_dependencies: GameQueryDependencies,
+    command_dependencies: GameCommandDependencies,
     version: str = "",
 ) -> ServerAppContext:
     """Build the server composition root from explicit dependency maps."""
-    query_service = GameQueryService.from_dependencies(
-        static_data=static_data,
-        **query_dependencies,
-    )
-    command_service = GameCommandService.from_dependencies(
-        static_data=static_data,
-        **command_dependencies,
-    )
+    query_service = GameQueryService(query_dependencies)
+    command_service = GameCommandService(command_dependencies)
     return ServerAppContext(
         runtime=runtime,
         manager=manager,

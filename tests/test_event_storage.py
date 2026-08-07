@@ -15,7 +15,7 @@ from pathlib import Path
 from unittest.mock import MagicMock
 
 from src.classes.event import Event, NULL_EVENT
-from src.classes.event_storage import EventStorage
+from src.classes.event_storage import EventStorage, EventStorageError
 from src.sim.managers.event_manager import EventManager
 from src.systems.time import MonthStamp, Year, Month, create_month_stamp
 
@@ -152,6 +152,20 @@ class TestEventStorageQueries:
 
         assert events == []
         assert cursor is None
+
+    def test_get_events_raises_distinct_error_when_sqlite_read_fails(self, event_storage):
+        """A broken store must not be indistinguishable from an empty result."""
+        class BrokenConnection:
+            def execute(self, *_args, **_kwargs):
+                raise Exception("broken sqlite")
+
+        connection = event_storage._conn
+        event_storage._conn = BrokenConnection()
+        try:
+            with pytest.raises(EventStorageError, match="Failed to query events"):
+                event_storage.get_events()
+        finally:
+            event_storage._conn = connection
 
     def test_get_events_all(self, event_storage):
         """Test getting all events (no filter)."""
