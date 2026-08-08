@@ -40,7 +40,6 @@ def create_configured_app(
         endpoint_filter=host.endpoint_filter,
         get_settings_view=context.settings_service.get_settings_view,
         apply_runtime_content_locale=host.apply_runtime_content_locale,
-        game_instance=context.game_state,
         language_manager=host.language_manager,
         game_loop=host.game_loop,
         is_dev_mode=host.is_dev_mode,

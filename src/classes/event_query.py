@@ -3,6 +3,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum
+from typing import Generic, TypeVar
+
+
+EventT = TypeVar("EventT")
 
 
 class EventAudience(str, Enum):
@@ -25,6 +29,19 @@ class EventQuery:
     cursor: str | None = None
     limit: int = 100
     chronological: bool = False
+
+
+@dataclass(frozen=True, slots=True)
+class EventPage(Generic[EventT]):
+    """A page returned by either event backend.
+
+    The cursor is opaque to callers.  Query adapters may expose legacy tuple
+    return values, but storage and in-memory implementations share this
+    result contract.
+    """
+
+    events: list[EventT]
+    next_cursor: str | None = None
 
 
 def matches_memory_scope(event: object, scope: EventMemoryScope) -> bool:

@@ -9,7 +9,7 @@ from src.i18n import t
 def create_websocket_router(
     *,
     manager,
-    game_instance: dict,
+    runtime,
 ) -> APIRouter:
     router = APIRouter()
 
@@ -17,8 +17,8 @@ def create_websocket_router(
     async def websocket_endpoint(websocket: WebSocket):
         await manager.connect(websocket)
 
-        if game_instance.get("llm_check_failed", False):
-            error_msg = game_instance.get("llm_error_message", t("LLM connection failed"))
+        if runtime.get("llm_check_failed", False):
+            error_msg = runtime.get("llm_error_message", t("LLM connection failed"))
             await websocket.send_json({
                 "type": "llm_config_required",
                 "error": error_msg,

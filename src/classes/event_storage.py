@@ -14,7 +14,7 @@ from contextlib import contextmanager
 from datetime import datetime, timezone
 
 from src.run.log import get_logger
-from src.classes.event_query import EventAudience, EventMemoryScope, EventQuery
+from src.classes.event_query import EventAudience, EventMemoryScope, EventPage, EventQuery
 
 
 class EventStorageError(RuntimeError):
@@ -421,7 +421,7 @@ class EventStorage:
         """生成复合 cursor。"""
         return f"{month_stamp}_{rowid}"
 
-    def get_events(
+    def _query_direct_page(
         self,
         avatar_id: Optional[str] = None,
         avatar_id_pair: Optional[tuple[str, str]] = None,
@@ -429,7 +429,7 @@ class EventStorage:
         major_scope: Optional[str] = None,
         cursor: Optional[str] = None,
         limit: int = 100,
-    ) -> tuple[list["Event"], Optional[str]]:
+    ) -> EventPage["Event"]:
         """
         分页查询事件。
 
@@ -444,7 +444,7 @@ class EventStorage:
             (events, next_cursor)，next_cursor 为 None 表示没有更多。
         """
         if self._conn is None:
-            return [], None
+            return EventPage([])
 
         base_query = ""
         params: list = []
@@ -533,7 +533,7 @@ class EventStorage:
                 if has_more and last_rowid is not None:
                     next_cursor = self._make_cursor(last_month_stamp, last_rowid)
 
-                return events, next_cursor
+                return EventPage(events, next_cursor)
 
         except Exception as e:
             self._logger.exception(
@@ -550,6 +550,86 @@ class EventStorage:
                 params,
             )
             raise EventStorageError("Failed to query events") from e
+
+    def query_page(self, query: EventQuery) -> EventPage["Event"]:
+        """Execute an EventQuery and preserve its pagination information."""
+        if self._conn is None:
+            return EventPage([])
+        if query.audience is EventAudience.DIRECT:
+            avatar_ids = query.avatar_ids
+            if len(avatar_ids) > 2:
+                raise ValueError("Direct event queries support at most two avatars")
+            return self._query_direct_page(
+                avatar_id=avatar_ids[0] if len(avatar_ids) == 1 else None,
+                avatar_id_pair=(avatar_ids[0], avatar_ids[1]) if len(avatar_ids) == 2 else None,
+                sect_id=query.sect_id,
+                major_scope=None if query.memory_scope is EventMemoryScope.ALL else query.memory_scope.value,
+                cursor=query.cursor,
+                limit=query.limit,
+            )
+
+        if len(query.avatar_ids) != 1:
+            raise ValueError("Observed event queries require exactly one avatar")
+        scope_sql = {
+            EventMemoryScope.ALL: "1=1",
+            EventMemoryScope.MAJOR: "e.is_major = TRUE AND e.is_story = FALSE",
+            EventMemoryScope.MINOR: "e.is_major = FALSE OR e.is_story = TRUE",
+        }[query.memory_scope]
+        params: list[object] = [query.avatar_ids[0]]
+        where_clauses = [scope_sql]
+        if query.sect_id is not None:
+            where_clauses.append("EXISTS (SELECT 1 FROM event_sects es WHERE es.event_id = e.id AND es.sect_id = ?)")
+            params.append(query.sect_id)
+        if query.cursor:
+            cursor_month, cursor_rowid = self._parse_cursor(query.cursor)
+            where_clauses.append("(e.month_stamp < ? OR (e.month_stamp = ? AND e.rowid < ?))")
+            params.extend([cursor_month, cursor_month, cursor_rowid])
+        sql = f"""
+            SELECT DISTINCT e.rowid, e.id, e.month_stamp, e.content, e.is_major, e.is_story,
+                e.event_type, e.render_key, e.render_params, e.subject_snapshots, e.created_at,
+                eo.propagation_kind, eo.observer_avatar_id, eo.subject_avatar_id, eo.relation_type
+            FROM events e JOIN event_observations eo
+                ON e.id = eo.event_id AND eo.observer_avatar_id = ?
+            WHERE {' AND '.join(where_clauses)}
+            ORDER BY e.month_stamp DESC, e.rowid DESC LIMIT ?
+        """
+        params.append(query.limit + 1)
+        try:
+            with self._db_lock:
+                rows = self._conn.execute(sql, params).fetchall()
+            has_more = len(rows) > query.limit
+            rows = rows[:query.limit]
+            events = self._build_events_from_rows(rows)
+            from src.classes.event_renderer import render_observed_event
+            for event, row in zip(events, rows):
+                event.content = render_observed_event(event, row)
+            next_cursor = None
+            if has_more and rows:
+                next_cursor = self._make_cursor(rows[-1]["month_stamp"], rows[-1]["rowid"])
+            return EventPage(events, next_cursor)
+        except Exception as exc:
+            self._logger.exception("Failed to execute observed event query: %s", exc)
+            raise EventStorageError("Failed to query events") from exc
+
+    def get_events(
+        self,
+        avatar_id: Optional[str] = None,
+        avatar_id_pair: Optional[tuple[str, str]] = None,
+        sect_id: Optional[int] = None,
+        major_scope: Optional[str] = None,
+        cursor: Optional[str] = None,
+        limit: int = 100,
+    ) -> tuple[list["Event"], Optional[str]]:
+        """Legacy paginated adapter; use :meth:`query_page` in new code."""
+        avatar_ids = avatar_id_pair or ((avatar_id,) if avatar_id else ())
+        page = self.query_page(EventQuery(
+            avatar_ids=tuple(str(item) for item in avatar_ids),
+            sect_id=sect_id,
+            memory_scope=EventMemoryScope(major_scope) if major_scope in {"major", "minor"} else EventMemoryScope.ALL,
+            cursor=cursor,
+            limit=limit,
+        ))
+        return page.events, page.next_cursor
 
     def get_events_by_avatar(self, avatar_id: str, limit: int = 50) -> list["Event"]:
         """
@@ -597,46 +677,12 @@ class EventStorage:
 
     def query_events(self, query: EventQuery) -> list["Event"]:
         """Execute the shared event query contract for the SQLite backend."""
-        if self._conn is None:
-            return []
-        if query.audience is EventAudience.DIRECT:
-            avatar_ids = query.avatar_ids
-            events, _ = self.get_events(
-                avatar_id=avatar_ids[0] if len(avatar_ids) == 1 else None,
-                avatar_id_pair=(avatar_ids[0], avatar_ids[1]) if len(avatar_ids) == 2 else None,
-                sect_id=query.sect_id,
-                major_scope=None if query.memory_scope is EventMemoryScope.ALL else query.memory_scope.value,
-                cursor=query.cursor,
-                limit=query.limit,
-            )
-        else:
-            if len(query.avatar_ids) != 1:
-                raise ValueError("Observed event queries require exactly one avatar")
-            scope_sql = {
-                EventMemoryScope.ALL: "1=1",
-                EventMemoryScope.MAJOR: "e.is_major = TRUE AND e.is_story = FALSE",
-                EventMemoryScope.MINOR: "e.is_major = FALSE OR e.is_story = TRUE",
-            }[query.memory_scope]
-            sql = f"""
-                SELECT DISTINCT e.rowid, e.id, e.month_stamp, e.content, e.is_major, e.is_story,
-                    e.event_type, e.render_key, e.render_params, e.subject_snapshots, e.created_at,
-                    eo.propagation_kind, eo.observer_avatar_id, eo.subject_avatar_id, eo.relation_type
-                FROM events e JOIN event_observations eo
-                    ON e.id = eo.event_id AND eo.observer_avatar_id = ?
-                WHERE {scope_sql}
-                ORDER BY e.month_stamp DESC, e.rowid DESC LIMIT ?
-            """
-            with self._db_lock:
-                rows = self._conn.execute(sql, (query.avatar_ids[0], query.limit)).fetchall()
-            events = self._build_events_from_rows(rows)
-            from src.classes.event_renderer import render_observed_event
-            for event, row in zip(events, rows):
-                event.content = render_observed_event(event, row)
+        events = self.query_page(query).events
         return list(reversed(events)) if query.chronological else events
 
     def get_recent_events(self, limit: int = 100) -> list["Event"]:
         """获取最近的事件（供初始状态 API 使用）。"""
-        events, _ = self.get_events(limit=limit)
+        events = self.query_page(EventQuery(limit=limit)).events
         return list(reversed(events))  # 时间正序。
 
     def cleanup(self, keep_major: bool = True, before_month_stamp: Optional[int] = None) -> int:

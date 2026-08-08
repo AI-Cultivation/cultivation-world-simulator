@@ -58,14 +58,7 @@ class GameCommandDependencies:
     get_load_game_into_runtime: Any
     get_load_game: Any
     get_events_db_path: Any
-    get_roleplay_session: Any
-    clear_roleplay_session: Any
-    start_roleplay: Any
-    stop_roleplay: Any
-    submit_roleplay_decision: Any
-    submit_roleplay_choice: Any
-    submit_roleplay_conversation_turn: Any
-    end_roleplay_conversation: Any
+    roleplay_commands: Any
 
 
 class GameCommandService:
@@ -334,14 +327,10 @@ class GameCommandService:
         )
 
     async def start_roleplay(self, *, avatar_id: str) -> dict:
-        return await self._deps.runtime.run_mutation(
-            self._deps.start_roleplay, self._deps.runtime, avatar_id=avatar_id
-        )
+        return await self._deps.roleplay_commands.start(avatar_id=avatar_id)
 
     async def stop_roleplay(self, *, avatar_id: str | None) -> dict:
-        return await self._deps.runtime.run_mutation(
-            self._deps.stop_roleplay, self._deps.runtime, avatar_id=avatar_id
-        )
+        return await self._deps.roleplay_commands.stop(avatar_id=avatar_id)
 
     async def submit_roleplay_decision(
         self,
@@ -350,12 +339,7 @@ class GameCommandService:
         request_id: str,
         command_text: str,
     ) -> dict:
-        # The roleplay service performs short prepare/commit mutations around
-        # the remote LLM request.  Do not hold the world lock while waiting on
-        # the provider: a slow provider must not freeze simulation, saving, or
-        # unrelated commands.
-        return await self._deps.submit_roleplay_decision(
-            self._deps.runtime,
+        return await self._deps.roleplay_commands.submit_decision(
             avatar_id=avatar_id,
             request_id=request_id,
             command_text=command_text,
@@ -368,9 +352,7 @@ class GameCommandService:
         request_id: str,
         selected_key: str,
     ) -> dict:
-        return await self._deps.runtime.run_mutation(
-            self._deps.submit_roleplay_choice,
-            self._deps.runtime,
+        return await self._deps.roleplay_commands.submit_choice(
             avatar_id=avatar_id,
             request_id=request_id,
             selected_key=selected_key,
@@ -383,8 +365,7 @@ class GameCommandService:
         request_id: str,
         message: str,
     ) -> dict:
-        return await self._deps.submit_roleplay_conversation_turn(
-            self._deps.runtime,
+        return await self._deps.roleplay_commands.send_conversation(
             avatar_id=avatar_id,
             request_id=request_id,
             message=message,
@@ -396,8 +377,7 @@ class GameCommandService:
         avatar_id: str,
         request_id: str,
     ) -> dict:
-        return await self._deps.end_roleplay_conversation(
-            self._deps.runtime,
+        return await self._deps.roleplay_commands.end_conversation(
             avatar_id=avatar_id,
             request_id=request_id,
         )

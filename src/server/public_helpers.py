@@ -26,7 +26,7 @@ def reset_runtime_custom_content() -> None:
     CustomContentRegistry.reset()
 
 
-def apply_runtime_content_locale(*, game_instance: dict, language_manager, lang_code: str) -> None:
+def apply_runtime_content_locale(*, runtime, language_manager, lang_code: str) -> None:
     from src.utils.config import update_paths_for_language
     from src.utils.df import reload_game_configs
 
@@ -35,7 +35,7 @@ def apply_runtime_content_locale(*, game_instance: dict, language_manager, lang_
     reload_game_configs()
     reload_all_static_data()
 
-    world = game_instance.get("world")
+    world = runtime.get_world()
     if world:
         from src.run.data_loader import fix_runtime_references
 

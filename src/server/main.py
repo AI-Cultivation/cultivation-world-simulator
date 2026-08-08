@@ -120,6 +120,10 @@ from src.server.app_factory import HostDependencies, create_configured_app
 from src.server.app_context import create_server_context
 from src.server.services.game_command_service import GameCommandDependencies
 from src.server.services.game_query_service import GameQueryDependencies
+from src.server.services.roleplay_command_service import (
+    RoleplayCommandDependencies,
+    RoleplayCommandService,
+)
 from src.server.auto_save import trigger_auto_save as _trigger_auto_save
 from src.server.bootstrap import (
     is_browser_auto_open_disabled,
@@ -187,7 +191,7 @@ IS_DEV_MODE = "--dev" in sys.argv
 def apply_runtime_content_locale(lang_code: str) -> None:
     """兼容保留：按当前主运行时切换内容语言。"""
     _apply_runtime_content_locale(
-        game_instance=game_instance,
+        runtime=runtime,
         language_manager=language_manager,
         lang_code=lang_code,
     )
@@ -309,6 +313,18 @@ query_dependencies = GameQueryDependencies(
 )
 settings_service = SettingsServiceProxy(get_settings_service)
 
+roleplay_command_service = RoleplayCommandService(RoleplayCommandDependencies(
+    runtime=runtime,
+    get_roleplay_session=get_roleplay_session_query,
+    clear_roleplay_session=clear_roleplay_session_service,
+    start_roleplay=start_roleplay_service,
+    stop_roleplay=stop_roleplay_service,
+    submit_roleplay_decision=submit_roleplay_decision_service,
+    submit_roleplay_choice=submit_roleplay_choice_service,
+    submit_roleplay_conversation_turn=submit_roleplay_conversation_turn_service,
+    end_roleplay_conversation=end_roleplay_conversation_service,
+))
+
 command_dependencies = GameCommandDependencies(
     static_data=static_data,
     runtime=runtime,
@@ -355,14 +371,7 @@ command_dependencies = GameCommandDependencies(
     get_load_game_into_runtime=lambda: load_game_into_runtime,
     get_load_game=lambda: load_game,
     get_events_db_path=get_events_db_path,
-    get_roleplay_session=get_roleplay_session_query,
-    clear_roleplay_session=clear_roleplay_session_service,
-    start_roleplay=start_roleplay_service,
-    stop_roleplay=stop_roleplay_service,
-    submit_roleplay_decision=submit_roleplay_decision_service,
-    submit_roleplay_choice=submit_roleplay_choice_service,
-    submit_roleplay_conversation_turn=submit_roleplay_conversation_turn_service,
-    end_roleplay_conversation=end_roleplay_conversation_service,
+    roleplay_commands=roleplay_command_service,
 )
 
 server_context = create_server_context(
@@ -381,7 +390,7 @@ command_service = server_context.command_service
 
 
 settings_handlers = create_settings_handlers(
-    game_state=game_instance,
+    runtime=runtime,
     language_manager=language_manager,
     settings_service=settings_service,
     model_to_dict=_model_to_dict,

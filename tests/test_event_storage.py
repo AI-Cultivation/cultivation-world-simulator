@@ -769,16 +769,24 @@ class TestEventManagerMemoryMode:
         assert "Story" in contents
 
     def test_pagination_memory_mode(self, memory_event_manager):
-        """Test that pagination in memory mode returns all events without real pagination."""
+        """Memory mode follows the same opaque-cursor pagination contract as SQLite."""
         for i in range(10):
             memory_event_manager.add_event(make_event(100, i + 1, f"Event {i}"))
 
         events, cursor, has_more = memory_event_manager.get_events_paginated(limit=5)
 
-        # Memory mode doesn't support real pagination
-        assert len(events) == 5  # Still respects limit
-        assert cursor is None
-        assert has_more is False
+        assert len(events) == 5
+        assert cursor is not None
+        assert has_more is True
+
+        next_events, next_cursor, next_has_more = memory_event_manager.get_events_paginated(
+            limit=5,
+            cursor=cursor,
+        )
+        assert len(next_events) == 5
+        assert next_cursor is None
+        assert next_has_more is False
+        assert {event.id for event in events}.isdisjoint(event.id for event in next_events)
 
     def test_cleanup_memory_mode(self, memory_event_manager):
         """Test cleanup in memory mode clears all events."""

@@ -3,6 +3,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from src.systems.cultivation import Realm
+
 if TYPE_CHECKING:
     from src.classes.core.avatar import Avatar
     from src.classes.core.sect import Sect
@@ -55,3 +57,34 @@ class SectMemberStatusService:
             -max(0, int(getattr(avatar, "sect_contribution", 0) or 0)),
             str(getattr(avatar, "name", "") or ""),
         ))
+
+
+def get_member_upkeep_by_realm() -> dict[Realm, int]:
+    """Read sect upkeep at call time so settings reloads are observed."""
+    from src.utils.config import CONFIG
+
+    defaults = {
+        Realm.Qi_Refinement: 15,
+        Realm.Foundation_Establishment: 30,
+        Realm.Core_Formation: 60,
+        Realm.Nascent_Soul: 120,
+    }
+    configured = getattr(getattr(CONFIG, "sect", None), "member_upkeep_by_realm", None)
+    if not configured:
+        return defaults
+    mapping = {
+        "QI_REFINEMENT": Realm.Qi_Refinement,
+        "FOUNDATION_ESTABLISHMENT": Realm.Foundation_Establishment,
+        "CORE_FORMATION": Realm.Core_Formation,
+        "NASCENT_SOUL": Realm.Nascent_Soul,
+    }
+    result = dict(defaults)
+    for key, value in configured.items():
+        realm = mapping.get(str(key).strip().upper())
+        if realm is None:
+            continue
+        try:
+            result[realm] = max(0, int(value))
+        except (TypeError, ValueError):
+            continue
+    return result

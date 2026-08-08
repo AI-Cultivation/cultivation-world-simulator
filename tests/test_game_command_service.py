@@ -96,7 +96,10 @@ async def test_roleplay_llm_work_does_not_hold_world_mutation_lock():
         await release.wait()
         return {"status": "ok"}
 
-    service = GameCommandService(SimpleNamespace(runtime=runtime, submit_roleplay_decision=slow_roleplay))
+    roleplay_commands = SimpleNamespace(
+        submit_decision=lambda **kwargs: slow_roleplay(runtime, **kwargs),
+    )
+    service = GameCommandService(SimpleNamespace(runtime=runtime, roleplay_commands=roleplay_commands))
     request = asyncio.create_task(
         service.submit_roleplay_decision(avatar_id="a", request_id="r", command_text="wait")
     )

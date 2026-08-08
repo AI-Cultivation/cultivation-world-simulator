@@ -40,7 +40,7 @@ class SettingsServiceProxy:
 
 def create_settings_handlers(
     *,
-    game_state: dict[str, Any],
+    runtime: Any,
     language_manager: Any,
     settings_service: Any,
     model_to_dict: Callable[[Any], dict],
@@ -48,7 +48,7 @@ def create_settings_handlers(
 ) -> SimpleNamespace:
     def apply_runtime_content_locale(lang_code: str) -> None:
         apply_runtime_content_locale_impl(
-            game_instance=game_state,
+            runtime=runtime,
             language_manager=language_manager,
             lang_code=lang_code,
         )
@@ -64,7 +64,7 @@ def create_settings_handlers(
         if next_locale and next_locale != current_locale:
             apply_runtime_content_locale(next_locale)
 
-        run_config = game_state.get("run_config")
+        run_config = runtime.get("run_config")
         if isinstance(run_config, dict):
             run_config["content_locale"] = next_locale
 
@@ -81,7 +81,7 @@ def create_settings_handlers(
         if next_locale and next_locale != current_locale:
             apply_runtime_content_locale(next_locale)
 
-        run_config = game_state.get("run_config")
+        run_config = runtime.get("run_config")
         if isinstance(run_config, dict):
             run_config["content_locale"] = next_locale
 

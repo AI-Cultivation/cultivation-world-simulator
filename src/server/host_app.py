@@ -16,7 +16,6 @@ def create_lifespan(
     endpoint_filter,
     get_settings_view,
     apply_runtime_content_locale,
-    game_instance: dict,
     language_manager,
     game_loop,
     is_dev_mode: bool,
@@ -88,7 +87,6 @@ def configure_routes_and_mounts(
     context=None,
     create_websocket_router,
     manager=None,
-    game_instance: dict | None = None,
     create_settings_router,
     model_to_dict,
     get_settings_view,
@@ -159,7 +157,6 @@ def configure_routes_and_mounts(
     version: str = "",
 ):
     manager = manager if manager is not None else context.manager
-    game_instance = game_instance if game_instance is not None else context.game_state
     query_service = getattr(context, "query_service", None) if context is not None else None
     command_service = getattr(context, "command_service", None) if context is not None else None
     if not version and context is not None:
@@ -173,7 +170,7 @@ def configure_routes_and_mounts(
             "version": version,
         }
 
-    app.include_router(create_websocket_router(manager=manager, game_instance=game_instance))
+    app.include_router(create_websocket_router(manager=manager, runtime=context.runtime))
 
     app.include_router(
         create_settings_router(

@@ -291,7 +291,8 @@ class Sect(SectEffectsMixin):
         }
 
     def get_member_upkeep_by_realm(self) -> dict[Realm, int]:
-        return get_sect_member_upkeep_by_realm()
+        from src.classes.sect_member_status import get_member_upkeep_by_realm
+        return get_member_upkeep_by_realm()
 
     def get_member_upkeep_by_rank(self) -> dict["SectRank", int]:
         from src.classes.sect_ranks import SectRank
@@ -424,37 +425,6 @@ class Sect(SectEffectsMixin):
             else:
                 avatar.sect_rank = SectRank.OuterDisciple
 
-
-def get_sect_member_upkeep_by_realm() -> dict[Realm, int]:
-    defaults = {
-        Realm.Qi_Refinement: 15,
-        Realm.Foundation_Establishment: 30,
-        Realm.Core_Formation: 60,
-        Realm.Nascent_Soul: 120,
-    }
-
-    sect_conf = getattr(CONFIG, "sect", None)
-    configured = getattr(sect_conf, "member_upkeep_by_realm", None) if sect_conf is not None else None
-    if not configured:
-        return defaults
-
-    mapping = {
-        "QI_REFINEMENT": Realm.Qi_Refinement,
-        "FOUNDATION_ESTABLISHMENT": Realm.Foundation_Establishment,
-        "CORE_FORMATION": Realm.Core_Formation,
-        "NASCENT_SOUL": Realm.Nascent_Soul,
-    }
-
-    result = dict(defaults)
-    for key, value in configured.items():
-        realm = mapping.get(str(key).strip().upper())
-        if realm is None:
-            continue
-        try:
-            result[realm] = max(0, int(value))
-        except (TypeError, ValueError):
-            continue
-    return result
 
 def _split_names(value: object) -> list[str]:
     raw = "" if value is None or str(value) == "nan" else str(value)

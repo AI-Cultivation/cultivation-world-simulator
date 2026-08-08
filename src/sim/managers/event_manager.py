@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from pathlib import Path
 from typing import Callable, List, Optional, TYPE_CHECKING
-from src.classes.event_query import EventAudience, EventMemoryScope, EventQuery, matches_memory_scope
+from src.classes.event_query import EventAudience, EventMemoryScope, EventPage, EventQuery, matches_memory_scope
 
 if TYPE_CHECKING:
     from src.classes.event import Event
@@ -178,12 +178,19 @@ class EventManager:
 
     def query_events(self, query: EventQuery) -> List["Event"]:
         """Execute the same semantic query contract in either storage backend."""
+        events = self.query_page(query).events
+        return list(reversed(events)) if query.chronological else events
+
+    def query_page(self, query: EventQuery) -> EventPage["Event"]:
+        """Return one page using the same EventQuery semantics in both backends."""
         if self._storage:
-            return self._storage.query_events(query)
+            return self._storage.query_page(query)
 
         if query.audience is EventAudience.OBSERVED and len(query.avatar_ids) != 1:
             raise ValueError("Observed event queries require exactly one avatar")
         result: list["Event"] = []
+        start_index = int(query.cursor or "0")
+        matched_index = 0
         for event in reversed(self._memory_events):
             related = {str(item) for item in (event.related_avatars or [])}
             if query.audience is EventAudience.OBSERVED:
@@ -194,10 +201,16 @@ class EventManager:
                 continue
             if query.sect_id is not None and query.sect_id not in (getattr(event, "related_sects", None) or []):
                 continue
+            if matched_index < start_index:
+                matched_index += 1
+                continue
             result.append(self._render_for_observer(event, query.avatar_ids[0]) if query.audience is EventAudience.OBSERVED else event)
-            if len(result) >= query.limit:
+            matched_index += 1
+            if len(result) > query.limit:
                 break
-        return list(reversed(result)) if query.chronological else result
+        has_more = len(result) > query.limit
+        result = result[:query.limit]
+        return EventPage(result, str(start_index + len(result)) if has_more else None)
 
     # --- 分页查询接口（新增）---
 
@@ -226,44 +239,15 @@ class EventManager:
             - next_cursor: 下一页的 cursor，None 表示没有更多。
             - has_more: 是否有更多数据。
         """
-        if self._storage:
-            events, next_cursor = self._storage.get_events(
-                avatar_id=avatar_id,
-                avatar_id_pair=avatar_id_pair,
-                sect_id=sect_id,
-                major_scope=major_scope,
-                cursor=cursor,
-                limit=limit,
-            )
-            return events, next_cursor, next_cursor is not None
-        else:
-            # 内存模式不支持完整分页，做轻量过滤后返回最近的。
-            filtered_events = self._memory_events
-            if avatar_id_pair:
-                id1, id2 = avatar_id_pair
-                filtered_events = [
-                    e for e in filtered_events
-                    if e.related_avatars and id1 in e.related_avatars and id2 in e.related_avatars
-                ]
-            elif avatar_id:
-                filtered_events = [
-                    e for e in filtered_events
-                    if e.related_avatars and avatar_id in e.related_avatars
-                ]
-
-            if sect_id is not None:
-                filtered_events = [
-                    e for e in filtered_events
-                    if getattr(e, "related_sects", None) and sect_id in (e.related_sects or [])
-                ]
-
-            if major_scope == "major":
-                filtered_events = [e for e in filtered_events if e.is_major and not e.is_story]
-            elif major_scope == "minor":
-                filtered_events = [e for e in filtered_events if (not e.is_major) or e.is_story]
-
-            events = filtered_events[-limit:]
-            return list(reversed(events)), None, False
+        avatar_ids = avatar_id_pair or ((avatar_id,) if avatar_id else ())
+        page = self.query_page(EventQuery(
+            avatar_ids=tuple(str(item) for item in avatar_ids),
+            sect_id=sect_id,
+            memory_scope=EventMemoryScope(major_scope) if major_scope in {"major", "minor"} else EventMemoryScope.ALL,
+            cursor=cursor,
+            limit=limit,
+        ))
+        return page.events, page.next_cursor, page.next_cursor is not None
 
     # --- 清理接口 ---
 
