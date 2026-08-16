@@ -35,7 +35,8 @@ class LLMConfig:
         profile, api_key = get_settings_service().get_llm_runtime_config()
         base_url = profile.base_url
         api_key_value = api_key
-        api_format = profile.api_format
+        # Profiles saved before api_format was introduced use the OpenAI-compatible API.
+        api_format = getattr(profile, "api_format", "openai") or "openai"
 
         # 根据模式选择模型
         model_name = ""
@@ -44,7 +45,7 @@ class LLMConfig:
             if profile.use_separate_fast_config:
                 base_url = profile.fast_base_url
                 api_key_value = get_settings_service().get_secrets().fast_api_key
-                api_format = profile.fast_api_format
+                api_format = getattr(profile, "fast_api_format", "openai") or "openai"
         else:
             # NORMAL or DEFAULT fallback
             model_name = profile.model_name

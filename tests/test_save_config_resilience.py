@@ -1,5 +1,9 @@
-from src.utils.config import CONFIG
+from omegaconf import OmegaConf
+
+from src.utils.config import CONFIG, get_static_config_path
 
 
 def test_static_config_exposes_version_through_meta_section():
-    assert CONFIG.meta.version == "4.1.0"
+    source_config = OmegaConf.load(get_static_config_path())
+
+    assert CONFIG.meta.version == source_config.meta.version
