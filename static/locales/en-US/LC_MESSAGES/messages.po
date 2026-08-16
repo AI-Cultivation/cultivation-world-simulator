@@ -1666,6 +1666,9 @@ msgstr "When {condition}"
 msgid "[{condition}] {effects}"
 msgstr "[{condition}] {effects}"
 
+msgid "condition_confucian_orthodoxy"
+msgstr "When following Confucianism"
+
 msgid "Died from severe injuries"
 msgstr "Died from severe injuries"
 

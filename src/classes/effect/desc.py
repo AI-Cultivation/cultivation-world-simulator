@@ -178,18 +178,25 @@ def translate_condition(condition: str) -> str:
                 pass
 
     # 3) WeaponType 条件（武器类型）
-    # 例: avatar.weapon.type == WeaponType.SWORD
-    if "avatar.weapon.type" in condition:
-        m_weapon = re.search(r"WeaponType\.([A-Z_]+)", condition)
-        if m_weapon:
-            w_key = m_weapon.group(1)
-            from src.classes.weapon_type import WeaponType
+    # 例: avatar.weapon.weapon_type == WeaponType.SWORD
+    weapon_matches = re.finditer(
+        r"avatar\.weapon\.(?:weapon_type|type)\s*==\s*"
+        r"(?:WeaponType\.)?(?:[\"'](?P<quoted>[A-Z_]+)[\"']|(?P<bare>[A-Z_]+))",
+        condition,
+    )
+    weapon_keys = [match.group("quoted") or match.group("bare") for match in weapon_matches]
+    if weapon_keys:
+        from src.classes.weapon_type import WeaponType
 
+        weapon_names = []
+        for weapon_key in weapon_keys:
             try:
-                w_enum = WeaponType[w_key]
-                return t("When using {weapon_type}", weapon_type=str(w_enum))
+                weapon_names.append(str(WeaponType[weapon_key]))
             except KeyError:
-                pass
+                weapon_names = []
+                break
+        if weapon_names:
+            return t("When using {weapon_type}", weapon_type=t("action_list_separator").join(weapon_names))
 
     # 4) 兜底简化：去掉常见前缀与符号，尽量可读。
     simple_cond = condition

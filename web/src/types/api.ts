@@ -287,6 +287,10 @@ export interface LLMConfigViewDTO {
   max_concurrent_requests: number;
   has_api_key: boolean;
   api_format: string;
+  use_separate_fast_config: boolean;
+  fast_base_url: string;
+  fast_api_format: string;
+  has_fast_api_key: boolean;
 }
 
 export interface LLMConfigDTO {
@@ -298,6 +302,11 @@ export interface LLMConfigDTO {
   max_concurrent_requests: number;
   clear_api_key?: boolean;
   api_format: string;
+  use_separate_fast_config: boolean;
+  fast_base_url: string;
+  fast_api_key?: string;
+  fast_api_format: string;
+  clear_fast_api_key?: boolean;
 }
 
 export interface LLMStatusDTO {

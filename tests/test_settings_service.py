@@ -118,6 +118,40 @@ def test_settings_service_trims_llm_profile_and_secret():
     assert api_key == "secret-key"
 
 
+def test_settings_service_persists_separate_fast_llm_secret():
+    service = get_settings_service()
+    updated = service.update_llm(
+        LLMSettingsUpdate(
+            base_url="https://api.qwen.example/v1",
+            api_key="qwen-key",
+            model_name="qwen-plus",
+            fast_model_name="qwen3:8b",
+            mode="default",
+            use_separate_fast_config=True,
+            fast_base_url="http://localhost:11434/v1",
+            fast_api_format="openai",
+        )
+    )
+    profile, api_key, fast_api_key = service.get_llm_test_payload(
+        LLMSettingsUpdate(
+            base_url="https://api.qwen.example/v1",
+            model_name="qwen-plus",
+            fast_model_name="qwen3:8b",
+            mode="default",
+            use_separate_fast_config=True,
+            fast_base_url="http://localhost:11434/v1",
+            fast_api_format="openai",
+        )
+    )
+
+    assert updated.use_separate_fast_config is True
+    assert updated.has_fast_api_key is False
+    assert profile.fast_base_url == "http://localhost:11434/v1"
+    assert api_key == "qwen-key"
+    assert fast_api_key == ""
+    assert "qwen-key" not in get_data_paths().settings_file.read_text(encoding="utf-8")
+
+
 def test_llm_settings_update_rejects_invalid_concurrency():
     with pytest.raises(ValidationError):
         LLMSettingsUpdate(

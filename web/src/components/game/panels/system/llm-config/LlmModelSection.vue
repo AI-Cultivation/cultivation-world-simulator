@@ -10,12 +10,22 @@ defineProps<{
   fastLabel: string
   fastDesc: string
   fastPlaceholder: string
+  separateFastConfigLabel: string
+  separateFastConfigDesc: string
 }>()
 </script>
 
 <template>
   <div class="section">
     <div class="section-title">{{ title }}</div>
+
+    <div class="form-item">
+      <label class="toggle-label">
+        <input v-model="config.use_separate_fast_config" type="checkbox" />
+        {{ separateFastConfigLabel }}
+      </label>
+      <div class="desc">{{ separateFastConfigDesc }}</div>
+    </div>
 
     <div class="form-item">
       <label>{{ normalLabel }}</label>
@@ -88,4 +98,5 @@ defineProps<{
   border-color: #4a9eff;
   background: #1a1a1a;
 }
+.toggle-label { align-items: center; display: flex !important; gap: .55em; }
 </style>

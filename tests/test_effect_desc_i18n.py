@@ -1,9 +1,12 @@
 
 import pytest
 from src.classes.effect.desc import format_effects_to_text
+from src.classes.effect.process import _evaluate_conditional_effect
 from src.classes.language import language_manager
+from src.classes.persona import personas_by_id
+from src.classes.weapon_type import WeaponType
 from src.i18n import reload_translations
-from src.i18n.locale_registry import get_fallback_locale, get_source_locale
+from src.i18n.locale_registry import get_fallback_locale, get_locale_codes, get_source_locale
 
 class TestEffectDescI18n:
     
@@ -129,3 +132,56 @@ class TestEffectDescI18n:
         assert "阵法持续 +2" in text
         assert "布阵消耗 -5.0%" in text
 
+    def test_weapon_persona_conditions_apply_and_are_localized_in_all_locales(self):
+        from types import SimpleNamespace
+
+        avatar = SimpleNamespace(
+            weapon=SimpleNamespace(weapon_type=WeaponType.SPEAR),
+        )
+        weapon_personas = [
+            persona
+            for persona in personas_by_id.values()
+            if "avatar.weapon.weapon_type" in str(persona.effects)
+        ]
+        assert weapon_personas
+        assert "avatar.weapon.type" not in str([persona.effects for persona in weapon_personas])
+
+        for persona in weapon_personas:
+            condition = persona.effects[0]["when"]
+            weapon_key = condition.split("WeaponType.", 1)[1].split()[0]
+            matching_avatar = SimpleNamespace(
+                weapon=SimpleNamespace(weapon_type=WeaponType[weapon_key]),
+            )
+            assert _evaluate_conditional_effect(persona.effects, matching_avatar)
+
+        spear_fanatic = personas_by_id[50]
+        active = _evaluate_conditional_effect(spear_fanatic.effects, avatar)
+        assert active["extra_weapon_proficiency_gain"] == 1.0
+        assert active["extra_battle_strength_points"] == 3
+
+        for locale in get_locale_codes():
+            language_manager.set_language(locale)
+            reload_translations()
+            text = format_effects_to_text(spear_fanatic.effects)
+            assert "avatar.weapon" not in text
+            assert "WeaponType." not in text
+            assert "SPEAR" not in text
+
+    def test_official_rank_condition_labels_are_localized_in_all_locales(self):
+        from src.classes.official_rank import OFFICIAL_RANKS
+        from src.i18n import t
+
+        condition_effects = [
+            effect
+            for rank in OFFICIAL_RANKS.values()
+            for effect in rank.effects
+            if isinstance(effect, dict) and effect.get("when_desc")
+        ]
+        assert condition_effects
+
+        for locale in get_locale_codes():
+            language_manager.set_language(locale)
+            reload_translations()
+            assert t("condition_confucian_orthodoxy") != "condition_confucian_orthodoxy"
+            for effect in condition_effects:
+                assert "avatar.orthodoxy" not in format_effects_to_text(effect)

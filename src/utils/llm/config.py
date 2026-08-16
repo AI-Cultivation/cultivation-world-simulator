@@ -34,20 +34,26 @@ class LLMConfig:
         """
         profile, api_key = get_settings_service().get_llm_runtime_config()
         base_url = profile.base_url
+        api_key_value = api_key
+        api_format = profile.api_format
 
         # 根据模式选择模型
         model_name = ""
         if mode == LLMMode.FAST:
             model_name = profile.fast_model_name
+            if profile.use_separate_fast_config:
+                base_url = profile.fast_base_url
+                api_key_value = get_settings_service().get_secrets().fast_api_key
+                api_format = profile.fast_api_format
         else:
             # NORMAL or DEFAULT fallback
             model_name = profile.model_name
 
         return cls(
             model_name=model_name,
-            api_key=api_key,
+            api_key=api_key_value,
             base_url=base_url,
-            api_format=getattr(profile, 'api_format', 'openai')
+            api_format=api_format,
         )
 
 

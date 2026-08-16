@@ -24,3 +24,6 @@ msgstr "{condition} のとき"
 
 msgid "[{condition}] {effects}"
 msgstr "[{condition}] {effects}"
+
+msgid "condition_confucian_orthodoxy"
+msgstr "儒家の道統を信奉している時"

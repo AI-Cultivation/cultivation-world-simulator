@@ -92,7 +92,7 @@ def _evaluate_conditional_effect(effect: dict[str, Any] | list[dict[str, Any]], 
     
     支持三种格式：
     1. 普通dict（无条件）: {"extra_battle_strength_points": 1}
-    2. 带条件的dict: {"extra_battle_strength_points": 2, "when": "avatar.weapon.type == WeaponType.SWORD"}
+    2. 带条件的dict: {"extra_battle_strength_points": 2, "when": "avatar.weapon.weapon_type == WeaponType.SWORD"}
     3. 条件数组: [{"extra_battle_strength_points": 2, "when": "..."}, {...}]
     
     Args:

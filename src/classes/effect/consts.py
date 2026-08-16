@@ -612,7 +612,7 @@ CSV 中 effects 列的写法（支持宽松JSON格式）:
   {legal_actions: ['DevourPeople']}
 
 条件effect（when字段）:
-  [{when: 'avatar.weapon.type == WeaponType.SWORD', extra_battle_strength_points: 3}]
+  [{when: 'avatar.weapon.weapon_type == WeaponType.SWORD', extra_battle_strength_points: 3}]
   可访问: avatar, WeaponType, EquipmentGrade, Alignment
 
 动态值（字符串表达式会被eval）:

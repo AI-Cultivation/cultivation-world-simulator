@@ -127,6 +127,37 @@ def test_profile_connectivity_tests_same_model_once():
     assert tested_models == ["same-model"]
 
 
+def test_profile_connectivity_supports_separate_local_fast_service_without_key():
+    profile = SimpleNamespace(
+        base_url="https://api.qwen.example/v1",
+        model_name="qwen-plus",
+        fast_model_name="qwen3:8b",
+        api_format="openai",
+        use_separate_fast_config=True,
+        fast_base_url="http://localhost:11434/v1",
+        fast_api_format="openai",
+    )
+    tested_configs = []
+
+    def fake_test_connectivity(*, config):
+        tested_configs.append(config)
+        return True, ""
+
+    success, error = check_llm_profile_connectivity(
+        profile=profile,
+        api_key="qwen-key",
+        fast_api_key="",
+        test_connectivity=fake_test_connectivity,
+    )
+
+    assert success is True
+    assert error == ""
+    assert [(config.base_url, config.model_name, config.api_key) for config in tested_configs] == [
+        ("https://api.qwen.example/v1", "qwen-plus", "qwen-key"),
+        ("http://localhost:11434/v1", "qwen3:8b", ""),
+    ]
+
+
 def test_profile_connectivity_labels_fast_model_failure():
     profile = SimpleNamespace(
         base_url="https://api.example.com/v1",

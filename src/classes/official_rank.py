@@ -68,6 +68,7 @@ OFFICIAL_RANKS: dict[str, OfficialRankDef] = {
             {"extra_luck": 2},
             {
                 "when": 'avatar.orthodoxy is not None and avatar.orthodoxy.id == "confucianism"',
+                "when_desc": "condition_confucian_orthodoxy",
                 "extra_educate_efficiency": 0.15,
                 "extra_breakthrough_success_rate": 0.01,
             },
@@ -83,6 +84,7 @@ OFFICIAL_RANKS: dict[str, OfficialRankDef] = {
             {"extra_luck": 5},
             {
                 "when": 'avatar.orthodoxy is not None and avatar.orthodoxy.id == "confucianism"',
+                "when_desc": "condition_confucian_orthodoxy",
                 "extra_educate_efficiency": 0.30,
                 "extra_breakthrough_success_rate": 0.02,
             },
@@ -98,6 +100,7 @@ OFFICIAL_RANKS: dict[str, OfficialRankDef] = {
             {"extra_luck": 9},
             {
                 "when": 'avatar.orthodoxy is not None and avatar.orthodoxy.id == "confucianism"',
+                "when_desc": "condition_confucian_orthodoxy",
                 "extra_educate_efficiency": 0.50,
                 "extra_breakthrough_success_rate": 0.04,
             },
@@ -113,6 +116,7 @@ OFFICIAL_RANKS: dict[str, OfficialRankDef] = {
             {"extra_luck": 14},
             {
                 "when": 'avatar.orthodoxy is not None and avatar.orthodoxy.id == "confucianism"',
+                "when_desc": "condition_confucian_orthodoxy",
                 "extra_educate_efficiency": 0.80,
                 "extra_breakthrough_success_rate": 0.06,
             },

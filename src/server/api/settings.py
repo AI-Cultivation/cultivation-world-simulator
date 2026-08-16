@@ -19,7 +19,7 @@ def create_settings_router(
     get_llm_view: Callable[[], object],
     get_llm_runtime_config: Callable[[], tuple[object, str]],
     get_llm_failure_state: Callable[[], tuple[bool, str]] | None = None,
-    get_llm_test_payload: Callable[[LLMSettingsUpdate], tuple[object, str]],
+    get_llm_test_payload: Callable[[LLMSettingsUpdate], tuple[object, str, str]],
     test_connectivity: Callable[..., tuple[bool, str]],
     update_llm: Callable[[LLMSettingsUpdate], object | Awaitable[object]],
     on_llm_updated: Callable[[], Awaitable[None]],
@@ -61,10 +61,11 @@ def create_settings_router(
     @router.post("/api/settings/llm/test")
     def test_llm_connection(req: LLMSettingsUpdate):
         try:
-            profile, api_key = get_llm_test_payload(req)
+            profile, api_key, fast_api_key = get_llm_test_payload(req)
             success, error_msg = check_llm_profile_connectivity(
                 profile=profile,
                 api_key=api_key,
+                fast_api_key=fast_api_key,
                 test_connectivity=test_connectivity,
             )
             if success:

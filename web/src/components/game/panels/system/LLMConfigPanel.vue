@@ -5,6 +5,7 @@ import LlmHelpModal from './llm-config/LlmHelpModal.vue'
 import LlmPresetSection from './llm-config/LlmPresetSection.vue'
 import LlmRunModeSection from './llm-config/LlmRunModeSection.vue'
 import LlmApiConfigSection from './llm-config/LlmApiConfigSection.vue'
+import LlmFastServiceSection from './llm-config/LlmFastServiceSection.vue'
 import LlmModelSection from './llm-config/LlmModelSection.vue'
 import LlmConfigActions from './llm-config/LlmConfigActions.vue'
 
@@ -19,9 +20,13 @@ const {
   testing,
   showHelpModal,
   hasSavedApiKey,
+  hasSavedFastApiKey,
   apiKeyFocused,
+  fastApiKeyFocused,
   showSavedApiKeyMask,
   apiKeyPlaceholder,
+  showSavedFastApiKeyMask,
+  fastApiKeyPlaceholder,
   llmConfigError,
   config,
   modeOptions,
@@ -31,6 +36,7 @@ const {
   applyPreset,
   handleTestAndSave,
   clearSavedApiKey,
+  clearSavedFastApiKey,
 } = useLlmConfigPanel(() => emit('config-saved'))
 </script>
 
@@ -83,6 +89,28 @@ const {
         :fast-label="t('llm.labels.fast_model')"
         :fast-desc="t('llm.descs.fast_model')"
         :fast-placeholder="t('llm.placeholders.fast_model')"
+        :separate-fast-config-label="t('llm.labels.separate_fast_config')"
+        :separate-fast-config-desc="t('llm.descs.separate_fast_config')"
+      />
+
+      <LlmFastServiceSection
+        v-if="config.use_separate_fast_config"
+        :config="config"
+        :title="t('llm.sections.api_config')"
+        :api-format-options="apiFormatOptions"
+        :api-key-label="t('llm.labels.api_key')"
+        :api-key-placeholder="fastApiKeyPlaceholder"
+        :has-saved-api-key="hasSavedFastApiKey"
+        :show-saved-api-key-mask="showSavedFastApiKeyMask"
+        :saved-api-key-hint="t('llm.api_key_saved_hint')"
+        :clear-saved-key-label="t('llm.actions.clear_saved_key')"
+        :base-url-label="t('llm.labels.base_url')"
+        :base-url-placeholder="t('llm.placeholders.base_url')"
+        :api-format-label="t('llm.labels.api_format')"
+        :testing="testing"
+        @api-key-focus="fastApiKeyFocused = true"
+        @api-key-blur="fastApiKeyFocused = false"
+        @clear-saved-key="clearSavedFastApiKey"
       />
 
       <LlmRunModeSection

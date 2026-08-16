@@ -33,12 +33,14 @@
     "fast_model": "快速模型 (Fast)",
     "max_concurrent_requests": "最大并发数",
     "what_is_api": "什么是 API / 如何获取?",
-    "api_format": "API 格式"
+    "api_format": "API 格式",
+    "separate_fast_config": "快速模型使用独立服务配置"
   },
   "descs": {
     "normal_model": "用于处理复杂逻辑、剧情生成等任务",
     "fast_model": "用于简单判定、频繁交互等任务",
-    "max_concurrent_requests": "同时请求 AI 的线程数。调大可加快速度，但可能触发 API 速率限制 (Rate Limit)。建议值：5-20。"
+    "max_concurrent_requests": "同时请求 AI 的线程数。调大可加快速度，但可能触发 API 速率限制 (Rate Limit)。建议值：5-20。",
+    "separate_fast_config": "启用后，快速模型可使用不同的 Base URL、API Key 与接口格式；关闭时仍与普通模型共用服务配置。"
   },
   "placeholders": {
     "api_key": "在此填入你自己的 API Key (通常以 sk- 开头)",

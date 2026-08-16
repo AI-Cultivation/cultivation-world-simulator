@@ -24,6 +24,10 @@ const createEmptyConfig = (): LLMConfigDTO => ({
   mode: 'default',
   max_concurrent_requests: 10,
   api_format: 'openai',
+  use_separate_fast_config: false,
+  fast_base_url: '',
+  fast_api_key: '',
+  fast_api_format: 'openai',
 })
 
 const LOCAL_LLM_HOSTS = new Set(['localhost', '127.0.0.1', '::1', '0.0.0.0'])
@@ -65,8 +69,11 @@ export function useLlmConfigPanel(onConfigSaved: () => void) {
   const testing = ref(false)
   const showHelpModal = ref(false)
   const hasSavedApiKey = ref(false)
+  const hasSavedFastApiKey = ref(false)
   const apiKeyFocused = ref(false)
+  const fastApiKeyFocused = ref(false)
   const savedCredentialScope = ref('')
+  const savedFastCredentialScope = ref('')
   const config = ref<LLMConfigDTO>(createEmptyConfig())
 
   const hasDraftApiKey = computed(() => Boolean(config.value.api_key))
@@ -75,6 +82,14 @@ export function useLlmConfigPanel(onConfigSaved: () => void) {
   )
   const apiKeyPlaceholder = computed(() => (
     hasSavedApiKey.value
+      ? t('llm.placeholders.api_key_saved')
+      : t('llm.placeholders.api_key')
+  ))
+  const showSavedFastApiKeyMask = computed(
+    () => hasSavedFastApiKey.value && !config.value.fast_api_key && !fastApiKeyFocused.value,
+  )
+  const fastApiKeyPlaceholder = computed(() => (
+    hasSavedFastApiKey.value
       ? t('llm.placeholders.api_key_saved')
       : t('llm.placeholders.api_key')
   ))
@@ -199,7 +214,9 @@ export function useLlmConfigPanel(onConfigSaved: () => void) {
     try {
       const result = await llmApi.fetchConfig()
       hasSavedApiKey.value = result.has_api_key
+      hasSavedFastApiKey.value = result.has_fast_api_key
       savedCredentialScope.value = getCredentialScope(result.base_url)
+      savedFastCredentialScope.value = getCredentialScope(result.fast_base_url)
       config.value = {
         base_url: result.base_url,
         api_key: '',
@@ -208,6 +225,10 @@ export function useLlmConfigPanel(onConfigSaved: () => void) {
         mode: result.mode,
         max_concurrent_requests: result.max_concurrent_requests,
         api_format: result.api_format || 'openai',
+        use_separate_fast_config: result.use_separate_fast_config,
+        fast_base_url: result.fast_base_url,
+        fast_api_key: '',
+        fast_api_format: result.fast_api_format || 'openai',
       }
     } catch {
       message.error(t('llm.fetch_failed'))
@@ -251,13 +272,26 @@ export function useLlmConfigPanel(onConfigSaved: () => void) {
       if (shouldClearOldKey) {
         payload.clear_api_key = true
       }
+      const shouldClearOldFastKey = payload.use_separate_fast_config
+        && hasSavedFastApiKey.value
+        && !payload.fast_api_key
+        && (
+          isLocalOpenAiEndpoint({ ...payload, base_url: payload.fast_base_url, api_format: payload.fast_api_format })
+          || getCredentialScope(payload.fast_base_url) !== savedFastCredentialScope.value
+        )
+      if (shouldClearOldFastKey) {
+        payload.clear_fast_api_key = true
+      }
 
       await llmApi.testConnection(payload)
       message.success(t('llm.test_success'))
       const saved = await llmApi.saveConfig(payload)
       hasSavedApiKey.value = saved.config?.has_api_key ?? Boolean(config.value.api_key || hasSavedApiKey.value)
+      hasSavedFastApiKey.value = saved.config?.has_fast_api_key ?? Boolean(config.value.fast_api_key || hasSavedFastApiKey.value)
       savedCredentialScope.value = getCredentialScope(saved.config?.base_url ?? payload.base_url)
+      savedFastCredentialScope.value = getCredentialScope(saved.config?.fast_base_url ?? payload.fast_base_url)
       config.value.api_key = ''
+      config.value.fast_api_key = ''
       message.success(t('llm.save_success'))
       uiStore.clearLlmConfigError()
       onConfigSaved()
@@ -308,6 +342,27 @@ export function useLlmConfigPanel(onConfigSaved: () => void) {
     })
   }
 
+  function clearSavedFastApiKey() {
+    if (!hasSavedFastApiKey.value || testing.value) return
+    dialog.warning({
+      title: t('llm.clear_key.title'),
+      content: t('llm.clear_key.content'),
+      positiveText: t('llm.clear_key.confirm'),
+      negativeText: t('common.cancel'),
+      onPositiveClick: async () => {
+        testing.value = true
+        try {
+          const saved = await llmApi.saveConfig({ ...config.value, fast_api_key: '', clear_fast_api_key: true })
+          hasSavedFastApiKey.value = saved.config?.has_fast_api_key ?? false
+          config.value.fast_api_key = ''
+          message.success(t('llm.clear_key.success'))
+        } finally {
+          testing.value = false
+        }
+      },
+    })
+  }
+
   onMounted(() => {
     void fetchConfig()
   })
@@ -317,10 +372,14 @@ export function useLlmConfigPanel(onConfigSaved: () => void) {
     testing,
     showHelpModal,
     hasSavedApiKey,
+    hasSavedFastApiKey,
     apiKeyFocused,
+    fastApiKeyFocused,
     hasDraftApiKey,
     showSavedApiKeyMask,
     apiKeyPlaceholder,
+    showSavedFastApiKeyMask,
+    fastApiKeyPlaceholder,
     llmConfigError,
     config,
     modeOptions,
@@ -331,5 +390,6 @@ export function useLlmConfigPanel(onConfigSaved: () => void) {
     applyPreset,
     handleTestAndSave,
     clearSavedApiKey,
+    clearSavedFastApiKey,
   }
 }

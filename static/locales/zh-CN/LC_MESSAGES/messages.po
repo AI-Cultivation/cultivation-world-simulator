@@ -1628,6 +1628,9 @@ msgstr "当{condition}"
 msgid "[{condition}] {effects}"
 msgstr "[{condition}] {effects}"
 
+msgid "condition_confucian_orthodoxy"
+msgstr "信奉儒家道统时"
+
 msgid "Died from severe injuries"
 msgstr "重伤不治身亡"
 

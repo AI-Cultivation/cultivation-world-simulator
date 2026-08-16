@@ -29,27 +29,27 @@ id,name_id,desc_id,key,name,exclusion_keys,desc,rarity,condition,effects
 27,PERSONA_27_NAME,PERSONA_27_DESC,SHY,腼腆,OPEN_MINDED,你对待和他人结为道侣或者双修比较谨慎,N,,
 28,PERSONA_28_NAME,PERSONA_28_DESC,SIMP,舔狗,ALOOF;INDIFFERENT;MEAN;SHY,你对异性中外貌出众者格外友善。,N,,
 29,PERSONA_29_NAME,PERSONA_29_DESC,ENVIOUS,嫉妒,FRIENDLY;ENTHUSIASTIC,你对远超于你的人容易产生敌意。,N,,
-32,PERSONA_32_NAME,PERSONA_32_DESC,SWORD_FANATIC,剑痴,LAZY;TIMID,以剑入道，剑即是命。你认为剑道至上。,SR,,"[{when: 'avatar.weapon.type == ""SWORD""', extra_weapon_proficiency_gain: 1.0, extra_battle_strength_points: 3}]"
+32,PERSONA_32_NAME,PERSONA_32_DESC,SWORD_FANATIC,剑痴,LAZY;TIMID,以剑入道，剑即是命。你认为剑道至上。,SR,,"[{when: 'avatar.weapon.weapon_type == WeaponType.SWORD', extra_weapon_proficiency_gain: 1.0, extra_battle_strength_points: 3}]"
 33,PERSONA_33_NAME,PERSONA_33_DESC,SCHEMING,心机深沉,RASH;ENTHUSIASTIC;EXTROVERTED,深藏不露，行事谨慎，善于算计。,R,,
 34,PERSONA_34_NAME,PERSONA_34_DESC,LOYAL,忠诚,ALOOF;INDIFFERENT;MEAN,重承诺守信义，对认定的人绝不背叛。,R,,
 35,PERSONA_35_NAME,PERSONA_35_DESC,RUTHLESS,狠辣,FRIENDLY;ENTHUSIASTIC;TIMID,行事果决狠辣，不留后患，斩草必除根。,N,,
 37,PERSONA_37_NAME,PERSONA_37_DESC,SUSPICIOUS,疑心重,ENTHUSIASTIC;EXTROVERTED;FRIENDLY,对任何人都保持怀疑，不轻易信任。,N,,
 38,PERSONA_38_NAME,PERSONA_38_DESC,BODY_CULTIVATOR,体修,LIFE_CHERISHING;TIMID,专注肉身淬炼，体魄强健，近战无敌。,R,,"[{when: 'avatar.weapon is None', when_desc: 'condition_unarmed', extra_battle_strength_points: 5}]"
 39,PERSONA_39_NAME,PERSONA_39_DESC,ALCHEMIST,炼丹师,AGGRESSIVE,精通丹道，对灵药敏感。,R,,{extra_refine_success_rate: 0.15}
-41,PERSONA_41_NAME,PERSONA_41_DESC,SWORD_CULTIVATOR,剑修,LAZY,对剑道有着深厚的兴趣和独特的天赋。,R,,"[{when: 'avatar.weapon.type == ""SWORD""', extra_weapon_proficiency_gain: 0.5, extra_battle_strength_points: 1}]"
-42,PERSONA_42_NAME,PERSONA_42_DESC,SABER_CULTIVATOR,刀修,LAZY,专精刀法，对刀道有着独特的理解。,R,,"[{when: 'avatar.weapon.type == ""SABER""', extra_weapon_proficiency_gain: 0.5, extra_battle_strength_points: 1}]"
-43,PERSONA_43_NAME,PERSONA_43_DESC,SPEAR_CULTIVATOR,枪修,LAZY,精通枪法，百兵之王在手。,R,,"[{when: 'avatar.weapon.type == ""SPEAR""', extra_weapon_proficiency_gain: 0.5, extra_battle_strength_points: 1}]"
-44,PERSONA_44_NAME,PERSONA_44_DESC,STAFF_CULTIVATOR,棍修,LAZY,棍棒在手，天下我有。,R,,"[{when: 'avatar.weapon.type == ""STAFF""', extra_weapon_proficiency_gain: 0.5, extra_battle_strength_points: 1}]"
-45,PERSONA_45_NAME,PERSONA_45_DESC,MUSICAL_MASTER,音律大师,LAZY,精通音律之道，琴笛在手，可攻可守。,SR,,"[{when: 'avatar.weapon.type == ""ZITHER"" or avatar.weapon.type == ""FLUTE""', extra_weapon_proficiency_gain: 1.0, extra_battle_strength_points: 3}]"
-46,PERSONA_46_NAME,PERSONA_46_DESC,HIDDEN_WEAPON_EXPERT,暗器高手,LAZY,擅长使用暗器，出手诡秘莫测。,R,,"[{when: 'avatar.weapon.type == ""HIDDEN_WEAPON""', extra_weapon_proficiency_gain: 0.5, extra_battle_strength_points: 1}]"
-47,PERSONA_47_NAME,PERSONA_47_DESC,FAN_CULTIVATOR,扇修,LAZY,精通扇法，举手投足间尽显风流。,R,,"[{when: 'avatar.weapon.type == ""FAN""', extra_weapon_proficiency_gain: 0.5, extra_battle_strength_points: 1}]"
-48,PERSONA_48_NAME,PERSONA_48_DESC,WHIP_CULTIVATOR,鞭修,LAZY,精通鞭法，软兵器在手，刚柔并济。,R,,"[{when: 'avatar.weapon.type == ""WHIP""', extra_weapon_proficiency_gain: 0.5, extra_battle_strength_points: 1}]"
-49,PERSONA_49_NAME,PERSONA_49_DESC,SABER_FANATIC,刀痴,LAZY;TIMID,以刀入道，刀即是命。你认为刀法至上。,SR,,"[{when: 'avatar.weapon.type == ""SABER""', extra_weapon_proficiency_gain: 1.0, extra_battle_strength_points: 3}]"
-50,PERSONA_50_NAME,PERSONA_50_DESC,SPEAR_FANATIC,枪痴,LAZY;TIMID,以枪入道，枪即是命。你认为枪法至上。,SR,,"[{when: 'avatar.weapon.type == ""SPEAR""', extra_weapon_proficiency_gain: 1.0, extra_battle_strength_points: 3}]"
-51,PERSONA_51_NAME,PERSONA_51_DESC,STAFF_SAINT,棍圣,LAZY;TIMID,以棍入道，棍即是命。棍法通神。,SR,,"[{when: 'avatar.weapon.type == ""STAFF""', extra_weapon_proficiency_gain: 1.0, extra_battle_strength_points: 3}]"
-52,PERSONA_52_NAME,PERSONA_52_DESC,FAN_FANATIC,扇痴,LAZY;TIMID,以扇入道，扇即是命。你认为扇法至上。,SR,,"[{when: 'avatar.weapon.type == ""FAN""', extra_weapon_proficiency_gain: 1.0, extra_battle_strength_points: 3}]"
-53,PERSONA_53_NAME,PERSONA_53_DESC,WHIP_FANATIC,鞭痴,LAZY;TIMID,以鞭入道，鞭即是命。你认为鞭法至上。,SR,,"[{when: 'avatar.weapon.type == ""WHIP""', extra_weapon_proficiency_gain: 1.0, extra_battle_strength_points: 3}]"
-54,PERSONA_54_NAME,PERSONA_54_DESC,MASTER_ASSASSIN,刺客宗师,LAZY;TIMID,暗器之道登峰造极，杀人于无形。,SR,,"[{when: 'avatar.weapon.type == ""HIDDEN_WEAPON""', extra_weapon_proficiency_gain: 1.0, extra_battle_strength_points: 3}]"
+41,PERSONA_41_NAME,PERSONA_41_DESC,SWORD_CULTIVATOR,剑修,LAZY,对剑道有着深厚的兴趣和独特的天赋。,R,,"[{when: 'avatar.weapon.weapon_type == WeaponType.SWORD', extra_weapon_proficiency_gain: 0.5, extra_battle_strength_points: 1}]"
+42,PERSONA_42_NAME,PERSONA_42_DESC,SABER_CULTIVATOR,刀修,LAZY,专精刀法，对刀道有着独特的理解。,R,,"[{when: 'avatar.weapon.weapon_type == WeaponType.SABER', extra_weapon_proficiency_gain: 0.5, extra_battle_strength_points: 1}]"
+43,PERSONA_43_NAME,PERSONA_43_DESC,SPEAR_CULTIVATOR,枪修,LAZY,精通枪法，百兵之王在手。,R,,"[{when: 'avatar.weapon.weapon_type == WeaponType.SPEAR', extra_weapon_proficiency_gain: 0.5, extra_battle_strength_points: 1}]"
+44,PERSONA_44_NAME,PERSONA_44_DESC,STAFF_CULTIVATOR,棍修,LAZY,棍棒在手，天下我有。,R,,"[{when: 'avatar.weapon.weapon_type == WeaponType.STAFF', extra_weapon_proficiency_gain: 0.5, extra_battle_strength_points: 1}]"
+45,PERSONA_45_NAME,PERSONA_45_DESC,MUSICAL_MASTER,音律大师,LAZY,精通音律之道，琴笛在手，可攻可守。,SR,,"[{when: 'avatar.weapon.weapon_type == WeaponType.ZITHER or avatar.weapon.weapon_type == WeaponType.FLUTE', extra_weapon_proficiency_gain: 1.0, extra_battle_strength_points: 3}]"
+46,PERSONA_46_NAME,PERSONA_46_DESC,HIDDEN_WEAPON_EXPERT,暗器高手,LAZY,擅长使用暗器，出手诡秘莫测。,R,,"[{when: 'avatar.weapon.weapon_type == WeaponType.HIDDEN_WEAPON', extra_weapon_proficiency_gain: 0.5, extra_battle_strength_points: 1}]"
+47,PERSONA_47_NAME,PERSONA_47_DESC,FAN_CULTIVATOR,扇修,LAZY,精通扇法，举手投足间尽显风流。,R,,"[{when: 'avatar.weapon.weapon_type == WeaponType.FAN', extra_weapon_proficiency_gain: 0.5, extra_battle_strength_points: 1}]"
+48,PERSONA_48_NAME,PERSONA_48_DESC,WHIP_CULTIVATOR,鞭修,LAZY,精通鞭法，软兵器在手，刚柔并济。,R,,"[{when: 'avatar.weapon.weapon_type == WeaponType.WHIP', extra_weapon_proficiency_gain: 0.5, extra_battle_strength_points: 1}]"
+49,PERSONA_49_NAME,PERSONA_49_DESC,SABER_FANATIC,刀痴,LAZY;TIMID,以刀入道，刀即是命。你认为刀法至上。,SR,,"[{when: 'avatar.weapon.weapon_type == WeaponType.SABER', extra_weapon_proficiency_gain: 1.0, extra_battle_strength_points: 3}]"
+50,PERSONA_50_NAME,PERSONA_50_DESC,SPEAR_FANATIC,枪痴,LAZY;TIMID,以枪入道，枪即是命。你认为枪法至上。,SR,,"[{when: 'avatar.weapon.weapon_type == WeaponType.SPEAR', extra_weapon_proficiency_gain: 1.0, extra_battle_strength_points: 3}]"
+51,PERSONA_51_NAME,PERSONA_51_DESC,STAFF_SAINT,棍圣,LAZY;TIMID,以棍入道，棍即是命。棍法通神。,SR,,"[{when: 'avatar.weapon.weapon_type == WeaponType.STAFF', extra_weapon_proficiency_gain: 1.0, extra_battle_strength_points: 3}]"
+52,PERSONA_52_NAME,PERSONA_52_DESC,FAN_FANATIC,扇痴,LAZY;TIMID,以扇入道，扇即是命。你认为扇法至上。,SR,,"[{when: 'avatar.weapon.weapon_type == WeaponType.FAN', extra_weapon_proficiency_gain: 1.0, extra_battle_strength_points: 3}]"
+53,PERSONA_53_NAME,PERSONA_53_DESC,WHIP_FANATIC,鞭痴,LAZY;TIMID,以鞭入道，鞭即是命。你认为鞭法至上。,SR,,"[{when: 'avatar.weapon.weapon_type == WeaponType.WHIP', extra_weapon_proficiency_gain: 1.0, extra_battle_strength_points: 3}]"
+54,PERSONA_54_NAME,PERSONA_54_DESC,MASTER_ASSASSIN,刺客宗师,LAZY;TIMID,暗器之道登峰造极，杀人于无形。,SR,,"[{when: 'avatar.weapon.weapon_type == WeaponType.HIDDEN_WEAPON', extra_weapon_proficiency_gain: 1.0, extra_battle_strength_points: 3}]"
 55,PERSONA_55_NAME,PERSONA_55_DESC,LUSTFUL,好色,DESIRELESS,你对美色有着强烈的渴求。,N,,
 56,PERSONA_56_NAME,PERSONA_56_DESC,DESIRELESS,无欲,LUSTFUL,你清心寡欲，对男女之事毫无兴趣。,N,,
 57,PERSONA_57_NAME,PERSONA_57_DESC,EXPLORER,探险家,HOMEBODY,你对未知的世界充满好奇。,SR,,

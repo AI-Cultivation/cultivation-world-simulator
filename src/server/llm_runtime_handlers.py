@@ -18,10 +18,11 @@ def create_llm_runtime_handlers(
         return test_connectivity_impl(config=config)
 
     def test_llm_connection(req) -> dict:
-        profile, api_key = settings_service.get_llm_test_payload(req)
+        profile, api_key, fast_api_key = settings_service.get_llm_test_payload(req)
         success, error_msg = check_llm_profile_connectivity(
             profile=profile,
             api_key=api_key,
+            fast_api_key=fast_api_key,
             test_connectivity=test_connectivity,
         )
         if success:

@@ -46,6 +46,10 @@ class LLMProfile(BaseModel):
     mode: str = "default"
     max_concurrent_requests: int = Field(default=10, ge=1, le=50)
     has_api_key: bool = False
+    use_separate_fast_config: bool = False
+    fast_base_url: str = ""
+    fast_api_format: str = "openai"
+    has_fast_api_key: bool = False
     api_format: str = "openai"  # "openai" 或 "anthropic"
 
 
@@ -59,6 +63,7 @@ class LLMSettings(BaseModel):
 
 class LLMSecrets(BaseModel):
     api_key: str = ""
+    fast_api_key: str = ""
 
 
 class LLMSettingsUpdate(BaseModel):
@@ -69,6 +74,11 @@ class LLMSettingsUpdate(BaseModel):
     mode: str
     max_concurrent_requests: int = Field(default=10, ge=1, le=50)
     clear_api_key: bool = False
+    use_separate_fast_config: bool = False
+    fast_base_url: str = ""
+    fast_api_key: Optional[str] = None
+    fast_api_format: str = "openai"
+    clear_fast_api_key: bool = False
     api_format: str = "openai"  # "openai" 或 "anthropic"
 
 

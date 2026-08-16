@@ -1731,6 +1731,9 @@ msgstr "Lorsque {condition}"
 msgid "[{condition}] {effects}"
 msgstr "[{condition}] {effects}"
 
+msgid "condition_confucian_orthodoxy"
+msgstr "En suivant le confucianisme"
+
 msgid "Died from severe injuries"
 msgstr "Mort de graves blessures"
 

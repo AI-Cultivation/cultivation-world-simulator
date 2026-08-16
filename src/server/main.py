@@ -593,10 +593,11 @@ def test_connectivity(config):
 
 def test_llm_connection(req) -> dict:
     """兼容保留：使用当前保存的密钥测试 LLM 配置。"""
-    profile, api_key = settings_service.get_llm_test_payload(req)
+    profile, api_key, fast_api_key = settings_service.get_llm_test_payload(req)
     success, error_msg = check_llm_profile_connectivity(
         profile=profile,
         api_key=api_key,
+        fast_api_key=fast_api_key,
         test_connectivity=lambda *, config: test_connectivity(config),
     )
     if success:

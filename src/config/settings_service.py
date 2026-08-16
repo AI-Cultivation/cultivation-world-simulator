@@ -245,6 +245,9 @@ class SettingsService:
             "mode": update.mode.strip() or "default",
             "max_concurrent_requests": update.max_concurrent_requests,
             "api_format": update.api_format.strip() or "openai",
+            "use_separate_fast_config": update.use_separate_fast_config,
+            "fast_base_url": update.fast_base_url.strip(),
+            "fast_api_format": update.fast_api_format.strip() or "openai",
         }
 
     def _normalize_llm_api_key(self, api_key: str | None) -> str | None:
@@ -266,6 +269,10 @@ class SettingsService:
             max_concurrent_requests=profile_payload["max_concurrent_requests"],
             has_api_key=settings.llm.profile.has_api_key,
             api_format=profile_payload["api_format"],
+            use_separate_fast_config=profile_payload["use_separate_fast_config"],
+            fast_base_url=profile_payload["fast_base_url"],
+            fast_api_format=profile_payload["fast_api_format"],
+            has_fast_api_key=settings.llm.profile.has_fast_api_key,
         )
 
         if update.clear_api_key:
@@ -273,7 +280,14 @@ class SettingsService:
         elif candidate_key:
             secrets.api_key = candidate_key
 
+        candidate_fast_key = self._normalize_llm_api_key(update.fast_api_key)
+        if update.clear_fast_api_key:
+            secrets.fast_api_key = ""
+        elif candidate_fast_key:
+            secrets.fast_api_key = candidate_fast_key
+
         profile.has_api_key = bool(secrets.api_key)
+        profile.has_fast_api_key = bool(secrets.fast_api_key)
         settings.llm.profile = profile
 
         self._save_settings(settings)
@@ -285,7 +299,7 @@ class SettingsService:
         secrets = self.get_secrets()
         return settings.llm.profile, secrets.api_key
 
-    def get_llm_test_payload(self, update: LLMSettingsUpdate) -> tuple[LLMProfile, str]:
+    def get_llm_test_payload(self, update: LLMSettingsUpdate) -> tuple[LLMProfile, str, str]:
         secrets = self.get_secrets()
         profile_payload = self._normalize_llm_profile_payload(update)
         candidate_key = self._normalize_llm_api_key(update.api_key)
@@ -293,6 +307,11 @@ class SettingsService:
             candidate_key = secrets.api_key
         if update.clear_api_key:
             candidate_key = ""
+        candidate_fast_key = self._normalize_llm_api_key(update.fast_api_key)
+        if not candidate_fast_key:
+            candidate_fast_key = secrets.fast_api_key
+        if update.clear_fast_api_key:
+            candidate_fast_key = ""
         profile = LLMProfile(
             base_url=profile_payload["base_url"],
             model_name=profile_payload["model_name"],
@@ -301,8 +320,12 @@ class SettingsService:
             max_concurrent_requests=profile_payload["max_concurrent_requests"],
             has_api_key=bool(candidate_key),
             api_format=profile_payload["api_format"],
+            use_separate_fast_config=profile_payload["use_separate_fast_config"],
+            fast_base_url=profile_payload["fast_base_url"],
+            fast_api_format=profile_payload["fast_api_format"],
+            has_fast_api_key=bool(candidate_fast_key),
         )
-        return profile, candidate_key
+        return profile, candidate_key, candidate_fast_key
 
     def get_new_game_defaults(self) -> NewGameDefaults:
         return deepcopy(self.get_settings().new_game_defaults)
