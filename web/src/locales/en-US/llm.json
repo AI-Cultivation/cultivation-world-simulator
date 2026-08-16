@@ -21,12 +21,15 @@
     "failed": "Failed to clear API Key"
   },
   "sections": {
+    "normal_model_config": "Normal Model Configuration",
+    "fast_model_config": "Fast Model Configuration",
     "quick_fill": "Quick Fill",
     "api_config": "API Configuration",
     "model_selection": "Model Selection",
     "run_mode": "Run Mode"
   },
   "labels": {
+    "separate_fast_config": "Use separate service configuration for the fast model",
     "api_key": "API Key",
     "base_url": "Base URL",
     "normal_model": "Normal Model (Normal)",
@@ -36,6 +39,7 @@
     "api_format": "API Format"
   },
   "descs": {
+    "separate_fast_config": "When enabled, the fast model can use a different Base URL, API Key, and API format; otherwise it shares the normal model service configuration.",
     "normal_model": "Used for complex logic, story generation, etc.",
     "fast_model": "Used for simple judgments, frequent interactions, etc.",
     "max_concurrent_requests": "Number of concurrent requests to AI. Higher value increases speed but may trigger API Rate Limit. Recommended: 5-20."

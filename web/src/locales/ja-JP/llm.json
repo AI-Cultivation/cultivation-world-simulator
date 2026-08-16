@@ -21,12 +21,15 @@
     "failed": "API Key の削除に失敗しました"
   },
   "sections": {
+    "normal_model_config": "通常モデル設定",
+    "fast_model_config": "高速モデル設定",
     "quick_fill": "クイック設定",
     "api_config": "API 設定",
     "model_selection": "モデル選択",
     "run_mode": "実行モード"
   },
   "labels": {
+    "separate_fast_config": "高速モデルに個別のサービス設定を使用する",
     "api_key": "API Key",
     "base_url": "Base URL",
     "normal_model": "高性能モデル（Normal）",
@@ -36,6 +39,7 @@
     "api_format": "API 形式"
   },
   "descs": {
+    "separate_fast_config": "有効にすると、高速モデルは別の Base URL、API Key、API 形式を使用できます。無効時は通常モデルとサービス設定を共有します。",
     "normal_model": "複雑なロジック、物語生成などに使用します。",
     "fast_model": "簡単な判定、頻繁なやり取りなどに使用します。",
     "max_concurrent_requests": "AI への同時リクエスト数です。値を上げると速度は上がりますが、API の Rate Limit に達しやすくなります。推奨値: 5〜20。"

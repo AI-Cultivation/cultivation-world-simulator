@@ -47,6 +47,14 @@ const {
       <div v-if="llmConfigError" class="error-banner">
         {{ llmConfigError }}
       </div>
+
+      <div class="fast-service-toggle">
+        <label>
+          <input v-model="config.use_separate_fast_config" type="checkbox" />
+          {{ t('llm.labels.separate_fast_config') }}
+        </label>
+        <div>{{ t('llm.descs.separate_fast_config') }}</div>
+      </div>
       
       <LlmPresetSection
         :title="t('llm.sections.quick_fill')"
@@ -59,7 +67,7 @@ const {
       <LlmApiConfigSection
         :config="config"
         :api-format-options="apiFormatOptions"
-        :title="t('llm.sections.api_config')"
+        :title="config.use_separate_fast_config ? t('llm.sections.normal_model_config') : t('llm.sections.api_config')"
         :api-key-label="t('llm.labels.api_key')"
         :api-key-help-label="t('llm.labels.what_is_api')"
         :api-key-placeholder="apiKeyPlaceholder"
@@ -82,21 +90,20 @@ const {
 
       <LlmModelSection
         :config="config"
-        :title="t('llm.sections.model_selection')"
+        :title="config.use_separate_fast_config ? '' : t('llm.sections.model_selection')"
         :normal-label="t('llm.labels.normal_model')"
         :normal-desc="t('llm.descs.normal_model')"
         :normal-placeholder="t('llm.placeholders.normal_model')"
         :fast-label="t('llm.labels.fast_model')"
         :fast-desc="t('llm.descs.fast_model')"
         :fast-placeholder="t('llm.placeholders.fast_model')"
-        :separate-fast-config-label="t('llm.labels.separate_fast_config')"
-        :separate-fast-config-desc="t('llm.descs.separate_fast_config')"
+        :show-fast="!config.use_separate_fast_config"
       />
 
       <LlmFastServiceSection
         v-if="config.use_separate_fast_config"
         :config="config"
-        :title="t('llm.sections.api_config')"
+        :title="t('llm.sections.fast_model_config')"
         :api-format-options="apiFormatOptions"
         :api-key-label="t('llm.labels.api_key')"
         :api-key-placeholder="fastApiKeyPlaceholder"
@@ -111,6 +118,18 @@ const {
         @api-key-focus="fastApiKeyFocused = true"
         @api-key-blur="fastApiKeyFocused = false"
         @clear-saved-key="clearSavedFastApiKey"
+      />
+
+      <LlmModelSection
+        v-if="config.use_separate_fast_config"
+        :config="config"
+        :normal-label="t('llm.labels.normal_model')"
+        :normal-desc="t('llm.descs.normal_model')"
+        :normal-placeholder="t('llm.placeholders.normal_model')"
+        :fast-label="t('llm.labels.fast_model')"
+        :fast-desc="t('llm.descs.fast_model')"
+        :fast-placeholder="t('llm.placeholders.fast_model')"
+        :show-normal="false"
       />
 
       <LlmRunModeSection
@@ -154,6 +173,19 @@ const {
   overflow: auto;
   padding: 0.75em 0.9em;
   word-break: break-word;
+}
+.fast-service-toggle {
+  color: #777;
+  font-size: 0.8em;
+  margin: 0.6em 0 1.5em;
+}
+.fast-service-toggle label {
+  align-items: center;
+  color: #bbb;
+  display: flex;
+  font-size: 1.05em;
+  gap: 0.55em;
+  margin-bottom: 0.5em;
 }
 /* Modal Styles */
 .card {

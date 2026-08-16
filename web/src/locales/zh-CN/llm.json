@@ -21,6 +21,8 @@
     "failed": "清除 API Key 失败"
   },
   "sections": {
+    "normal_model_config": "智能模型配置",
+    "fast_model_config": "快速模型配置",
     "quick_fill": "快速填充",
     "api_config": "API 配置",
     "model_selection": "模型选择",

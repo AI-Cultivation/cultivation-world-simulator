@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import type { LLMConfigDTO } from '@/types/api'
 
-defineProps<{
-  title: string
+withDefaults(defineProps<{
+  title?: string
   config: LLMConfigDTO
   normalLabel: string
   normalDesc: string
@@ -10,24 +10,20 @@ defineProps<{
   fastLabel: string
   fastDesc: string
   fastPlaceholder: string
-  separateFastConfigLabel: string
-  separateFastConfigDesc: string
-}>()
+  showNormal?: boolean
+  showFast?: boolean
+}>(), {
+  title: '',
+  showNormal: true,
+  showFast: true,
+})
 </script>
 
 <template>
   <div class="section">
-    <div class="section-title">{{ title }}</div>
+    <div v-if="title" class="section-title">{{ title }}</div>
 
-    <div class="form-item">
-      <label class="toggle-label">
-        <input v-model="config.use_separate_fast_config" type="checkbox" />
-        {{ separateFastConfigLabel }}
-      </label>
-      <div class="desc">{{ separateFastConfigDesc }}</div>
-    </div>
-
-    <div class="form-item">
+    <div v-if="showNormal" class="form-item">
       <label>{{ normalLabel }}</label>
       <div class="desc">{{ normalDesc }}</div>
       <input
@@ -38,7 +34,7 @@ defineProps<{
       />
     </div>
 
-    <div class="form-item">
+    <div v-if="showFast" class="form-item">
       <label>{{ fastLabel }}</label>
       <div class="desc">{{ fastDesc }}</div>
       <input

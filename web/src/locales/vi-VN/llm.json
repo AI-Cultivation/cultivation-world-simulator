@@ -21,12 +21,15 @@
     "failed": "Xóa API Key thất bại"
   },
   "sections": {
+    "normal_model_config": "Cấu hình mô hình thường",
+    "fast_model_config": "Cấu hình mô hình nhanh",
     "quick_fill": "Điền Nhanh",
     "api_config": "Cấu Hình API",
     "model_selection": "Chọn Mô Hình",
     "run_mode": "Chế Độ Chạy"
   },
   "labels": {
+    "separate_fast_config": "Dùng cấu hình dịch vụ riêng cho mô hình nhanh",
     "api_key": "API Key",
     "base_url": "Base URL",
     "normal_model": "Mô Hình Thường (Normal)",
@@ -36,6 +39,7 @@
     "api_format": "Định Dạng API"
   },
   "descs": {
+    "separate_fast_config": "Khi bật, mô hình nhanh có thể dùng Base URL, API Key và định dạng API khác; khi tắt, nó dùng chung cấu hình dịch vụ với mô hình thường.",
     "normal_model": "Dùng cho logic phức tạp, tạo cốt truyện, v.v.",
     "fast_model": "Dùng cho phán đoán đơn giản, tương tác thường xuyên, v.v.",
     "max_concurrent_requests": "Số yêu cầu gửi đồng thời tới AI. Giá trị càng cao thì càng nhanh, nhưng cũng dễ chạm giới hạn tốc độ API. Khuyến nghị: 5-20."

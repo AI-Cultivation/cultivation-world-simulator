@@ -21,12 +21,15 @@
     "failed": "Échec de l'effacement de la clé API"
   },
   "sections": {
+    "normal_model_config": "Configuration du modèle normal",
+    "fast_model_config": "Configuration du modèle rapide",
     "quick_fill": "Remplissage rapide",
     "api_config": "Configuration de l'API",
     "model_selection": "Sélection du modèle",
     "run_mode": "Mode d'exécution"
   },
   "labels": {
+    "separate_fast_config": "Utiliser une configuration de service distincte pour le modèle rapide",
     "api_key": "Clé API",
     "base_url": "URL de base",
     "normal_model": "Modèle normal (Normal)",
@@ -36,6 +39,7 @@
     "api_format": "Format de l'API"
   },
   "descs": {
+    "separate_fast_config": "Lorsqu'il est activé, le modèle rapide peut utiliser une autre URL de base, clé API et format d'API ; sinon, il partage la configuration de service du modèle normal.",
     "normal_model": "Utilisé pour la logique complexe, la génération d'histoires, etc.",
     "fast_model": "Utilisé pour les jugements simples, les interactions fréquentes, etc.",
     "max_concurrent_requests": "Nombre de requêtes simultanées vers l'IA. Une valeur plus élevée augmente la vitesse mais peut déclencher la limite de débit de l'API. Recommandé : 5-20."
