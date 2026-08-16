@@ -32,8 +32,8 @@ const createEmptyConfig = (): LLMConfigDTO => ({
 
 const LOCAL_LLM_HOSTS = new Set(['localhost', '127.0.0.1', '::1', '0.0.0.0'])
 
-function getCredentialScope(baseUrl: string): string {
-  const raw = baseUrl.trim()
+function getCredentialScope(baseUrl?: string): string {
+  const raw = baseUrl?.trim() ?? ''
   if (!raw) {
     return ''
   }
@@ -225,8 +225,8 @@ export function useLlmConfigPanel(onConfigSaved: () => void) {
         mode: result.mode,
         max_concurrent_requests: result.max_concurrent_requests,
         api_format: result.api_format || 'openai',
-        use_separate_fast_config: result.use_separate_fast_config,
-        fast_base_url: result.fast_base_url,
+        use_separate_fast_config: result.use_separate_fast_config ?? false,
+        fast_base_url: result.fast_base_url ?? '',
         fast_api_key: '',
         fast_api_format: result.fast_api_format || 'openai',
       }
